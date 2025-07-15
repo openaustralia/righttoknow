@@ -1,0 +1,18 @@
+<h2><%= _("Act on what you've learnt") %></h2>
+
+<div class="act_link">
+  <i class="act-link-icon act-link-icon--medium"></i>
+  <%= link_to _("Write about this on Medium"),
+              "http://medium.com/",
+              :onclick => track_analytics_event(
+                AnalyticsEvent::Category::OUTBOUND,
+                AnalyticsEvent::Action::MEDIUM_EXIT,
+                :label => "Request sidebar") %>
+</div>
+
+<% if AlaveteliConfiguration::enable_widgets %>
+  <div class="act_link">
+    <i class="act-link-icon act-link-icon--widget"></i>
+    <%= link_to _("Create a widget for this request"), new_request_widget_path(info_request) %>
+  </div>
+<% end %>
