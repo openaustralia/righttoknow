@@ -1,21 +1,18 @@
 <div id="content">
-<div class="request-sent-message" id="notice">
-  <h1>
-    <%= _("Your requests will be <strong>sent</strong> shortly!") %>
-  </h1>
-
-  <div class="request-sent-message__row">
-    <div class="request-sent-message__column-1">
-      <p class="subtitle">
-        <%= _("<strong>We will email you</strong> when they have been sent. " \
+  <div class="request-sent-message" id="notice">
+    <h1>
+      <%= _("Your requests will be <strong>sent</strong> shortly!") %>
+    </h1>
+    <div class="request-sent-message__row">
+      <div class="request-sent-message__column-1">
+        <p class="subtitle">
+          <%= _("<strong>We will email you</strong> when they have been sent. " \
               "We will also email you when there is a response to any of them, or " \
               "after a response is due if the authorities still " \
               "haven't replied by then.") %>
-      </p>
-
-      <h2><%= _("Share your batch request") %></h2>
-
-      <%= link_to image_tag("next-step-twitter.png",
+        </p>
+        <h2><%= _("Share your batch request") %></h2>
+        <%= link_to image_tag("next-step-twitter.png",
                             :alt => _("Tweet it"),
                             :width => "120",
                             :height => "37"),
@@ -29,8 +26,7 @@
                                           AnalyticsEvent::Category::OUTBOUND,
                                           AnalyticsEvent::Action::TWITTER_EXIT,
                                           :label => "Share Batch Request") %>
-
-      <%= link_to image_tag("next-step-facebook.png",
+        <%= link_to image_tag("next-step-facebook.png",
                             :alt => _("Share on Facebook"),
                             :width => "120",
                             :height => "37"),
@@ -41,26 +37,24 @@
                                           AnalyticsEvent::Category::OUTBOUND,
                                           AnalyticsEvent::Action::FACEBOOK_EXIT,
                                           :label => "Share Batch Request") %>
-
-      <h2><%= _("Keep your requests up to date") %></h2>
-      <p>
-        <%= _('If you write about these requests ' \
+        <h2><%= _("Keep your requests up to date") %></h2>
+        <p>
+          <%= _('If you write about these requests ' \
               '(for example in a forum or a blog) ' \
               'please link to this page.') %>
-      </p>
-    </div>
-
-    <div class="request-sent-message__column-2">
-      <div class="what-next">
-        <h2><%= _("What next?") %></h2>
-        <ul class="what-next__list">
-          <li>
-            <%= link_to _("Help us classify requests that haven't " \
+        </p>
+      </div>
+      <div class="request-sent-message__column-2">
+        <div class="what-next">
+          <h2><%= _("What next?") %></h2>
+          <ul class="what-next__list">
+            <li>
+              <%= link_to _("Help us classify requests that haven't " \
                           "been updated"), categorise_play_path %>
-        </li>
-        </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>

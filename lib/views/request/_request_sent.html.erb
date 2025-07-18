@@ -4,7 +4,6 @@
       <%= _("Your {{law_used_full}} request has been sent",
             :law_used_full => @info_request.law_used_human(:full)) %>
     </h1>
-
     <div class="request-sent-message__row">
       <div class="request-sent-message__column-1">
         <p class="subtitle">
@@ -14,9 +13,7 @@
                 :late_number_of_days => @info_request.public_body.reply_late_after_days,
                 :working_or_calendar => @info_request.public_body.working_or_calendar_days) %>
         </p>
-
         <h2><%= _("Share your request") %></h2>
-
         <%= link_to image_tag("next-step-twitter.png",
                               :alt => _("Tweet it"),
                               :width => "120",
@@ -34,8 +31,6 @@
                                             AnalyticsEvent::Category::OUTBOUND,
                                             AnalyticsEvent::Action::TWITTER_EXIT,
                                             :label => "Share Request") %>
-
-
         <%= link_to image_tag("next-step-facebook.png",
                               :alt => _("Share on Facebook"),
                               :width => "120",
@@ -47,9 +42,7 @@
                                             AnalyticsEvent::Category::OUTBOUND,
                                             AnalyticsEvent::Action::FACEBOOK_EXIT,
                                             :label => "Share Request") %>
-
         <h2><%= _("Keep your request up to date") %></h2>
-
         <% if feature_enabled?(:annotations) %>
           <p class="request-sent-message__para">
             <%= _('If you write about this request ' \
@@ -67,11 +60,9 @@
           </p>
         <% end %>
       </div>
-
       <div class="request-sent-message__column-2">
         <div class="what-next">
           <h2><%= _("What next?") %></h2>
-
           <ul class="what-next__list">
             <li>
               <%= link_to _("View other requests to {{public_body}}", :public_body => @info_request.public_body.name), public_body_path(@info_request.public_body) %>
@@ -86,7 +77,6 @@
     </div>
   </div>
 </div>
-
 <% if Rails.env.production? && AlaveteliConfiguration.domain == 'www.righttoknow.org.au' %>
   <!-- Google Code for RTK Request Made Conversion Page -->
   <script type="text/javascript">
@@ -99,8 +89,7 @@
     var google_remarketing_only = false;
     /* ]]> */
   </script>
-  <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
-  </script>
+  <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
   <noscript>
     <div style="display:inline;">
       <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/1055120173/?label=_HtwCMv6o2oQrbaP9wM&amp;guid=ON&amp;script=0"/>

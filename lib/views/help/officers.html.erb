@@ -1,153 +1,126 @@
 <% @title = "FOI officer questions" %>
-
 <%= render :partial => 'sidebar' %>
 <div id="left_column_flip">
-
-<h1><%= @title %></h1>
-
-<dl>
-
-<dt id="top">I just got here from bottom of an FOI request, what is going on? <a href="#top">#</a> </dt>
-
-<dd><p><%= site_name %> is a service run by a charity. It helps ordinary members
-of the public make FOI requests, and easily track and share the responses.</p>
-
-<p>The FOI request you received was made by someone using <%= site_name %>. You can
-simply reply to the request as you would any other request from an individual.
-The only difference is that your response will be automatically published on
-the Internet.
-</p>
-<p>If you have privacy or other concerns, please read the answers below.
-You might also like to read the <a
+  <h1><%= @title %></h1>
+  <dl>
+    <dt id="top">I just got here from bottom of an FOI request, what is going on? <a href="#top">#</a> </dt>
+    <dd>
+      <p><%= site_name %> is a service run by a charity. It helps ordinary members
+        of the public make FOI requests, and easily track and share the responses.</p>
+      <p>The FOI request you received was made by someone using <%= site_name %>. You can
+        simply reply to the request as you would any other request from an individual.
+        The only difference is that your response will be automatically published on
+        the Internet.
+      </p>
+      <p>If you have privacy or other concerns, please read the answers below.
+        You might also like to read the <a
 href="/help/about">introduction to <%= site_name %></a> to find out more about what
-the site does from the point of view of someone requesting information. You can also search the
-site to find the authority that you work for, and view the status of
-any requests made using the site.
-
-<p>Finally, we welcome comments and
-thoughts from FOI officers, please <a href="/help/contact">get in touch</a>.
-</p>
-</dd>
-
-<dt id="responses">Why are you publishing responses to FOI requests? <a href="#responses">#</a> </dt>
-
-<dd>We think there are lots of benefits. Most importantly it will encourage the
-public to be more interested and involved in the work of government. We
-also hope that it will reduce the number of duplicate requests on any
-subject that a public authority will receive. Given that Freedom of Information
-responses contain public information, which anybody could easily request
-again from the public authority, we think there should be no reason not to
-publish it widely.
-</dd>
-
-<dt id="pdf">Why should I not send PDF documents in FOI responses? <a href="#pdf">#</a> </dt>
-<dd>
-  The <a href="http://webguide.gov.au/accessibility-usability/accessibility/pdf-accessibility/">Australian Government Webguide</a> makes it very clear that PDF is not an acceptable format for you to use in the delivery of government information:
-  <blockquote>
-    PDF does not yet have approved Sufficient Techniques to claim WCAG 2.0 conformance, so it cannot be ‘relied upon’ in the provision of government information.
-  </blockquote>
-  Write a response in an email as plain text. This is not only a simple and efficient way for you to conform to government guidelines, it is easier and quicker for the recipient to read.
-</dd>
-
-<dt id="realpeople">Are the people making requests real people? <a href="#realpeople">#</a> </dt>
-
-<dd>Yes. For the purposes of keeping track of responses we use
-computer-generated email addresses for each request. However, before
-they can send a request, each user must register on the site with a
-unique email address that we then verify. You can search this site and
-find a page listing all requests that each person has made.
-</dd>
-
-<dt id="vexatious">Aren't you making lots of vexatious requests? <a href="#vexatious">#</a> </dt>
-
-<dd><p><%= site_name %> is not making any requests. We are sending requests on
-behalf of our users, who are real people making the requests. </p>
-<p>Look at it like this - if lots of different people made requests from
-different Hotmail email addresses, then you would not think that Microsoft were
-making vexatious requests. It is exactly the same if lots of requests are made
-via <%= site_name %>. Moreover, since all requests are public it is much easier
-for you to see if one of our users is making vexatious requests. </p>
-</dd>
-
-<dt id="spam_problems">I can see a request on <%= site_name %>, but we never got it by email! <a href="#spam_problems">#</a> </dt>
-
-<dd><p>If a request appears on the site, then we have attempted to send it to
-the authority by email. Any delivery failure messages will automatically
-appear on the site. You can check the address we're using with the "View FOI
-email address" link which appears on the page for the authority. <a
+        the site does from the point of view of someone requesting information. You can also search the
+        site to find the authority that you work for, and view the status of
+        any requests made using the site.
+        <p>Finally, we welcome comments and
+          thoughts from FOI officers, please <a href="/help/contact">get in touch</a>.
+        </p>
+      </dd>
+      <dt id="responses">Why are you publishing responses to FOI requests? <a href="#responses">#</a> </dt>
+      <dd>We think there are lots of benefits. Most importantly it will encourage the
+        public to be more interested and involved in the work of government. We
+        also hope that it will reduce the number of duplicate requests on any
+        subject that a public authority will receive. Given that Freedom of Information
+        responses contain public information, which anybody could easily request
+        again from the public authority, we think there should be no reason not to
+        publish it widely.
+      </dd>
+      <dt id="pdf">Why should I not send PDF documents in FOI responses? <a href="#pdf">#</a> </dt>
+      <dd>
+        The <a href="http://webguide.gov.au/accessibility-usability/accessibility/pdf-accessibility/">Australian Government Webguide</a> makes it very clear that PDF is not an acceptable format for you to use in the delivery of government information:
+        <blockquote>
+          PDF does not yet have approved Sufficient Techniques to claim WCAG 2.0 conformance, so it cannot be ‘relied upon’ in the provision of government information.
+        </blockquote>
+        Write a response in an email as plain text. This is not only a simple and efficient way for you to conform to government guidelines, it is easier and quicker for the recipient to read.
+      </dd>
+      <dt id="realpeople">Are the people making requests real people? <a href="#realpeople">#</a> </dt>
+      <dd>Yes. For the purposes of keeping track of responses we use
+        computer-generated email addresses for each request. However, before
+        they can send a request, each user must register on the site with a
+        unique email address that we then verify. You can search this site and
+        find a page listing all requests that each person has made.
+      </dd>
+      <dt id="vexatious">Aren't you making lots of vexatious requests? <a href="#vexatious">#</a> </dt>
+      <dd>
+        <p><%= site_name %> is not making any requests. We are sending requests on
+          behalf of our users, who are real people making the requests. </p>
+        <p>Look at it like this - if lots of different people made requests from
+          different Hotmail email addresses, then you would not think that Microsoft were
+          making vexatious requests. It is exactly the same if lots of requests are made
+          via <%= site_name %>. Moreover, since all requests are public it is much easier
+          for you to see if one of our users is making vexatious requests. </p>
+      </dd>
+      <dt id="spam_problems">I can see a request on <%= site_name %>, but we never got it by email! <a href="#spam_problems">#</a> </dt>
+      <dd>
+        <p>If a request appears on the site, then we have attempted to send it to
+          the authority by email. Any delivery failure messages will automatically
+          appear on the site. You can check the address we're using with the "View FOI
+          email address" link which appears on the page for the authority. <a
 href="/help/contact">Contact us</a> if there is a better address we can
-use.</p>
-<p>Requests are sometimes not delivered because they are quietly removed by
-"spam filters" in the IT department of the authority. Authorities can make
-sure this doesn't happen by asking their IT departments to "whitelist"
-any email from <strong>@<%= AlaveteliConfiguration::incoming_email_domain %></strong>.
-If you <a href="/help/contact">ask us</a> we will resend any request,
-and/or give technical details of delivery so an IT department can chase
-up what happened to the message.
-</p>
-<p>Finally, you can respond to any request from your web browser, without
-needing any email, using the "respond to request" link at the bottom of
-each request page.
-</dd>
-
-<dt id="days">How do you calculate the deadline shown on request pages? <a href="#days">#</a> </dt>
-
-<dd>
-  <p>
-    The law says that the authority must respond as soon as practicable. It also
-    specifies that the authority must have responded within a maximum number of days,
-    which is what we use for the calculation shown on the request page.
-  </p>
-  <p>
-    The number of days varies depending on which jurisdiction governs the authority
-    and we try to be as generous as possible in our calculation of the timeframe.
-  </p>
-</dd>
-
-<dt id="large_file">How can I send a large file, which won't go by email? <a href="#large_file">#</a> </dt>
-
-<dd>Instead of email, you can respond to a request directly from your web
-browser, including uploading a file. To do this, choose "respond to request" at
-the bottom of the request's page. <a href="/help/contact">Contact us</a> if it
-is too big for even that (more than, say, 50Mb).
-</dd>
-
-<dt id="names">Why do you publish the names of public servants and the text of emails? <a href="#names">#</a> </dt>
-
-<dd>We consider what officers or servants do in the course of their employment
-to be public information. We will only remove content in exceptional
-circumstances, see our <a href="/help/privacy#takedown">take down policy</a>.
-</dd>
-
-<dt id="mobiles">Do you publish email addresses or mobile phone numbers? <a href="#mobiles">#</a> </dt>
-
-<dd><p>To prevent spam, we automatically remove most emails and some mobile numbers from
-responses to requests.  Please <a href="/help/contact">contact us</a> if we've
-missed one.
-For technical reasons we don't always remove them from attachments, such as certain PDFs.</p>
-<p>If you need to know what an address was that we've removed, please <a
+          use.</p>
+        <p>Requests are sometimes not delivered because they are quietly removed by
+          "spam filters" in the IT department of the authority. Authorities can make
+          sure this doesn't happen by asking their IT departments to "whitelist"
+          any email from <strong>@<%= AlaveteliConfiguration::incoming_email_domain %></strong>.
+          If you <a href="/help/contact">ask us</a> we will resend any request,
+          and/or give technical details of delivery so an IT department can chase
+          up what happened to the message.
+        </p>
+        <p>Finally, you can respond to any request from your web browser, without
+          needing any email, using the "respond to request" link at the bottom of
+          each request page.
+        </dd>
+        <dt id="days">How do you calculate the deadline shown on request pages? <a href="#days">#</a> </dt>
+        <dd>
+          <p>
+            The law says that the authority must respond as soon as practicable. It also
+            specifies that the authority must have responded within a maximum number of days,
+            which is what we use for the calculation shown on the request page.
+          </p>
+          <p>
+            The number of days varies depending on which jurisdiction governs the authority
+            and we try to be as generous as possible in our calculation of the timeframe.
+          </p>
+        </dd>
+        <dt id="large_file">How can I send a large file, which won't go by email? <a href="#large_file">#</a> </dt>
+        <dd>Instead of email, you can respond to a request directly from your web
+          browser, including uploading a file. To do this, choose "respond to request" at
+          the bottom of the request's page. <a href="/help/contact">Contact us</a> if it
+          is too big for even that (more than, say, 50Mb).
+        </dd>
+        <dt id="names">Why do you publish the names of public servants and the text of emails? <a href="#names">#</a> </dt>
+        <dd>We consider what officers or servants do in the course of their employment
+          to be public information. We will only remove content in exceptional
+          circumstances, see our <a href="/help/privacy#takedown">take down policy</a>.
+        </dd>
+        <dt id="mobiles">Do you publish email addresses or mobile phone numbers? <a href="#mobiles">#</a> </dt>
+        <dd>
+          <p>To prevent spam, we automatically remove most emails and some mobile numbers from
+            responses to requests.  Please <a href="/help/contact">contact us</a> if we've
+            missed one.
+            For technical reasons we don't always remove them from attachments, such as certain PDFs.</p>
+          <p>If you need to know what an address was that we've removed, please <a
   href="/help/contact">get in touch with us</a>. Occasionally, an email address
-forms an important part of a response and we will post it up in an obscured
-form in an annotation.
-</dd>
-
-<dt id="copyright"><a name="commercial"></a>What is your policy on copyright of documents? <a href="#copyright">#</a> </dt>
-
-<dd>Our Freedom of Information law is "applicant blind", so anyone in the
-world can request the same document and get a copy of it.
-
-If you think our making a document available on the internet infringes your
-copyright, you may <a href="/help/contact">contact us</a> and ask us
-to take it down.  However, to save tax payers' money by preventing duplicate
-requests, and for good public relations, we'd advise you not to do that.
-</dd>
-
-</dl>
-
-<p><strong>If you haven't already</strong>, read <a href="/help/about">the introduction</a> --&gt;
-<br><strong>Otherwise</strong>, the <a href="/help/credits">credits</a> or the <a href="/help/api">programmers API</a> --&gt;
-
-<div id="hash_link_padding"></div>
-
-
-</div>
+            forms an important part of a response and we will post it up in an obscured
+            form in an annotation.
+          </dd>
+          <dt id="copyright"><a name="commercial"></a>What is your policy on copyright of documents? <a href="#copyright">#</a> </dt>
+          <dd>Our Freedom of Information law is "applicant blind", so anyone in the
+            world can request the same document and get a copy of it.
+            If you think our making a document available on the internet infringes your
+            copyright, you may <a href="/help/contact">contact us</a> and ask us
+            to take it down.  However, to save tax payers' money by preventing duplicate
+            requests, and for good public relations, we'd advise you not to do that.
+          </dd>
+        </dl>
+        <p><strong>If you haven't already</strong>, read <a href="/help/about">the introduction</a> --&gt;
+          <br>
+          <strong>Otherwise</strong>, the <a href="/help/credits">credits</a> or the <a href="/help/api">programmers API</a> --&gt;
+          <div id="hash_link_padding"></div>
+        </div>

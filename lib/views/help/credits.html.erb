@@ -1,110 +1,100 @@
 <% @title = "Credit where credit is due" %>
-
 <%= render :partial => 'sidebar' %>
 <div id="left_column_flip">
-
-<h1><%= @title%></h1>
-
-<dl>
-
-<dt id="thanks">Which people made <%= site_name %>? <a href="#thanks">#</a> </dt>
-<dd>
-<ul>
-<li>
-    Matthew Landauer, Henare Degan, Katherine Szuminska and Alexander Sadleir set up the software that runs Right To Know, collected and collated the information, adapted the help text and generally pushed, prodded and poked until things worked.
-</li>
-<li>
-    Ben Fairless is a volunteer that almost single-handedly took care of the site administration for much of it's early life. He also played a big part in expanding Right To Know to cover states and territories along with Richard Taylor, who did a sterling job of collecting public authority information.
-</li>
-<li>
-    Guy King's <a href="https://www.openaustraliafoundation.org.au/2012/09/25/accelerating-to-the-future-of-online-democracy-in-australia/">donation to the OpenAustralia Foundation</a>, made building and running this site possible.
-</li>
-<li>
-    Our early testers, for checking over all the legal help text and making sure that things worked as expected.
-    And since our launch, the amazingly helpful growing community of people that help each other on this site by leaving annotations on requests.
-</li>
-<li>
-    Peter Timmins, Australia's foremost authority on Freedom of Information law, has kept us informed through the years with his indespensable blog <a href="http://foi-privacy.blogspot.com.au/">Open and Shut</a>.
-</li>
-<li>
-    Everyone who has helped look up Freedom of Information email addresses.
-</li>
-<li>
-    All the amazing <a href="https://www.whatdotheyknow.com/help/credits#thanks">staff and volunteers at mySociety, past and present, who created WhatDoTheyKnow.com</a> in the UK, which ultimately was spun out into the international software project <a href="http://alaveteli.org/">Alaveteli</a>, on which <%= site_name %> runs.
-</li>
-<li>
-    Thank you to <a href="https://unsplash.com/@nathanielw?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Nate Watson</a> for the use of their <a href="https://unsplash.com/photos/ArnSNszzd1M">photo</a>
-    on our home page.
-</li>
-<li>
-    Finally, all the officers who will and have answered the requests
-    made through the site. Their diligence, patience and professionalism is
-    what has actually made the information that you see here. Thank them for
-    helping make Government more transparent.
-</li>
-</ul>
-<p>They're all stars.</p>
-<p>You could be too&hellip;</p>
-</dd>
-
-<dt id="helpus">Can I help out? <a href="#helpus">#</a> </dt>
-<dd>
-    <p>Yes please! We're built out of our supporters and volunteers.</p>
-    <ul>
-    <li>You can <a href="https://www.openaustraliafoundation.org.au/donate/righttoknow/">make a donation</a>.</li>
-    <li>Help people find successful requests, and monitor performance of authorities, by
-    <a href="/categorise/play">playing the categorisation game</a>. </li>
-    <li>Help people get the documents they’re after by annotating their requests with suggestions for improvements and ways to overcome objections.</li>
-    <li>Keep <%= site_name %> in shape and help people who email in for support by becoming an administrator. <%= link_to "Contact", help_contact_path %> the team if you’re interested.</li>
-    <li>Find out the Freedom of Information email addresses of <a href="/help/requesting#missing_body">authorities that we're missing</a>.</li>
-    <li>Write a blog post about either <%= site_name %> or an interesting request that you've
-    found. Post about it on a forum that you frequent. Tell friends about it.</li> <li>If you're
-    a programmer, get the source code for our parent project, <a href="http://alaveteli.org">Alaveteli</a>
-    and tell us about patches we can pull. It's made in Ruby on Rails.
-    </ul>
-</dd>
-
-<dt id="supporting">Supporting Organisations <a href="#supporting">#</a> </dt>
-<dd>
-    <h4>Australian Supporting Organisations</h4>
-    <ul>
-        <li><%= link_to "Open Forum", "https://www.openforum.com.au/"%></li>
-        <li><%= link_to "Open Knowledge Foundation Australia", "https://au.okfn.org/"%></li>
-        <li><%= link_to "Centre For Policy Development", "https://cpd.org.au/"%></li>
-        <li><%= link_to "GetUp", "https://www.getup.org.au/"%></li>
-        <li><%= link_to "Crikey", "https://www.crikey.com.au/"%></li>
-        <li><%= link_to "New Matilda", "https://newmatilda.com/" %></li>
-        <li><%= link_to "Electronic Frontiers Australia", "https://www.efa.org.au/" %></li>
-        <li><%= link_to "Transparency International Australia", "https://transparency.org.au/" %></li>
-        <li><%= link_to "Blueprint for Free Speech", "https://blueprintforfreespeech.net/" %></li>
-    </ul>
-    <h4>International Supporting Organisations</h4>
-    <ul>
-        <li><%= link_to "mySociety", "https://www.mysociety.org/"%></li>
-        <li><%= link_to "OpenNorth", "https://opennorth.ca/"%></li>
-    </ul>
-    <p>
-        Supporting organisations share and value the aims and objectives of the Right To Know project, to make Freedom of Information easier and more accessible for all Australians.
-    </p>
-    <p>
-        We invite organisations with diverse civic interests and affiliations to become supporters of the Right To Know project and agree to share this information across their networks.
-    </p>
-    <p>
-        No money changes hands.
-    </p>
-    <p>
-        <%= link_to "Contact us", help_contact_path %> to become a suppporting organisation.
-    </p>
-</dd>
-
-<dt id="attribution">Attribution <a href="#attribution">#</a> </dt>
-<dd>
-    Some descriptions of public authorities were sourced and adapted from <a href="http://australia.gov.au">australia.gov.au</a> in which the <a href="http://australia.gov.au/about/copyright">text content is licensed</a> under <a href="http://creativecommons.org/licenses/by/3.0/au/">Creative Commons Attribution 3.0 Australia</a>.
-</dd>
-
-
-</dl>
-<div id="hash_link_padding"></div>
-
-
-</div>
+  <h1><%= @title%></h1>
+  <dl>
+    <dt id="thanks">Which people made <%= site_name %>? <a href="#thanks">#</a> </dt>
+    <dd>
+      <ul>
+        <li>
+          Matthew Landauer, Henare Degan, Katherine Szuminska and Alexander Sadleir set up the software that runs Right To Know, collected and collated the information, adapted the help text and generally pushed, prodded and poked until things worked.
+        </li>
+        <li>
+          Ben Fairless is a volunteer that almost single-handedly took care of the site administration for much of it's early life. He also played a big part in expanding Right To Know to cover states and territories along with Richard Taylor, who did a sterling job of collecting public authority information.
+        </li>
+        <li>
+          Guy King's <a href="https://www.openaustraliafoundation.org.au/2012/09/25/accelerating-to-the-future-of-online-democracy-in-australia/">donation to the OpenAustralia Foundation</a>, made building and running this site possible.
+        </li>
+        <li>
+          Our early testers, for checking over all the legal help text and making sure that things worked as expected.
+          And since our launch, the amazingly helpful growing community of people that help each other on this site by leaving annotations on requests.
+        </li>
+        <li>
+          Peter Timmins, Australia's foremost authority on Freedom of Information law, has kept us informed through the years with his indespensable blog <a href="http://foi-privacy.blogspot.com.au/">Open and Shut</a>.
+        </li>
+        <li>
+          Everyone who has helped look up Freedom of Information email addresses.
+        </li>
+        <li>
+          All the amazing <a href="https://www.whatdotheyknow.com/help/credits#thanks">staff and volunteers at mySociety, past and present, who created WhatDoTheyKnow.com</a> in the UK, which ultimately was spun out into the international software project <a href="http://alaveteli.org/">Alaveteli</a>, on which <%= site_name %> runs.
+        </li>
+        <li>
+          Thank you to <a href="https://unsplash.com/@nathanielw?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Nate Watson</a> for the use of their <a href="https://unsplash.com/photos/ArnSNszzd1M">photo</a>
+          on our home page.
+        </li>
+        <li>
+          Finally, all the officers who will and have answered the requests
+          made through the site. Their diligence, patience and professionalism is
+          what has actually made the information that you see here. Thank them for
+          helping make Government more transparent.
+        </li>
+      </ul>
+      <p>They're all stars.</p>
+      <p>You could be too&hellip;</p>
+    </dd>
+    <dt id="helpus">Can I help out? <a href="#helpus">#</a> </dt>
+    <dd>
+      <p>Yes please! We're built out of our supporters and volunteers.</p>
+      <ul>
+        <li>You can <a href="https://www.openaustraliafoundation.org.au/donate/righttoknow/">make a donation</a>.</li>
+        <li>Help people find successful requests, and monitor performance of authorities, by
+          <a href="/categorise/play">playing the categorisation game</a>. </li>
+        <li>Help people get the documents they’re after by annotating their requests with suggestions for improvements and ways to overcome objections.</li>
+        <li>Keep <%= site_name %> in shape and help people who email in for support by becoming an administrator. <%= link_to "Contact", help_contact_path %> the team if you’re interested.</li>
+        <li>Find out the Freedom of Information email addresses of <a href="/help/requesting#missing_body">authorities that we're missing</a>.</li>
+        <li>Write a blog post about either <%= site_name %> or an interesting request that you've
+          found. Post about it on a forum that you frequent. Tell friends about it.</li>
+        <li>If you're
+          a programmer, get the source code for our parent project, <a href="http://alaveteli.org">Alaveteli</a>
+          and tell us about patches we can pull. It's made in Ruby on Rails.
+        </ul>
+      </dd>
+      <dt id="supporting">Supporting Organisations <a href="#supporting">#</a> </dt>
+      <dd>
+        <h4>Australian Supporting Organisations</h4>
+        <ul>
+          <li><%= link_to "Open Forum", "https://www.openforum.com.au/"%></li>
+          <li><%= link_to "Open Knowledge Foundation Australia", "https://au.okfn.org/"%></li>
+          <li><%= link_to "Centre For Policy Development", "https://cpd.org.au/"%></li>
+          <li><%= link_to "GetUp", "https://www.getup.org.au/"%></li>
+          <li><%= link_to "Crikey", "https://www.crikey.com.au/"%></li>
+          <li><%= link_to "New Matilda", "https://newmatilda.com/" %></li>
+          <li><%= link_to "Electronic Frontiers Australia", "https://www.efa.org.au/" %></li>
+          <li><%= link_to "Transparency International Australia", "https://transparency.org.au/" %></li>
+          <li><%= link_to "Blueprint for Free Speech", "https://blueprintforfreespeech.net/" %></li>
+        </ul>
+        <h4>International Supporting Organisations</h4>
+        <ul>
+          <li><%= link_to "mySociety", "https://www.mysociety.org/"%></li>
+          <li><%= link_to "OpenNorth", "https://opennorth.ca/"%></li>
+        </ul>
+        <p>
+          Supporting organisations share and value the aims and objectives of the Right To Know project, to make Freedom of Information easier and more accessible for all Australians.
+        </p>
+        <p>
+          We invite organisations with diverse civic interests and affiliations to become supporters of the Right To Know project and agree to share this information across their networks.
+        </p>
+        <p>
+          No money changes hands.
+        </p>
+        <p>
+          <%= link_to "Contact us", help_contact_path %> to become a suppporting organisation.
+        </p>
+      </dd>
+      <dt id="attribution">Attribution <a href="#attribution">#</a> </dt>
+      <dd>
+        Some descriptions of public authorities were sourced and adapted from <a href="http://australia.gov.au">australia.gov.au</a> in which the <a href="http://australia.gov.au/about/copyright">text content is licensed</a> under <a href="http://creativecommons.org/licenses/by/3.0/au/">Creative Commons Attribution 3.0 Australia</a>.
+      </dd>
+    </dl>
+    <div id="hash_link_padding"></div>
+  </div>

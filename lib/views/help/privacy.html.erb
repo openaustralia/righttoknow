@@ -1,152 +1,112 @@
 <% @title = "Your privacy" %>
-
 <%= render :partial => 'sidebar' %>
-
 <div id="left_column_flip">
-<h1><%= @title %></h1>
-
-<dl>
-
-<dt id="email_address">Who gets to see my email address? <a href="#email_address">#</a> </dt>
-
-<dd>
-
-<p> We will not disclose your email address to anyone unless we are obliged to by law,
-or you ask us to. This includes the public authority that you are sending a
-request to. When you make a request, the authority will receive an email from a unique
-@<%= AlaveteliConfiguration::incoming_email_domain %> address.</p>
-
-<p>If you send a message to another user on the site, then it will reveal your
-email address to them so they can reply to you. You will be told that this is going to happen.</p>
-
-</dd>
-
-<dt id="nasty_spam">Will you send nasty, brutish spam to my email address? <a href="#nasty_spam">#</a> </dt>
-<dd> <p>Nope. After you sign up to <%= site_name %> we will send you emails
-relating to a request you made, an email alert that you have signed up for,
-or for other reasons that you specifically authorise. </p>
-
-<p>You will also receive emails from the <a href="https://www.openaustraliafoundation.org.au/">OpenAustralia Foundation</a>,
-the charity that runs <%= site_name %>. You can unsubscribe from these emails without affecting any alerts from <%= site_name %>. </p>
-
-<p> We will never give or sell your email addresses to anyone else, unless we are obliged
-to by law, or you ask us to.</p>
-</dd>
-
-<dt id="public_request">Why will my name and my request appear publicly on the site? <a href="#public_request">#</a> </dt>
-
-<dd>
-<p>We publish your request on the Internet so that anybody can read it and
-make use of the information that you have found. We do not normally delete
-requests (<a href="#delete_requests">more details</a>).
-</p>
-<p>
-Your name is tangled up with your request.
-It is only reasonable that we publish your name, just as we'll be publishing the name of the public servant who responds to you.
-</p>
-<p>
-If possible please use your real name as it helps make your request look serious. It can also help people
-get in touch with you to assist you with your research or to campaign with you.
-</p>
-<p>If you don't want to use your real name to make a request, by law, you don't have to. See the next question if you're thinking of using a pseudonym.
-</p>
-</dd>
-
-<dt id="real_name">Can I make a Freedom of Information request using a pseudonym? <a href="#real_name">#</a> </dt>
-
-<dd>
-<p>Yes, you can use a pseudonym. Be careful though. It might make it impossible to follow up if you think a decision needs to be reviewed.</p>
-
-<p>The Federal Information Commissioner guidelines <a href="http://www.oaic.gov.au/freedom-of-information/applying-the-foi-act/foi-guidelines/part-3-processing-requests-for-access#right">say</a> that "The FOI Act does not require an applicant to disclose or provide proof of their identity" but that the "agency or minister should consider whether collection of information about the applicant's identity is required to assess the request".</p>
-
-<p>Please do not try to impersonate someone else.</p>
-
-</dd>
-
-<dt id="full_address">They've asked for my postal address! <a href="#full_address">#</a> </dt>
-
-<dd>
-<p>An email address is sufficient by law. You don't need to give your postal address.</p>
-<p>
-  If a public authority insists on your full, physical address, <a href="/help/contact">let us know</a>. This website is specifically mentioned in the Federal Information Commissioner's <a href="http://www.oaic.gov.au/freedom-of-information/applying-the-foi-act/foi-guidelines/part-3-processing-requests-for-access#formal">FOI Guidelines</a> because we've been through this before.
-</p>
-</dd>
-
-<dt id="postal_answer">No no, they need a postal address to send files or a paper response! <a href="#postal_answer">#</a> </dt>
-
-<dd>
-<p>
-  If an authority only has a paper copy of the information that you want,
-  they may ask you for a postal address. To start with, ask them
-  to scan in the documents for you. You can even offer to gift them a scanner,
-  which in one particular case embarrassed the organisation into finding one
-  they had already.
-</p>
-<p>
-  If they claim it's becase they want to send you large files, like a video
-  file, tell them that they can <a href="/help/officers#large_file">upload it
-  directly to a request</a>. If you need a hand then
-  <a href="/help/contact">get in touch</a> and we can help out.
-</dd>
-
-<dt id="delete_requests">Can you delete my requests, or alter my name?  <a href="#delete_requests">#</a> </dt>
-
-<dd>
-
-<p><%= site_name %> is a permanent, public archive of Freedom of
-Information requests. Even though you may not find the response to
-a request useful any more, it may be of interest to others. For this
-reason, we will not delete requests.
-</p>
-
-<p>Under exceptional circumstances we may remove or change your name
-on the website, <a href="#takedown">see the next question</a>.
-Similarly, we may also remove other personal information.
-</p>
-
-<p>If you're worried about this before you make your request,
-see the section on <a href="#real_name">pseudonyms</a>.</p>
-
-</dd>
-
-<dt id="takedown">Can you take down personal information about me? <a href="#takedown">#</a> </dt>
-
-<dd>
-
-<p>If you see any personal information about you on the site which you'd like
-us to remove or hide, then please <a href="/help/contact">let us know</a>.
-Specify exactly what information you believe to be problematic and why, and
-where it appears on the site.</p>
-
-<p>If it is sensitive personal information that has been accidentally
-posted, then we will usually remove it. Normally we will only consider
-requests to remove personal information which come from the individual
-concerned, but for sensitive information we would appreciate anyone
-pointing out anything they see.</p>
-
-<p>We consider that there is a strong public interest in
-retaining the names of officers or servants of public authorities. We will only
-remove such names in exceptional circumstances, such as where the disclosure of
-a name and position of employment would substantially risk an individual's
-safety. If you are such an official and you wish to have your name removed for
-such an urgent reason, you must supply us with a request to do so from your
-line manager. This request must demonstrate that a risk has been perceived
-which outweighs the public interest, and must demonstrate that efforts have
-been made to conceal the name on the organisation's own website.</p>
-
-<p>For all other requests we apply a public interest test to decide
-whether information should be removed. We cannot easily edit many types of attachments (such
-as PDFs, or Microsoft Word or Excel files), so we will usually ask
-that authorities resend these with the personal information removed.</p>
-
-</dd>
-
-
-</dl>
-
-<p><strong>Learn more</strong> from the help for <a href="/help/officers">FOI officers</a> --&gt;
-
-<div id="hash_link_padding"></div>
-
-
-</div>
+  <h1><%= @title %></h1>
+  <dl>
+    <dt id="email_address">Who gets to see my email address? <a href="#email_address">#</a> </dt>
+    <dd>
+      <p> We will not disclose your email address to anyone unless we are obliged to by law,
+        or you ask us to. This includes the public authority that you are sending a
+        request to. When you make a request, the authority will receive an email from a unique
+        @<%= AlaveteliConfiguration::incoming_email_domain %> address.</p>
+      <p>If you send a message to another user on the site, then it will reveal your
+        email address to them so they can reply to you. You will be told that this is going to happen.</p>
+    </dd>
+    <dt id="nasty_spam">Will you send nasty, brutish spam to my email address? <a href="#nasty_spam">#</a> </dt>
+    <dd>
+      <p>Nope. After you sign up to <%= site_name %> we will send you emails
+        relating to a request you made, an email alert that you have signed up for,
+        or for other reasons that you specifically authorise. </p>
+      <p>You will also receive emails from the <a href="https://www.openaustraliafoundation.org.au/">OpenAustralia Foundation</a>,
+        the charity that runs <%= site_name %>. You can unsubscribe from these emails without affecting any alerts from <%= site_name %>. </p>
+      <p> We will never give or sell your email addresses to anyone else, unless we are obliged
+        to by law, or you ask us to.</p>
+    </dd>
+    <dt id="public_request">Why will my name and my request appear publicly on the site? <a href="#public_request">#</a> </dt>
+    <dd>
+      <p>We publish your request on the Internet so that anybody can read it and
+        make use of the information that you have found. We do not normally delete
+        requests (<a href="#delete_requests">more details</a>).
+      </p>
+      <p>
+        Your name is tangled up with your request.
+        It is only reasonable that we publish your name, just as we'll be publishing the name of the public servant who responds to you.
+      </p>
+      <p>
+        If possible please use your real name as it helps make your request look serious. It can also help people
+        get in touch with you to assist you with your research or to campaign with you.
+      </p>
+      <p>If you don't want to use your real name to make a request, by law, you don't have to. See the next question if you're thinking of using a pseudonym.
+      </p>
+    </dd>
+    <dt id="real_name">Can I make a Freedom of Information request using a pseudonym? <a href="#real_name">#</a> </dt>
+    <dd>
+      <p>Yes, you can use a pseudonym. Be careful though. It might make it impossible to follow up if you think a decision needs to be reviewed.</p>
+      <p>The Federal Information Commissioner guidelines <a href="http://www.oaic.gov.au/freedom-of-information/applying-the-foi-act/foi-guidelines/part-3-processing-requests-for-access#right">say</a> that "The FOI Act does not require an applicant to disclose or provide proof of their identity" but that the "agency or minister should consider whether collection of information about the applicant's identity is required to assess the request".</p>
+      <p>Please do not try to impersonate someone else.</p>
+    </dd>
+    <dt id="full_address">They've asked for my postal address! <a href="#full_address">#</a> </dt>
+    <dd>
+      <p>An email address is sufficient by law. You don't need to give your postal address.</p>
+      <p>
+        If a public authority insists on your full, physical address, <a href="/help/contact">let us know</a>. This website is specifically mentioned in the Federal Information Commissioner's <a href="http://www.oaic.gov.au/freedom-of-information/applying-the-foi-act/foi-guidelines/part-3-processing-requests-for-access#formal">FOI Guidelines</a> because we've been through this before.
+      </p>
+    </dd>
+    <dt id="postal_answer">No no, they need a postal address to send files or a paper response! <a href="#postal_answer">#</a> </dt>
+    <dd>
+      <p>
+        If an authority only has a paper copy of the information that you want,
+        they may ask you for a postal address. To start with, ask them
+        to scan in the documents for you. You can even offer to gift them a scanner,
+        which in one particular case embarrassed the organisation into finding one
+        they had already.
+      </p>
+      <p>
+        If they claim it's becase they want to send you large files, like a video
+        file, tell them that they can <a href="/help/officers#large_file">upload it
+          directly to a request</a>. If you need a hand then
+        <a href="/help/contact">get in touch</a> and we can help out.
+      </dd>
+      <dt id="delete_requests">Can you delete my requests, or alter my name?  <a href="#delete_requests">#</a> </dt>
+      <dd>
+        <p><%= site_name %> is a permanent, public archive of Freedom of
+          Information requests. Even though you may not find the response to
+          a request useful any more, it may be of interest to others. For this
+          reason, we will not delete requests.
+        </p>
+        <p>Under exceptional circumstances we may remove or change your name
+          on the website, <a href="#takedown">see the next question</a>.
+          Similarly, we may also remove other personal information.
+        </p>
+        <p>If you're worried about this before you make your request,
+          see the section on <a href="#real_name">pseudonyms</a>.</p>
+      </dd>
+      <dt id="takedown">Can you take down personal information about me? <a href="#takedown">#</a> </dt>
+      <dd>
+        <p>If you see any personal information about you on the site which you'd like
+          us to remove or hide, then please <a href="/help/contact">let us know</a>.
+          Specify exactly what information you believe to be problematic and why, and
+          where it appears on the site.</p>
+        <p>If it is sensitive personal information that has been accidentally
+          posted, then we will usually remove it. Normally we will only consider
+          requests to remove personal information which come from the individual
+          concerned, but for sensitive information we would appreciate anyone
+          pointing out anything they see.</p>
+        <p>We consider that there is a strong public interest in
+          retaining the names of officers or servants of public authorities. We will only
+          remove such names in exceptional circumstances, such as where the disclosure of
+          a name and position of employment would substantially risk an individual's
+          safety. If you are such an official and you wish to have your name removed for
+          such an urgent reason, you must supply us with a request to do so from your
+          line manager. This request must demonstrate that a risk has been perceived
+          which outweighs the public interest, and must demonstrate that efforts have
+          been made to conceal the name on the organisation's own website.</p>
+        <p>For all other requests we apply a public interest test to decide
+          whether information should be removed. We cannot easily edit many types of attachments (such
+          as PDFs, or Microsoft Word or Excel files), so we will usually ask
+          that authorities resend these with the personal information removed.</p>
+      </dd>
+    </dl>
+    <p><strong>Learn more</strong> from the help for <a href="/help/officers">FOI officers</a> --&gt;
+      <div id="hash_link_padding"></div>
+    </div>

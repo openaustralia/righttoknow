@@ -13,9 +13,7 @@
     default_title = _('Make and browse Freedom of Information (FOI) requests')
   end
 %>
-
 <meta property="og:site_name" content="<%= _site_name %>" />
-
 <% if @title %>
   <meta property="og:title" content="<%= @title %>" />
   <meta property="og:type" content="article" />
@@ -23,9 +21,7 @@
   <meta property="og:title" content="<%= default_title %>" />
   <meta property="og:type" content="website" />
 <% end %>
-
 <%= content_for :open_graph_tags %>
-
 <meta property="og:image" content="<%= "#{request.protocol}#{request.host_with_port}#{asset_path(opengraph_logo)}" %>" />
 <meta property="og:url" content="<%= request.original_url.force_encoding('utf-8') %>" />
 <meta property="og:image:width" content="1200" />

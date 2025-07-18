@@ -1,381 +1,312 @@
 <% @title = "Making requests" %>
-
 <%= render :partial => 'sidebar' %>
 <div id="left_column_flip">
-
-<h1><%= @title %></h1>
-
-<dl>
-
-<dt id="which_authority">I'm not sure which authority to make my request to, how can I find out? <a href="#which_authority">#</a> </dt>
-
-<dd>
-<p>It can be hard to untangle government's complicated structures, and work out
-who knows the information that you want. Here are a few tips:
-<ul>
-<li>Browse or search <%= site_name %> looking for similar requests to yours.</li>
-<li>When you've found an authority you think might have the information, use
-the "home page" link on the right hand side of their page to check what they do
-on their website.</li>
-<li>Contact the authority by phone or email to ask if they hold the kind of
-information you're after.</li>
-<li>Don't worry excessively about getting the right authority. If you get it
-wrong, they should transfer your request to the correct authority for you.
-</li>
-<li>If you've got a thorny case, please <a href="/help/contact">contact us</a> for help.</li>
-</ul>
-
-</dd>
-<dt id="who">Who can make a request? <a href="#who">#</a></dt>
-<dd>
-<p>
-Any person, of any nationality, anywhere in the world, however young or old can make a request under Australian Freedom of Information (FOI) laws.
-</p>
-<p>
-The Freedom of Information Acts simply say that "every person has a legally enforceable right to obtain access in accordance with this Act". A "person" can also be a body corporate, such as a company.
-</p>
-</dd>
-
-<dt id="missing_body">You're missing the public authority that I want to request from! <a href="#missing_body">#</a> </dt>
-
-<dd>
-<p>
-  We aim to cover all public authorities in Australia whether they are federal, state or local.
-  If we are missing an authority please <a href="/change_request/new">contact us</a>
-  with the name of the public authority and, if you can find it, their contact
-  email address for Freedom of Information requests.
-</p>
-</dd>
-
-<dt id="authorities">Why do you include some authorities that aren't formally subject to Freedom of Information?<a href="#authorities">#</a> </dt>
-
-<dd>
-<p><%= site_name %> lets you make requests for information to a range of
-organisations:</p>
-
-<ul>
-  <li>Those formally subject to Freedom of Information</li>
-  <li>Those which choose to voluntarily comply with Freedom of Information</li>
-  <li>Those which aren't subject to Freedom of Information but we think should be, on grounds
-  such as them having significant public responsibilities.
-  </li>
-</ul>
-
-<p>In the last case, we're using the site to lobby for expansion of the
-scope of Freedom of Information. Even if an organisation is not legally obliged to respond
-to a Freedom of Information request, they can still do so voluntarily.
-</p>
-
-</dd>
-
-<dt id="focused">Why must I keep my request focused? <a href="#focused">#</a> </dt>
-
-<dd>
-
-<p>
-Please put in your request only what is needed so that someone can
-easily identify what information you are asking for. Please do
-<i>not</i> include any of the following:
-</p>
-
-<ul>
-<li>arguments about your cause</li>
-<li>statements that could defame or insult others</li>
-</ul>
-
-<p>
-If you do, we may have to remove your request to avoid problems with
-libel law, which is a pain for both you and us. Short, succinct messages
-make it easier for authorities to be clear what information you are
-requesting, which means you will get a reply more quickly.
-</p>
-
-<p>
-If you want information to support an argument or campaign, Freedom of
-Information is a powerful tool. Although you may not use this site to
-run your campaign, we encourage you to use it to get the information you
-need. We also encourage to run your campaign elsewhere - one effective
-and very easy way is to <%= link_to 'start your own blog',
+  <h1><%= @title %></h1>
+  <dl>
+    <dt id="which_authority">I'm not sure which authority to make my request to, how can I find out? <a href="#which_authority">#</a> </dt>
+    <dd>
+      <p>It can be hard to untangle government's complicated structures, and work out
+        who knows the information that you want. Here are a few tips:
+        <ul>
+          <li>Browse or search <%= site_name %> looking for similar requests to yours.</li>
+          <li>When you've found an authority you think might have the information, use
+            the "home page" link on the right hand side of their page to check what they do
+            on their website.</li>
+          <li>Contact the authority by phone or email to ask if they hold the kind of
+            information you're after.</li>
+          <li>Don't worry excessively about getting the right authority. If you get it
+            wrong, they should transfer your request to the correct authority for you.
+          </li>
+          <li>If you've got a thorny case, please <a href="/help/contact">contact us</a> for help.</li>
+        </ul>
+      </dd>
+      <dt id="who">Who can make a request? <a href="#who">#</a></dt>
+      <dd>
+        <p>
+          Any person, of any nationality, anywhere in the world, however young or old can make a request under Australian Freedom of Information (FOI) laws.
+        </p>
+        <p>
+          The Freedom of Information Acts simply say that "every person has a legally enforceable right to obtain access in accordance with this Act". A "person" can also be a body corporate, such as a company.
+        </p>
+      </dd>
+      <dt id="missing_body">You're missing the public authority that I want to request from! <a href="#missing_body">#</a> </dt>
+      <dd>
+        <p>
+          We aim to cover all public authorities in Australia whether they are federal, state or local.
+          If we are missing an authority please <a href="/change_request/new">contact us</a>
+          with the name of the public authority and, if you can find it, their contact
+          email address for Freedom of Information requests.
+        </p>
+      </dd>
+      <dt id="authorities">Why do you include some authorities that aren't formally subject to Freedom of Information?<a href="#authorities">#</a> </dt>
+      <dd>
+        <p><%= site_name %> lets you make requests for information to a range of
+          organisations:</p>
+        <ul>
+          <li>Those formally subject to Freedom of Information</li>
+          <li>Those which choose to voluntarily comply with Freedom of Information</li>
+          <li>Those which aren't subject to Freedom of Information but we think should be, on grounds
+            such as them having significant public responsibilities.
+          </li>
+        </ul>
+        <p>In the last case, we're using the site to lobby for expansion of the
+          scope of Freedom of Information. Even if an organisation is not legally obliged to respond
+          to a Freedom of Information request, they can still do so voluntarily.
+        </p>
+      </dd>
+      <dt id="focused">Why must I keep my request focused? <a href="#focused">#</a> </dt>
+      <dd>
+        <p>
+          Please put in your request only what is needed so that someone can
+          easily identify what information you are asking for. Please do
+          <i>not</i> include any of the following:
+        </p>
+        <ul>
+          <li>arguments about your cause</li>
+          <li>statements that could defame or insult others</li>
+        </ul>
+        <p>
+          If you do, we may have to remove your request to avoid problems with
+          libel law, which is a pain for both you and us. Short, succinct messages
+          make it easier for authorities to be clear what information you are
+          requesting, which means you will get a reply more quickly.
+        </p>
+        <p>
+          If you want information to support an argument or campaign, Freedom of
+          Information is a powerful tool. Although you may not use this site to
+          run your campaign, we encourage you to use it to get the information you
+          need. We also encourage to run your campaign elsewhere - one effective
+          and very easy way is to <%= link_to 'start your own blog',
 "https://wordpress.com/"%>. You are welcome to link to your campaign
-from this site in an annotation to your request (you can make
-annotations after submitting the request).
-</p>
-
-</dd>
-
-<dt id="documents">Why do I have to ask for specific existing documents? <a href="#documents">#</a> </dt>
-
-<dd>
-
-<p>
-Freedom of Information only gives you a right to "documents", which is very
-broadly defined as information in recorded form.
-</p>
-
-<p>
-When it comes to making your formal application, it needs to be in the form of
-a request for existing documents &mdash; reports, briefs, memorandum, notes for file,
-tenders, etc.
-</p>
-
-<p>
-In limited circumstances, such as when information is not available in written form but instead is stored in an authority computer system,
-agencies are required to produce a written document containing the information by using a 'computer or other equipment that is ordinarily available' to the authority.
-</p>
-
-<p>
-However, it's a mistake to ask for everything! Remember to <a href="#focused">
-keep your request focused</a> and ask for specific existing documents.
-</p>
-
-</dd>
-
-<dt id="fees">Does it cost me anything to make a request? <a href="#fees">#</a> </dt>
-
-<dd>
-
-<p>
-  Making a Freedom of Information request to a Federal or ACT authority is always free.
-  For other states and territories there is an application fee around $30.
-  However most jurisdictions encourage informal or administrative requests.
-</p>
-
-<p>
-  These requests do not have an application fee and happen outside of the FOI law.
-  So while they can be a quicker and cheaper way of accessing information, keep in mind that informal requests don't come with the same rights, like review rights, as formal requests.
-  To make an informal or administrative request on <%= site_name %> just ask the public authority to treat it that way when making your request.
-</p>
-
-<p>
-  A public authority may also choose to impose certain charges to provide the
-  information but they can only charge you if you have specifically agreed in
-  advance to pay.
-</p>
-
-<p>
-  The laws contain a 'lowest reasonable cost' objective, meaning that if
-  the public authority chooses to impose a charge it should fairly reflect the work
-  involved in providing access to documents and must not be used to discourage
-  you from exercising your right of access.
-</p>
-
-<p>
-  If a public authority decides to charge you for access to documents there are
-  certain circumstances where the charges may be reduced or waived, such as:
-</p>
-
-<ul>
-  <li>Releasing the information is in the general public interest</li>
-  <li>The charges would cause you financial hardship (e.g. you're a pensioner)</li>
-</ul>
-
-<p>Sometimes an authority will refuse your request, saying that the cost
-of handling it exceeds a level that would detriment their day to day work. At this point you can refine your
-request. e.g. it would be much cheaper for an authority to tell you the amount
-spent on marshmallows in the past year than in the past ten years.
-</p>
-
-</dd>
-
-
-
-<dt id="quickly_response">How quickly will I get a response? <a href="#quickly_response">#</a> </dt>
-
-<dd>
-<p>
-  By law, the public authority must keep you informed about the progress of your Freedom of Information request.
-  It should take no longer than <strong>about a month</strong> for you to get a response to your request.
-  For various reasons, this timeframe can be extended.
-</p>
-
-<p>
-  <%= site_name %> will email you if you don't get a timely response.  You can
-  then send the public authority a message to remind them, and tell them if they
-  are breaking the law.
-</p>
-
-</dd>
-
-<dt id="no_response">What if I never get a response? <a href="#no_response">#</a> </dt>
-
-<dd>
-<p>There are several things you can do if you never get a response.</p>
-<ul>
-    <li>Sometimes there has been a genuine problem and the authority never
-    received the request. It is worth telephoning the authority and politely
-    checking that they received the request. It was sent to them by email.
-    </li>
-    <li>If they have not received it, the problem is most likely due to
-    "spam filters". Refer the authority to the measures in the answer
-    '<a href="/help/officers#spam_problems">I can see a request on <%= site_name %>, but we never got it by email!</a>'
-    in the FOI officers section of this help.
-    </li>
-    <li>If you're still having no luck, then you can ask for an internal review,
-    or complain to an Information Commissioner, Ombudsman, or Tribunal about the authority, or both.
-    Read our page '<a href="/help/unhappy">Unhappy about the response you got?</a>'.
-</ul>
-</dd>
-
-<dt id="not_satifised">What if I'm not satisfied with the response? <a href="#not_satifised">#</a> </dt>
-<dd>If you didn't get the information you asked for, or you didn't get it in time,
-then read our page '<a href="/help/unhappy">Unhappy about the response you got?</a>'.
-</dd>
-
-<dt id="reuse">It says I can't re-use the information I got! <a href="#reuse">#</a> </dt>
-<dd>
-<p>
-  Authorities often add legal boilerplate about Copyright, which at first
-  glance implies you may not be able do anything with the information. This is
-  likely to be incorrect. For example, the latest
-  <a href="https://www.communications.gov.au/documents/intellectual-property-principles-commonwealth-entities">
-    Intellectual property principles for Commonwealth entities
-  </a>
-  explicitly encourages reuse.
-</p>
-
-<blockquote>
-  <p>
-    Consistent with the need for free and open re-use and adaptation, public
-    sector information should be licensed by entities under the Creative
-    Commons BY standard as the default.
-  </p>
-</blockquote>
-
-<p>You can, of course, write articles about the information or summarise it, or
-quote parts of it. We also think you should feel free to republish the
-information in full, just as we do, even though in theory you might not be
-allowed to do so.  See <a href="/help/officers#copyright">our policy on copyright</a>.</p>
-
-</dd>
-
-<dt id="ico_help">Can you tell me more of the nitty gritty about the process of making requests? <a href="#ico_help">#</a> </dt>
-
-<dd>
-  <p>
-    Right To Know will guide you through each step of the way, giving you just
-    enough information at just the right time. However if you're still keen to get your
-    hands dirty, you'll want to check out information that relates to the jurisdiction
-    you're making a request in:
-  </p>
-
-  <ul>
-    <li>
-      For <%= link_to "Federal Authorities", list_public_bodies_path(:tag => "federal") %>,
-      have a look at the Freedom of Information
-      <a href="https://www.oaic.gov.au/freedom-of-information/foi-guidelines/">guidelines</a>
-      and <a href="https://www.oaic.gov.au/freedom-of-information/guidance-and-advice/fact-sheet-for-foi-practitioners-to-provide-to-agency-staff/">fact sheets that agency staff see</a>
-      on the Information Commissioner's website.
-    </li>
-    <li>
-      For <%= link_to "ACT Authorities", list_public_bodies_path(:tag => "ACT") %>,
-      see the website for the Directorate in charge of
-      <a href="http://www.cmd.act.gov.au/functions/foi">Freedom of Information</a>.
-    </li>
-    <li>
-      For <%= link_to "NT Authorities", list_public_bodies_path(:tag => "NT") %>,
-      information can be found on the
-      <a href="https://infocomm.nt.gov.au/freedom-of-information">NT Information Commissioner website</a>.
-    </li>
-    <li>
-      For <%= link_to "NSW Authorities", list_public_bodies_path(:tag => "NSW") %>,
-      information can be found on the
-      <a href="http://www.ipc.nsw.gov.au/resources-public">NSW Information Commissioner website</a>.
-    </li>
-    <li>
-      For <%= link_to "Victorian Authorities", list_public_bodies_path(:tag => "VIC") %>,
-      information can be found on the
-      <a href="http://www.foi.vic.gov.au/">Victorian Freedom of Information website</a>.
-    </li>
-    <li>
-      For <%= link_to "Queensland Authorities", list_public_bodies_path(:tag => "QLD") %>,
-      information can be found on the
-      <a href="https://www.oic.qld.gov.au/guidelines/for-community-members/information-sheets-access-and-amendment/accessing-information-held-by-government">Queensland Information Commissioner website</a>.
-    </li>
-    <li>
-      For <%= link_to "SA Authorities", list_public_bodies_path(:tag => "SA") %>,
-      information can be found on the
-      <a href="http://www.archives.sa.gov.au/content/foi-in-sa">State Records' FOI in South Australia</a> pages.
-    </li>
-    <li>
-      For <%= link_to "WA Authorities", list_public_bodies_path(:tag => "WA") %>,
-      information can be found on the
-      <a href="http://foi.wa.gov.au/">WA Information Commissioner website</a>.
-    </li>
-    <li>
-      For <%= link_to "Tasmanian Authorities", list_public_bodies_path(:tag => "TAS") %>,
-      information can be found on
-      <a href="https://www.ombudsman.tas.gov.au/right-to-information">Ombudsman Tasmania’s Right To Information</a> pages.
-    </li>
-  </ul>
-</dd>
-
-<dt id="data_protection">Can I request information about myself? <a href="#data_protection">#</a> </dt>
-
-<dd>
-  <p>
-    <strong>No</strong>. Requests made using <%= site_name %> are <strong>publicly
-    visible</strong> so cannot help you find information about yourself or another private individual.
-  </p>
-
-  <p>
-    If you'd like to request personal information you can do so privately by
-    asking the public authority directly. Agencies will often give you this
-    information when you ask for it or you can formally request it using a
-    relevant law.
-  </p>
-
-  <p>
-    If you see that somebody has included personal information, perhaps
-    unwittingly, in a request, please <a href="/help/contact">contact us</a>
-    immediately so we can remove it.
-  </p>
-</dd>
-
-<dt id="private_requests">I'd like to keep my request secret! (At least until I publish my story) <a href="#private_requests">#</a> </dt>
-
-<dd><p><%= site_name %> is currently only designed for public requests. All
-responses that we receive are automatically published on the website for anyone
-to read.  </p>
-<p>You should contact the public authority directly if you would like to
-make a request in private.  If you're interested in buying a system which helps
-you manage Freedom of Information requests in secret, then <a href="/help/contact">contact us</a>.
-</p>
-</dd>
-
-
-<dt id="multiple">Can I make the same request to lots of authorities, e.g. all departments? <a href="#multiple">#</a> </dt>
-
-<dd>We ask you to first send a test version of your request to a few
-authorities. Their responses will help you improve the wording of your request,
-so that you get the best information when you send the request to all of
-the authorities. Once you’re ready to do that <%= link_to "contact us", help_contact_path %>
-and we’ll enable batch requests for your account.
-</dd>
-
-<dt id="offsite">I made a request off the site, how do I upload it to the archive? <a href="#offsite">#</a> </dt>
-
-<dd><%= site_name %> is an archive of requests made through the site,
-and does not try to be an archive of all Freedom of Information requests. We'll never support uploading
-other requests. For one thing, we wouldn't be able to verify that other
-responses actually came from the authority. If this really matters to you,
-you can always make the same request again via <%= site_name %>.
-</dd>
-
-<dt id="moderation">How do you moderate request annotations? <a href="#moderation">#</a> </dt>
-
-<dd>
-<p>Annotations on <%= site_name %> are to help
-people get the information they want, or to give them pointers to places they
-can go to help them act on it. We reserve the right to remove anything else.
-</p>
-<p>Endless, political discussions are not allowed.
-Post a link to a suitable forum or campaign site elsewhere.</p>
-<dd>
-
-</dl>
-
-<p><strong>Next</strong>, read about <a href="/help/privacy">your privacy</a> --&gt;
-
-<div id="hash_link_padding"></div>
-
-</div>
+          from this site in an annotation to your request (you can make
+          annotations after submitting the request).
+        </p>
+      </dd>
+      <dt id="documents">Why do I have to ask for specific existing documents? <a href="#documents">#</a> </dt>
+      <dd>
+        <p>
+          Freedom of Information only gives you a right to "documents", which is very
+          broadly defined as information in recorded form.
+        </p>
+        <p>
+          When it comes to making your formal application, it needs to be in the form of
+          a request for existing documents &mdash; reports, briefs, memorandum, notes for file,
+          tenders, etc.
+        </p>
+        <p>
+          In limited circumstances, such as when information is not available in written form but instead is stored in an authority computer system,
+          agencies are required to produce a written document containing the information by using a 'computer or other equipment that is ordinarily available' to the authority.
+        </p>
+        <p>
+          However, it's a mistake to ask for everything! Remember to <a href="#focused">
+            keep your request focused</a> and ask for specific existing documents.
+        </p>
+      </dd>
+      <dt id="fees">Does it cost me anything to make a request? <a href="#fees">#</a> </dt>
+      <dd>
+        <p>
+          Making a Freedom of Information request to a Federal or ACT authority is always free.
+          For other states and territories there is an application fee around $30.
+          However most jurisdictions encourage informal or administrative requests.
+        </p>
+        <p>
+          These requests do not have an application fee and happen outside of the FOI law.
+          So while they can be a quicker and cheaper way of accessing information, keep in mind that informal requests don't come with the same rights, like review rights, as formal requests.
+          To make an informal or administrative request on <%= site_name %> just ask the public authority to treat it that way when making your request.
+        </p>
+        <p>
+          A public authority may also choose to impose certain charges to provide the
+          information but they can only charge you if you have specifically agreed in
+          advance to pay.
+        </p>
+        <p>
+          The laws contain a 'lowest reasonable cost' objective, meaning that if
+          the public authority chooses to impose a charge it should fairly reflect the work
+          involved in providing access to documents and must not be used to discourage
+          you from exercising your right of access.
+        </p>
+        <p>
+          If a public authority decides to charge you for access to documents there are
+          certain circumstances where the charges may be reduced or waived, such as:
+        </p>
+        <ul>
+          <li>Releasing the information is in the general public interest</li>
+          <li>The charges would cause you financial hardship (e.g. you're a pensioner)</li>
+        </ul>
+        <p>Sometimes an authority will refuse your request, saying that the cost
+          of handling it exceeds a level that would detriment their day to day work. At this point you can refine your
+          request. e.g. it would be much cheaper for an authority to tell you the amount
+          spent on marshmallows in the past year than in the past ten years.
+        </p>
+      </dd>
+      <dt id="quickly_response">How quickly will I get a response? <a href="#quickly_response">#</a> </dt>
+      <dd>
+        <p>
+          By law, the public authority must keep you informed about the progress of your Freedom of Information request.
+          It should take no longer than <strong>about a month</strong> for you to get a response to your request.
+          For various reasons, this timeframe can be extended.
+        </p>
+        <p>
+          <%= site_name %> will email you if you don't get a timely response.  You can
+          then send the public authority a message to remind them, and tell them if they
+          are breaking the law.
+        </p>
+      </dd>
+      <dt id="no_response">What if I never get a response? <a href="#no_response">#</a> </dt>
+      <dd>
+        <p>There are several things you can do if you never get a response.</p>
+        <ul>
+          <li>Sometimes there has been a genuine problem and the authority never
+            received the request. It is worth telephoning the authority and politely
+            checking that they received the request. It was sent to them by email.
+          </li>
+          <li>If they have not received it, the problem is most likely due to
+            "spam filters". Refer the authority to the measures in the answer
+            '<a href="/help/officers#spam_problems">I can see a request on <%= site_name %>, but we never got it by email!</a>'
+            in the FOI officers section of this help.
+          </li>
+          <li>If you're still having no luck, then you can ask for an internal review,
+            or complain to an Information Commissioner, Ombudsman, or Tribunal about the authority, or both.
+            Read our page '<a href="/help/unhappy">Unhappy about the response you got?</a>'.
+          </ul>
+        </dd>
+        <dt id="not_satifised">What if I'm not satisfied with the response? <a href="#not_satifised">#</a> </dt>
+        <dd>If you didn't get the information you asked for, or you didn't get it in time,
+          then read our page '<a href="/help/unhappy">Unhappy about the response you got?</a>'.
+        </dd>
+        <dt id="reuse">It says I can't re-use the information I got! <a href="#reuse">#</a> </dt>
+        <dd>
+          <p>
+            Authorities often add legal boilerplate about Copyright, which at first
+            glance implies you may not be able do anything with the information. This is
+            likely to be incorrect. For example, the latest
+            <a href="https://www.communications.gov.au/documents/intellectual-property-principles-commonwealth-entities">
+              Intellectual property principles for Commonwealth entities
+            </a>
+            explicitly encourages reuse.
+          </p>
+          <blockquote>
+            <p>
+              Consistent with the need for free and open re-use and adaptation, public
+              sector information should be licensed by entities under the Creative
+              Commons BY standard as the default.
+            </p>
+          </blockquote>
+          <p>You can, of course, write articles about the information or summarise it, or
+            quote parts of it. We also think you should feel free to republish the
+            information in full, just as we do, even though in theory you might not be
+            allowed to do so.  See <a href="/help/officers#copyright">our policy on copyright</a>.</p>
+        </dd>
+        <dt id="ico_help">Can you tell me more of the nitty gritty about the process of making requests? <a href="#ico_help">#</a> </dt>
+        <dd>
+          <p>
+            Right To Know will guide you through each step of the way, giving you just
+            enough information at just the right time. However if you're still keen to get your
+            hands dirty, you'll want to check out information that relates to the jurisdiction
+            you're making a request in:
+          </p>
+          <ul>
+            <li>
+              For <%= link_to "Federal Authorities", list_public_bodies_path(:tag => "federal") %>,
+              have a look at the Freedom of Information
+              <a href="https://www.oaic.gov.au/freedom-of-information/foi-guidelines/">guidelines</a>
+              and <a href="https://www.oaic.gov.au/freedom-of-information/guidance-and-advice/fact-sheet-for-foi-practitioners-to-provide-to-agency-staff/">fact sheets that agency staff see</a>
+              on the Information Commissioner's website.
+            </li>
+            <li>
+              For <%= link_to "ACT Authorities", list_public_bodies_path(:tag => "ACT") %>,
+              see the website for the Directorate in charge of
+              <a href="http://www.cmd.act.gov.au/functions/foi">Freedom of Information</a>.
+            </li>
+            <li>
+              For <%= link_to "NT Authorities", list_public_bodies_path(:tag => "NT") %>,
+              information can be found on the
+              <a href="https://infocomm.nt.gov.au/freedom-of-information">NT Information Commissioner website</a>.
+            </li>
+            <li>
+              For <%= link_to "NSW Authorities", list_public_bodies_path(:tag => "NSW") %>,
+              information can be found on the
+              <a href="http://www.ipc.nsw.gov.au/resources-public">NSW Information Commissioner website</a>.
+            </li>
+            <li>
+              For <%= link_to "Victorian Authorities", list_public_bodies_path(:tag => "VIC") %>,
+              information can be found on the
+              <a href="http://www.foi.vic.gov.au/">Victorian Freedom of Information website</a>.
+            </li>
+            <li>
+              For <%= link_to "Queensland Authorities", list_public_bodies_path(:tag => "QLD") %>,
+              information can be found on the
+              <a href="https://www.oic.qld.gov.au/guidelines/for-community-members/information-sheets-access-and-amendment/accessing-information-held-by-government">Queensland Information Commissioner website</a>.
+            </li>
+            <li>
+              For <%= link_to "SA Authorities", list_public_bodies_path(:tag => "SA") %>,
+              information can be found on the
+              <a href="http://www.archives.sa.gov.au/content/foi-in-sa">State Records' FOI in South Australia</a> pages.
+            </li>
+            <li>
+              For <%= link_to "WA Authorities", list_public_bodies_path(:tag => "WA") %>,
+              information can be found on the
+              <a href="http://foi.wa.gov.au/">WA Information Commissioner website</a>.
+            </li>
+            <li>
+              For <%= link_to "Tasmanian Authorities", list_public_bodies_path(:tag => "TAS") %>,
+              information can be found on
+              <a href="https://www.ombudsman.tas.gov.au/right-to-information">Ombudsman Tasmania’s Right To Information</a> pages.
+            </li>
+          </ul>
+        </dd>
+        <dt id="data_protection">Can I request information about myself? <a href="#data_protection">#</a> </dt>
+        <dd>
+          <p>
+            <strong>No</strong>. Requests made using <%= site_name %> are <strong>publicly
+              visible</strong> so cannot help you find information about yourself or another private individual.
+          </p>
+          <p>
+            If you'd like to request personal information you can do so privately by
+            asking the public authority directly. Agencies will often give you this
+            information when you ask for it or you can formally request it using a
+            relevant law.
+          </p>
+          <p>
+            If you see that somebody has included personal information, perhaps
+            unwittingly, in a request, please <a href="/help/contact">contact us</a>
+            immediately so we can remove it.
+          </p>
+        </dd>
+        <dt id="private_requests">I'd like to keep my request secret! (At least until I publish my story) <a href="#private_requests">#</a> </dt>
+        <dd>
+          <p><%= site_name %> is currently only designed for public requests. All
+            responses that we receive are automatically published on the website for anyone
+            to read.  </p>
+          <p>You should contact the public authority directly if you would like to
+            make a request in private.  If you're interested in buying a system which helps
+            you manage Freedom of Information requests in secret, then <a href="/help/contact">contact us</a>.
+          </p>
+        </dd>
+        <dt id="multiple">Can I make the same request to lots of authorities, e.g. all departments? <a href="#multiple">#</a> </dt>
+        <dd>We ask you to first send a test version of your request to a few
+          authorities. Their responses will help you improve the wording of your request,
+          so that you get the best information when you send the request to all of
+          the authorities. Once you’re ready to do that <%= link_to "contact us", help_contact_path %>
+          and we’ll enable batch requests for your account.
+        </dd>
+        <dt id="offsite">I made a request off the site, how do I upload it to the archive? <a href="#offsite">#</a> </dt>
+        <dd><%= site_name %> is an archive of requests made through the site,
+          and does not try to be an archive of all Freedom of Information requests. We'll never support uploading
+          other requests. For one thing, we wouldn't be able to verify that other
+          responses actually came from the authority. If this really matters to you,
+          you can always make the same request again via <%= site_name %>.
+        </dd>
+        <dt id="moderation">How do you moderate request annotations? <a href="#moderation">#</a> </dt>
+        <dd>
+          <p>Annotations on <%= site_name %> are to help
+            people get the information they want, or to give them pointers to places they
+            can go to help them act on it. We reserve the right to remove anything else.
+          </p>
+          <p>Endless, political discussions are not allowed.
+            Post a link to a suitable forum or campaign site elsewhere.</p>
+          <dd>
+          </dl>
+          <p><strong>Next</strong>, read about <a href="/help/privacy">your privacy</a> --&gt;
+            <div id="hash_link_padding"></div>
+          </div>
