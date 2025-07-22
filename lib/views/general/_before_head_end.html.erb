@@ -2,3 +2,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="<%= image_path('favicon/favicon-32x32.png') %>">
 <link rel="icon" type="image/png" sizes="16x16" href="<%= image_path('favicon/favicon-16x16.png')%>">
 <link rel="manifest" href="<%= image_path('favicon/manifest.json') %>">
+<% if Rails.env.production? && AlaveteliConfiguration.domain == 'www.righttoknow.org.au' %>
+<script defer data-domain="righttoknow.org.au" src="https://plausible.io/js/script.outbound-links.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+<% end %>
