@@ -1,0 +1,29 @@
+name: General Issue (Contributor Use Only)
+description: For contributors to report issues that don't fit other templates
+labels: [triage]
+body:
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      options:
+        - Bug
+        - Feature Request
+        - Documentation
+        - Question
+        - Discussion
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue, question, or topic you'd like to discuss.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any relevant context, links, or screenshots.

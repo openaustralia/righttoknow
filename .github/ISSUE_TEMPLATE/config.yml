@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contact us for support
+    url: https://www.righttoknow.org.au/help/contact
+    about: Please click the "Report" button on the relevant material that you are concerned about. If you can't, please click here to contact us.
+  - name: Add an Authority
+    url: https://www.righttoknow.org.au/change_request/new
+    about: Authority changes are requested directly on the site
