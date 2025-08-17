@@ -1,0 +1,58 @@
+name: Feature Request
+description: Suggest an idea for Right To Know
+labels: [enhancement]
+type: [Feature]
+body:
+  - type: dropdown
+    id: feature-area
+    attributes:
+      label: What area would this feature improve?
+      options:
+        - Making FOI requests
+        - Browsing and searching requests
+        - User account and notifications
+        - Authority information
+        - Mobile experience
+        - Accessibility
+        - Site administration
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the issue or limitation you're experiencing.
+      placeholder: Ex. When I try to [action], I find it difficult because [...]
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe your proposed solution
+      description: What would you like to see implemented?
+    validations:
+      required: true
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: Who would benefit from this feature?
+      options:
+        - FOI requesters
+        - Journalists
+        - Researchers
+        - General public
+        - Site administrators
+        - All users
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative solutions considered
+      description: Have you considered other ways to solve this problem?
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context, examples, or screenshots about the feature request here.
