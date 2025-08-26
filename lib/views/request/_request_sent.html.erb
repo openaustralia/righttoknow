@@ -2,7 +2,7 @@
   <div class="request-sent-message" id="notice">
     <h1>
       <%= _("Your {{law_used_full}} request has been sent",
-            :law_used_full => @info_request.law_used_human(:full)) %>
+            law_used_full: @info_request.legislation.to_s(:full)) %>
     </h1>
 
     <div class="request-sent-message__row">
@@ -14,39 +14,6 @@
                 :late_number_of_days => @info_request.public_body.reply_late_after_days,
                 :working_or_calendar => @info_request.public_body.working_or_calendar_days) %>
         </p>
-
-        <h2><%= _("Share your request") %></h2>
-
-        <%= link_to image_tag("next-step-twitter.png",
-                              :alt => _("Tweet it"),
-                              :width => "120",
-                              :height => "37"),
-                              "https://twitter.com/intent/tweet?" << {
-                                :url => request.url,
-                                :via => AlaveteliConfiguration.twitter_username,
-                                :text => "'#{ @info_request.title }'",
-                                :related => _('mySociety:Helping people set ' \
-                                                'up sites like {{site_name}} ' \
-                                                'all over the world',
-                                              :site_name => site_name),
-                              }.to_query, :class => 'share-link',
-                                          :onclick => track_analytics_event(
-                                            AnalyticsEvent::Category::OUTBOUND,
-                                            AnalyticsEvent::Action::TWITTER_EXIT,
-                                            :label => "Share Request") %>
-
-
-        <%= link_to image_tag("next-step-facebook.png",
-                              :alt => _("Share on Facebook"),
-                              :width => "120",
-                              :height => "37"),
-                              "https://www.facebook.com/sharer/sharer.php?" << {
-                                :u => request.url
-                              }.to_query, :class => 'share-link',
-                                          :onclick => track_analytics_event(
-                                            AnalyticsEvent::Category::OUTBOUND,
-                                            AnalyticsEvent::Action::FACEBOOK_EXIT,
-                                            :label => "Share Request") %>
 
         <h2><%= _("Keep your request up to date") %></h2>
 

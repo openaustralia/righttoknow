@@ -57,42 +57,59 @@ Rails.configuration.to_prepare do
     end
   end
 
-  InfoRequest.class_eval do
-    AUSTRALIAN_LAW_USED_READABLE_DATA = {
-      foi: { short: _('FOI'),
-             full: _('Freedom of Information'),
-             act: _('Freedom of Information Act') },
-      gipa: { short: _('GIPA'),
-              full: _("Government Information (Public Access)"),
-              act: _("Government Information (Public Access) Act") },
-      rti: { short: _('RTI'),
-             full: _("Right to Information"),
-             act: _("Right to Information Act") }
-    }
-
-    def australian_law_used
-      if public_body
-        case public_body.jurisdiction
-        when :nsw
-          :gipa
-        when :qld, :tas
-          :rti
-        else
-          :foi
-        end
+  PublicBody.class_eval do
+    def legislation
+      case jurisdiction
+      when :nsw
+        Legislation.find!('gipa')
+      when :qld, :tas
+        Legislation.find!('rti')
       else
-        :foi
+        Legislation.find!('foi')
       end
     end
+  end
 
-    def applicable_law
-      begin
-        AUSTRALIAN_LAW_USED_READABLE_DATA.fetch(australian_law_used)
-      rescue KeyError
-        raise "Unknown law used '#{australian_law_used}'"
-      end
+  Legislation.class_eval do
+    def self.all
+      [
+        new(
+          key: 'foi',
+          short: _('FOI'),
+          full: _('Freedom of Information'),
+          with_a: _('A Freedom of Information request'),
+          act: _('Freedom of Information Act'),
+          refusals: refusals['foi']
+        ),
+        new(
+          key: 'eir',
+          short: _('EIR'),
+          full: _('Environmental Information Regulations'),
+          with_a: _('An Environmental Information request'),
+          act: _('Environmental Information Regulations'),
+          refusals: refusals['eir']
+        ),
+        new(
+          key: 'gipa',
+          short: _('GIPA'),
+          full: _('Government Information (Public Access)'),
+          with_a: _('A Government Information (Public Access) request'),
+          act: _('Government Information (Public Access) Act'),
+          refusals: refusals['gipa'] || []
+        ),
+        new(
+          key: 'rti',
+          short: _('RTI'),
+          full: _('Right to Information'),
+          with_a: _('A Right to Information request'),
+          act: _('Right to Information Act'),
+          refusals: refusals['rti'] || []
+        )
+      ]
     end
+  end
 
+  InfoRequest.class_eval do
     def date_response_required_by
       Holiday.due_date_from(date_initial_request_last_sent_at, public_body.reply_late_after_days, public_body.working_or_calendar_days)
     end
