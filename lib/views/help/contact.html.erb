@@ -6,37 +6,40 @@
 
 <div id="contact_preamble">
 
-    <% if !flash[:notice] %>
-        <h2>Contact an authority to get official information</h2>
-        <ul>
-            <li><a href="<%= new_request_path %>">Go here</a> to make a request, in public, for information
-            from public authorities.</li>
+        <% if !flash[:notice] %>
+            <h2>Want to contact us?</h2>
+            <p>You can — but you might get what you need faster by following the steps below.</p>
 
-            <li>
-            Asking for <b>private information about yourself</b>?
-            Please read our
-            <a href="<%= help_requesting_path(:anchor => 'data_protection') %>">help page</a>.
-            </li>
-        </ul>
-
-        <h2>Removing information</h2>
-        <p>Our <a href="<%= help_house_rules_url %>">House Rules</a> provide information on what we do 
-            and don't allow on <%= site_name %>. </p>
-        <p> Please use the <b> report button </b> that can be found on each request.</p>
-
-    <h2>Contact the <%= site_name %> team</h2>
+            <h2>Contact an authority to get official information</h2>
             <ul>
-            <li>
-                Please read the  <a href="<%= help_about_path %>">help pages</a> first, as it may
-                answer your question quicker.
-            </li>
-            <li>
-                We are a <strong>charity</strong> and not part of the
-                Government.
-            </li>
-            
+                <li>
+                    <a href="<%= new_request_path %>">Request information from a public authority</a> — your request will be published on the site.
+                </li>
+                <li>
+                    Looking for personal information about yourself? Please read our
+                    <a href="<%= help_requesting_path(:anchor => 'data_protection') %>">help page</a>.
+                </li>
             </ul>
-    <% end %>
+
+            <h2>Report or remove information</h2>
+            <p>
+                If you want to report a problem, first read our <a href="<%= help_house_rules_url %>">House Rules</a>. These clearly explain what <%= site_name %> does and doesn’t allow.
+                To report a specific problem, use the <b>Report</b> button on the request page.
+            </p>
+
+            <h2>Contact the <%= site_name %> team</h2>
+            <ul>
+                <li>
+                    Check the <a href="<%= help_about_path %>">help pages</a> first — they often answer questions much quicker than we can.
+                </li>
+                <li>
+                    <strong>Still need help?</strong> Please get in touch using the form below.
+                </li>
+                <li>
+                    Please remember: <%= site_name %> is a charity and not part of the Government.
+                </li>
+            </ul>
+        <% end %>
 </div>
 
 <%= form_for :contact do |f| %>
