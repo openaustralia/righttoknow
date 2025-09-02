@@ -7,7 +7,11 @@ class HelpPageHistory
   end
 
   def commits_url
-    template.inspect.gsub(/lib\/themes\/righttoknow/, GITHUB_BASE)
+    # Use the template identifier (full path) and replace the local path prefix with the GitHub base URL
+  path = template.identifier
+  filename = File.basename(path)
+  # Build the GitHub commits URL for this file
+  "#{GITHUB_BASE}/lib/views/help/#{filename}"
   end
 
   protected
