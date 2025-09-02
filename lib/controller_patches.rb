@@ -13,9 +13,11 @@ Rails.configuration.to_prepare do
     private
 
     def set_history
-      @history ||= HelpPageHistory.new(
-        lookup_context.find_template("#{controller_path}/#{action_name}")
-      )
+      # Only set history if a template exists for this action
+      template = lookup_context.find_template("#{controller_path}/#{action_name}")
+      @history ||= HelpPageHistory.new(template)
+    rescue ActionView::MissingTemplate
+      # No template for this action, skip setting history
     end
   end
 end
