@@ -17,7 +17,8 @@
                     <li role="presentation"><%= link_to 'View authorities', list_public_bodies_default_path %></li>
                     <% if feature_enabled?(:alaveteli_pro) %>
                       <li role="presentation"><%= link_to 'Journalist?', account_request_index_path %></li>
-                   <% if feature_enabled?(:pro_pricing) %>
+	                   <% end %>
+										<% if feature_enabled?(:pro_pricing) %>
                       <li>
                         <%= link_to 'Pro Terms', pro_page_path(:id => 'legal') %>
                       </li>
@@ -29,7 +30,6 @@
                     <li role="presentation"><%= link_to 'Contact us', help_contact_path %></li>
                     <li role="presentation"><%= link_to 'Privacy', help_privacy_path %></li>
                     <li role="presentation"><%= link_to 'API', help_api_path %></li>
-                    <% end %>
                 </ul>
             </nav>
         </div>
