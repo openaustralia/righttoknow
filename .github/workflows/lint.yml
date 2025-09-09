@@ -2,9 +2,9 @@ name: Lint Code Base
 
 on:
   push:
-    branches: [ production, main ]
+    branches: [ staging, production ]
   pull_request:
-    branches: [ production, main ]
+    branches: [ staging, production ]
 
 jobs:
   lint:
@@ -21,7 +21,7 @@ jobs:
       - name: Lint Code Base
         uses: super-linter/super-linter@v5
         env:
-          DEFAULT_BRANCH: production
+          DEFAULT_BRANCH: staging
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Disable some linters that may not be relevant for this theme package
           VALIDATE_JSCPD: false

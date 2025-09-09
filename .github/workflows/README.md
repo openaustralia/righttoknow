@@ -9,8 +9,8 @@ This repository includes automated workflows for pull request management and cod
 Automatically runs code linting on all pull requests using [Super Linter](https://github.com/super-linter/super-linter).
 
 **Triggers:**
-- Push to `production` or `main` branches
-- Pull requests targeting `production` or `main` branches
+- Push to `staging` or `production` branches
+- Pull requests targeting `staging` or `production` branches
 
 **Languages checked:**
 - Ruby
@@ -22,8 +22,8 @@ Automatically runs code linting on all pull requests using [Super Linter](https:
 Implements automated pull request review management.
 
 **Features:**
-- **Team Review Assignment**: Automatically requests review from `openaustralia/team-right-to-know` team on new PRs
-- **Auto-approval**: PRs that haven't been reviewed after 48 hours are automatically approved (only if status checks pass)
+- **Team Review Assignment**: Automatically requests review from `openaustralia/team-right-to-know` team on new PRs (excludes draft PRs)
+- **Auto-approval**: Non-draft PRs that haven't been reviewed after 48 hours are automatically approved (only if status checks pass)
 
 **Triggers:**
 - PR events: opened, synchronize, reopened
@@ -57,5 +57,6 @@ Ensure the `openaustralia/team-right-to-know` team exists and has appropriate pe
 
 - The auto-approval workflow only approves PRs where all status checks have passed
 - PRs with failed status checks are skipped from auto-approval
+- Draft PRs are excluded from both team review assignment and auto-approval
 - Team members can still request changes or re-review auto-approved PRs
 - All auto-approvals are logged and include explanatory comments

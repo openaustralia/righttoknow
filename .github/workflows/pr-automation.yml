@@ -11,7 +11,7 @@ jobs:
   assign-reviewers:
     name: Assign Team Reviewers
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && !github.event.pull_request.draft
     
     steps:
       - name: Request Review from Team
@@ -60,6 +60,12 @@ jobs:
             
             for (const pr of prs.data) {
               const prCreated = new Date(pr.created_at);
+              
+              // Skip draft PRs
+              if (pr.draft) {
+                console.log(`Skipping draft PR #${pr.number}`);
+                continue;
+              }
               
               // Skip if PR is less than 48 hours old
               if (prCreated > fortyEightHoursAgo) {
