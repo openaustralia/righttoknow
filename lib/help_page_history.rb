@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class HelpPageHistory
   GITHUB_BASE =
-    'https://github.com/openaustralia/righttoknow/commits/production'.freeze
+    'https://github.com/openaustralia/righttoknow/commits/production'
 
   def initialize(template)
     @template = template

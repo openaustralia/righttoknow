@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 theme_name = File.split(File.expand_path('..', __dir__))[1]
 theme_name.gsub!('-', '_')
 THEME_NAME = theme_name
@@ -5,15 +7,17 @@ THEME_NAME = theme_name
 Rails.application.config.assets.precompile << ['event_tracking.js',
                                                'personal_message_toggler.js']
 
-class ActionController::Base
-  # The following prepends the path of the current theme's views to
-  # the "filter_path" that Rails searches when deciding which
-  # template to use for a view.  It does so by creating a method
-  # uniquely named for this theme.
-  path_function_name = "set_view_paths_for_#{THEME_NAME}"
-  before_action path_function_name.to_sym
-  send :define_method, path_function_name do
-    prepend_view_path File.join(File.dirname(__FILE__), 'views')
+module ActionController
+  class Base
+    # The following prepends the path of the current theme's views to
+    # the "filter_path" that Rails searches when deciding which
+    # template to use for a view.  It does so by creating a method
+    # uniquely named for this theme.
+    path_function_name = "set_view_paths_for_#{THEME_NAME}"
+    before_action path_function_name.to_sym
+    send :define_method, path_function_name do
+      prepend_view_path File.join(File.dirname(__FILE__), 'views')
+    end
   end
 end
 
@@ -27,9 +31,9 @@ end
 end
 
 # Monkey patch app code
-for patch in ['controller_patches.rb',
-              'model_patches.rb',
-              'patch_mailer_paths.rb']
+['controller_patches.rb',
+ 'model_patches.rb',
+ 'patch_mailer_paths.rb'].each do |patch|
   require File.expand_path "../#{patch}", __FILE__
 end
 

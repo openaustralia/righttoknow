@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # See `doc/THEMES.md` for more explanation of this file
 # This example adds a "transferred" state to requests.
 
@@ -36,7 +38,7 @@ module RequestControllerCustomStates
     # called after the core describe_state code.  It should
     # end by raising an error if the status is unknown
     unless info_request.calculate_status == 'transferred'
-      raise 'unknown calculate_status ' + info_request.calculate_status
+      raise "unknown calculate_status #{info_request.calculate_status}"
     end
 
     flash[:notice] = _('Authority has transferred your request to a different public body.')

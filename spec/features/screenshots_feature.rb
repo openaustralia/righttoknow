@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # To run this test go to the root of the alaveteli directory and run:
 #
 # $ bundle exec rspec lib/themes/righttoknow/spec/features/screenshots_feature.rb
@@ -55,9 +57,7 @@ describe 'Take Pro marketing screenshots', js: true do
       now = Time.new(2021, 3, 16, 15, 0, 0)
 
       Timecop.freeze(now - 5.days) do
-        1.times do
-          FactoryBot.create(:info_request, :embargoed, :overdue, user: pro_user)
-        end
+        FactoryBot.create(:info_request, :embargoed, :overdue, user: pro_user)
         45.times do
           FactoryBot.create(:info_request, :embargoed, :very_overdue, user: pro_user)
         end
