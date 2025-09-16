@@ -8,7 +8,7 @@ Rails.configuration.to_prepare do
   HelpController.class_eval do
     before_action :set_history
 
-    def house_rules; end    
+    def house_rules; end
 
     private
 

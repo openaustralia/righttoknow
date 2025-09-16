@@ -1,10 +1,9 @@
-# -*- encoding : utf-8 -*-
-theme_name = File.split(File.expand_path("../..", __FILE__))[1]
+theme_name = File.split(File.expand_path('..', __dir__))[1]
 theme_name.gsub!('-', '_')
 THEME_NAME = theme_name
 
-Rails.application.config.assets.precompile << ["event_tracking.js",
-                                               "personal_message_toggler.js"]
+Rails.application.config.assets.precompile << ['event_tracking.js',
+                                               'personal_message_toggler.js']
 
 class ActionController::Base
   # The following prepends the path of the current theme's views to
@@ -14,13 +13,13 @@ class ActionController::Base
   path_function_name = "set_view_paths_for_#{THEME_NAME}"
   before_action path_function_name.to_sym
   send :define_method, path_function_name do
-    self.prepend_view_path File.join(File.dirname(__FILE__), "views")
+    prepend_view_path File.join(File.dirname(__FILE__), 'views')
   end
 end
 
 # In order to have the theme lib/ folder ahead of the main app one,
 # inspired in Ruby Guides explanation: http://guides.rubyonrails.org/plugins.html
-%w{ . }.each do |dir|
+%w[.].each do |dir|
   path = File.join(File.dirname(__FILE__), dir)
   $LOAD_PATH.insert(0, path)
   ActiveSupport::Dependencies.autoload_paths << path
@@ -47,13 +46,13 @@ theme_asset_path = Pathname.new(theme_asset_path).cleanpath.to_s
 
 LOOSE_THEME_ASSETS = lambda do |logical_path, filename|
   filename.start_with?(theme_asset_path) &&
-  !['.js', '.css', ''].include?(File.extname(logical_path))
+    !['.js', '.css', ''].include?(File.extname(logical_path))
 end
 Rails.application.config.assets.precompile.unshift(LOOSE_THEME_ASSETS)
 
 def prepend_theme_assets
   # Prepend the asset directories in this theme to the asset path:
-  ['stylesheets', 'images', 'javascripts'].each do |asset_type|
+  %w[stylesheets images javascripts].each do |asset_type|
     theme_asset_path = File.join(File.dirname(__FILE__),
                                  '..',
                                  'app',
@@ -72,8 +71,9 @@ end
 # locale-theme directory for a translation in the first place, and if
 # it isn't found, look in the Alaveteli locale directory next:
 repos = [
-  FastGettext::TranslationRepository.build('app', :path=>File.join(File.dirname(__FILE__), '..', 'locale-theme'), :type => :po),
-  FastGettext::TranslationRepository.build('app', :path=>'locale', :type => :po)
+  FastGettext::TranslationRepository.build('app', path: File.join(File.dirname(__FILE__), '..', 'locale-theme'),
+                                                  type: :po),
+  FastGettext::TranslationRepository.build('app', path: 'locale', type: :po)
 ]
-FastGettext.add_text_domain 'app', :type=>:chain, :chain=>repos
+FastGettext.add_text_domain 'app', type: :chain, chain: repos
 FastGettext.default_text_domain = 'app'

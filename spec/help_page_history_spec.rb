@@ -1,6 +1,6 @@
 # If defined, ALAVETELI_TEST_THEME will be loaded in config/initializers/theme_loader
 ALAVETELI_TEST_THEME = 'righttoknow'
-require File.expand_path(File.join(File.dirname(__FILE__),'..','..','..','..','spec','spec_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', '..', 'spec', 'spec_helper'))
 
 describe HelpPageHistory do
   describe '#commits_url' do
