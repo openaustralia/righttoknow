@@ -215,3 +215,4 @@ When adding authorities for jurisdictions we don't yet cover we need to:
 * Upload the new authorities (with the correct tags, see above)
 * Add categories (see above)
 
+This project is tested with [BrowserStack](https://email.browserstack.com/c/eJwkyDtywyAQANDTmA4GMN-Cs2RW7K7NyBIRSFGOnyLtw-IXj1FQMTHoYKwNSbyLjcnTM9pcvdOBjKWYELJlHWMmH0UrIbGuDPDMkeHLVPZGa2dtMM44NRvS2g7Jg46L9lMyyu-O1ySYp5EbtN3L1yDaZfIZcwjOL3Ku-Hs8nKYN2kfxoPlGmquqfROfct-3Wka_J415Qv3nURbaH053YNXHS8Elfor9CwAA__9z00N9)
