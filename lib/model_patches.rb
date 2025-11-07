@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Add a callback - to be executed before each request in development,
 # and at startup in production - to patch existing app classes.
 # Doing so in init/environment.rb wouldn't work in development, since
@@ -39,7 +41,7 @@ Rails.configuration.to_prepare do
       when :vic, :wa
         45
       else
-        AlaveteliConfiguration::reply_late_after_days
+        AlaveteliConfiguration.reply_late_after_days
       end
     end
 
@@ -53,7 +55,7 @@ Rails.configuration.to_prepare do
     end
 
     def info_requests_hidden_count
-      info_requests.where("prominence != ?", "normal").count
+      info_requests.where('prominence != ?', 'normal').count
     end
   end
 
@@ -111,7 +113,8 @@ Rails.configuration.to_prepare do
 
   InfoRequest.class_eval do
     def date_response_required_by
-      Holiday.due_date_from(date_initial_request_last_sent_at, public_body.reply_late_after_days, public_body.working_or_calendar_days)
+      Holiday.due_date_from(date_initial_request_last_sent_at, public_body.reply_late_after_days,
+                            public_body.working_or_calendar_days)
     end
   end
 end
