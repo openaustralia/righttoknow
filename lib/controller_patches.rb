@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Add a callback - to be executed before each request in development,
 # and at startup in production - to patch existing app classes.
 # Doing so in init/environment.rb wouldn't work in development, since
@@ -8,7 +10,7 @@ Rails.configuration.to_prepare do
   HelpController.class_eval do
     before_action :set_history
 
-    def house_rules; end    
+    def house_rules; end
 
     private
 
