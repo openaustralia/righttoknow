@@ -355,7 +355,7 @@ a.link_button_green_large {
 }
 /* Notices, errors */
 
-#notice, #error, #hidden_request, .warning {
+#notice, #error, #hidden_request,.describe_state_form form, .undescribed_requests, .warning {
   border-top: 10px solid;
   font-size: 1em;
   margin:1em 0;
