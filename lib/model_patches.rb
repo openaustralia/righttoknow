@@ -6,6 +6,45 @@
 # classes are reloaded, but initialization is not run each time.
 # See http://stackoverflow.com/questions/7072758/plugin-not-reloading-in-development-mode
 #
+Legislation.class_eval do
+  def self.all
+    [
+      new(
+        key: 'foi',
+        short: _('FOI'),
+        full: _('Freedom of Information'),
+        with_a: _('A Freedom of Information request'),
+        act: _('Freedom of Information Act'),
+        refusals: refusals['foi']
+      ),
+      new(
+        key: 'eir',
+        short: _('EIR'),
+        full: _('Environmental Information Regulations'),
+        with_a: _('An Environmental Information request'),
+        act: _('Environmental Information Regulations'),
+        refusals: refusals['eir']
+      ),
+      new(
+        key: 'gipa',
+        short: _('GIPA'),
+        full: _('Government Information (Public Access)'),
+        with_a: _('A Government Information (Public Access) request'),
+        act: _('Government Information (Public Access) Act'),
+        refusals: refusals['gipa'] || []
+      ),
+      new(
+        key: 'rti',
+        short: _('RTI'),
+        full: _('Right to Information'),
+        with_a: _('A Right to Information request'),
+        act: _('Right to Information Act'),
+        refusals: refusals['rti'] || []
+      )
+    ]
+  end
+end
+
 Rails.configuration.to_prepare do
   PublicBody.class_eval do
     def jurisdiction
@@ -69,45 +108,6 @@ Rails.configuration.to_prepare do
       else
         Legislation.find!('foi')
       end
-    end
-  end
-
-  Legislation.class_eval do
-    def self.all
-      [
-        new(
-          key: 'foi',
-          short: _('FOI'),
-          full: _('Freedom of Information'),
-          with_a: _('A Freedom of Information request'),
-          act: _('Freedom of Information Act'),
-          refusals: refusals['foi']
-        ),
-        new(
-          key: 'eir',
-          short: _('EIR'),
-          full: _('Environmental Information Regulations'),
-          with_a: _('An Environmental Information request'),
-          act: _('Environmental Information Regulations'),
-          refusals: refusals['eir']
-        ),
-        new(
-          key: 'gipa',
-          short: _('GIPA'),
-          full: _('Government Information (Public Access)'),
-          with_a: _('A Government Information (Public Access) request'),
-          act: _('Government Information (Public Access) Act'),
-          refusals: refusals['gipa'] || []
-        ),
-        new(
-          key: 'rti',
-          short: _('RTI'),
-          full: _('Right to Information'),
-          with_a: _('A Right to Information request'),
-          act: _('Right to Information Act'),
-          refusals: refusals['rti'] || []
-        )
-      ]
     end
   end
 
