@@ -12,15 +12,13 @@ repository's
 Development
 -----------
 
-To get the most benefits from open source and be good open source citizens we
-use [upstream Alaveteli](https://github.com/mysociety/alaveteli) and not a fork.
-If there is a bug in the core software that can be shared by all we will make
-the fix in our repository and open a pull request. In the vast majority of cases
-we will not deploy a fix until it's been accepted upstream. This ensures we're
-all using the same code as much as possible.
+At present, we [use a fork of Alaveteli](https://github.com/openaustralia/alaveteli) which contains minor changes to the core to support us. Our plan is to transition to using upstream as soon as possible.
 
-However if you'd like to adjust the look and feel of Right To Know, or to update
-copy like that found on the help pages, this is the place to make those changes.
+As of 9 Dec 2025, we are currently running [Alaveteli 0.42.0.2](https://github.com/openaustralia/alaveteli/tree/0.42.0.2) using Ruby 2.7.8.
+
+If there is a bug in the core software that can be shared by all this should be made in the above Alaveteli repository and open a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
+
+However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
 
 To get a development copy up-and-running, follow the
 [Alaveteli installation instructions](http://alaveteli.org/docs/installing/)
@@ -80,12 +78,12 @@ isn’t always available, especially when they exist within a bigger department.
 This is the order of preference for the authority’s request email:
 
 1. Specific FOI address for sub-department agency (e.g.
-   foi@special_agency.gov.au)
+   <foi@special_agency.gov.au>)
 2. Specific address for sub-department agency at department (e.g.
-   special_agency@department.gov.au)
-3. Specific FOI address for department (e.g. foi@department.gov.au)
-4. Generic address for department (e.g. info@department.gov.au)
-5. Address for a specific person at the agency (e.g. jane.zhang@dept.gov.au)
+   <special_agency@department.gov.au>)
+3. Specific FOI address for department (e.g. <foi@department.gov.au>)
+4. Generic address for department (e.g. <info@department.gov.au>)
+5. Address for a specific person at the agency (e.g. <jane.zhang@dept.gov.au>)
 
 A person’s address is the absolute last resort.
 
@@ -107,12 +105,12 @@ basic description of the authority. For example:
 
 #### Short name
 
-You can add abbreviated version of the authority’s name as it’s *short name*.
+You can add abbreviated version of the authority’s name as it’s _short name_.
 These are really useful because the common name for an agency might not be it’s
 full formal name. For example, people commonly search “ABS” when looking for
 the “Australian Bureau of Statistics”.
 
-It’s very important to only add acronyms or abbreviations that people *really* do use.
+It’s very important to only add acronyms or abbreviations that people _really_ do use.
 These are displayed on authority pages and lists of authorities, and having lots
 of irrelevant short names adds unnecessary noise to the page.
 
