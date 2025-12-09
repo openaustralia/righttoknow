@@ -9,8 +9,7 @@ deployment. If you find a problem with Right to Know, please report it to this
 repository's
 [issue tracker](https://github.com/openaustralia/righttoknow/issues).
 
-Development
------------
+## Development
 
 At present, we [use a fork of Alaveteli](https://github.com/openaustralia/alaveteli) which contains minor changes to the core to support us. Our plan is to transition to using upstream as soon as possible.
 
@@ -25,8 +24,7 @@ To get a development copy up-and-running, follow the
 and then install this theme. You can read more about themes and how to install
 them in the [Alaveteli documentation](http://alaveteli.org/docs/customising/themes/).
 
-Contributing
-------------
+## Contributing
 
 If you want to modify the customised look and feel of Right To Know then you
 should edit this repository however if it's something more general you probably
@@ -41,8 +39,7 @@ To contribute an enhancement or a fix to this theme:
 * Commit the changes without making changes to any files that aren't related to your enhancement or fix.
 * Send a pull request against the `production` branch.
 
-Authorities
------------
+## Authorities
 
 ### Adding new authorities
 
@@ -157,49 +154,49 @@ This how we want Right To Know's categories organised:
 
 | Title | Description | Tag |
 |-------|-------------|-----|
-| Agriculture | part of the Agriculture portfolio | `agriculture`
-| Attorney-General | part of the Attorney-General portfolio | `attorney_general`
-| Communications | part of the Communications portfolio | `communications`
-| Defence | part of the Defence portfolio | `defence`
-| Education and Training | part of the Education and Training portfolio | `education_and_training`
-| Employment | part of the Employment portfolio | `employment`
-| Environment | part of the Environment portfolio | `environment`
-| Finance | part of the Finance portfolio | `finance`
-| Foreign Affairs and Trade | part of the Foreign Affairs and Trade portfolio | `foreign_affairs_and_trade`
-| Health | part of the Health portfolio | `health`
-| Immigration & Border Protection | part of the Immigration & Border Protection portfolio | `immigration_and_border_protection`
-| Industry and Science | part of the Industry and Science portfolio | `industry_and_science`
-| Infrastructure and Regional Development | part of the Infrastructure and Regional Development portfolio | `infrastructure_and_regional_development`
-| Prime Minister | part of the Prime Minister portfolio | `prime_minister`
-| Social Services | part of the Social Services portfolio | `social_services`
-| Treasury | part of the Treasury portfolio | `treasury`
-| Veterans' Affairs | part of the Veterans' Affairs portfolio | `veterans_affairs`
-| All Federal authorities | a Federal authority | `federal`
+| Agriculture | part of the Agriculture portfolio | `agriculture` |
+| Attorney-General | part of the Attorney-General portfolio | `attorney_general` |
+| Communications | part of the Communications portfolio | `communications` |
+| Defence | part of the Defence portfolio | `defence` |
+| Education and Training | part of the Education and Training portfolio | `education_and_training` |
+| Employment | part of the Employment portfolio | `employment` |
+| Environment | part of the Environment portfolio | `environment` |
+| Finance | part of the Finance portfolio | `finance` |
+| Foreign Affairs and Trade | part of the Foreign Affairs and Trade portfolio | `foreign_affairs_and_trade` |
+| Health | part of the Health portfolio | `health` |
+| Immigration & Border Protection | part of the Immigration & Border Protection portfolio | `immigration_and_border_protection` |
+| Industry and Science | part of the Industry and Science portfolio | `industry_and_science` |
+| Infrastructure and Regional Development | part of the Infrastructure and Regional Development portfolio | `infrastructure_and_regional_development` |
+| Prime Minister | part of the Prime Minister portfolio | `prime_minister` |
+| Social Services | part of the Social Services portfolio | `social_services` |
+| Treasury | part of the Treasury portfolio | `treasury` |
+| Veterans' Affairs | part of the Veterans' Affairs portfolio | `veterans_affairs` |
+| All Federal authorities | a Federal authority | `federal` |
 
 #### State and Territory
 
 | Title | Description | Tag |
 |-------|-------------|-----|
-| ACT | an ACT authority | `ACT_state`
-| New South Wales | a NSW authority | `NSW_state`
-| Northern Territory | a Northern Territory authority | `NT_state`
-| Queensland | a Queensland authority | `QLD_state`
-| South Australia | a South Australian authority | `SA_state`
-| Tasmania | a Tasmanian authority | `TAS_state`
-| Victoria | a Victorian authority | `VIC_state`
-| Western Australia | a Western Australian authority | `WA_state`
+| ACT | an ACT authority | `ACT_state` |
+| New South Wales | a NSW authority | `NSW_state` |
+| Northern Territory | a Northern Territory authority | `NT_state` |
+| Queensland | a Queensland authority | `QLD_state` |
+| South Australia | a South Australian authority | `SA_state` |
+| Tasmania | a Tasmanian authority | `TAS_state` |
+| Victoria | a Victorian authority | `VIC_state` |
+| Western Australia | a Western Australian authority | `WA_state` |
 
 #### Local
 
 | Title | Description | Tag |
 |-------|-------------|-----|
-| New South Wales | a NSW Council | `NSW_council`
-| Northern Territory | a Northern Territory Council | `NT_council`
-| Queensland | a Queensland Council | `QLD_council`
-| South Australia | a South Australian Council | `SA_council`
-| Tasmania | a Tasmanian Council | `TAS_council`
-| Victoria | a Victorian Council | `VIC_council`
-| Western Australia | a Western Australian Council | `WA_council`
+| New South Wales | a NSW Council | `NSW_council` |
+| Northern Territory | a Northern Territory Council | `NT_council` |
+| Queensland | a Queensland Council | `QLD_council` |
+| South Australia | a South Australian Council | `SA_council` |
+| Tasmania | a Tasmanian Council | `TAS_council` |
+| Victoria | a Victorian Council | `VIC_council` |
+| Western Australia | a Western Australian Council | `WA_council` |
 
 ### Adding more jurisdictions
 
