@@ -19,10 +19,17 @@ If there is a bug in the core software that can be shared by all this should be 
 
 However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
 
-To get a development copy up-and-running, follow the
-[Alaveteli installation instructions](http://alaveteli.org/docs/installing/)
-and then install this theme. You can read more about themes and how to install
-them in the [Alaveteli documentation](http://alaveteli.org/docs/customising/themes/).
+## Development Environment - Simple Steps
+
+We use Docker to create an Alaveteli instance. You can find more information on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
+
+A shortened version:
+
+1. Pull a copy of our [Alaveteli Fork](https://github.com/openaustralia/alaveteli) onto your machine
+2. Create a sub-folder at the same level as the Alaveteli folder called `alaveteli-themes`
+3. Pull a copy of the Right to Know repository into the `alaveteli-themes` directory.
+4. Copy `alaveteli\config\general.yml.example` to `alaveteli\config\general-righttoknow.yml` and modify the file. An exmaple of our current `general.yml` file can be found in the [infrastructure repository](https://github.com/openaustralia/infrastructure/blob/main/roles/internal/righttoknow/templates/general.yml).
+5. Continue following the instructions on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
 
 ## Contributing
 
@@ -34,10 +41,10 @@ want to edit the upstream
 To contribute an enhancement or a fix to this theme:
 
 * Fork the project on GitHub.
-* Make a topic branch from the `production` branch.
+* Make a topic branch from the `staging` branch.
 * Make your changes and test.
 * Commit the changes without making changes to any files that aren't related to your enhancement or fix.
-* Send a pull request against the `production` branch.
+* Send a pull request against the `staging` branch.
 
 ## Authorities
 
