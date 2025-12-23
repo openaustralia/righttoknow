@@ -9,26 +9,29 @@ deployment. If you find a problem with Right to Know, please report it to this
 repository's
 [issue tracker](https://github.com/openaustralia/righttoknow/issues).
 
-Development
------------
+## Development
 
-To get the most benefits from open source and be good open source citizens we
-use [upstream Alaveteli](https://github.com/mysociety/alaveteli) and not a fork.
-If there is a bug in the core software that can be shared by all we will make
-the fix in our repository and open a pull request. In the vast majority of cases
-we will not deploy a fix until it's been accepted upstream. This ensures we're
-all using the same code as much as possible.
+At present, we [use a fork of Alaveteli](https://github.com/openaustralia/alaveteli) which contains minor changes to the core to support us. Our plan is to transition to using upstream as soon as possible.
 
-However if you'd like to adjust the look and feel of Right To Know, or to update
-copy like that found on the help pages, this is the place to make those changes.
+As of 9 Dec 2025, we are currently running [Alaveteli 0.42.0.2](https://github.com/openaustralia/alaveteli/tree/0.42.0.2) using Ruby 2.7.8.
 
-To get a development copy up-and-running, follow the
-[Alaveteli installation instructions](http://alaveteli.org/docs/installing/)
-and then install this theme. You can read more about themes and how to install
-them in the [Alaveteli documentation](http://alaveteli.org/docs/customising/themes/).
+If there is a bug in the core software that can be shared by all this should be made in the above Alaveteli repository and open a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
 
-Contributing
-------------
+However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
+
+## Development Environment - Simple Steps
+
+We use Docker to create an Alaveteli instance. You can find more information on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
+
+A shortened version:
+
+1. Pull a copy of our [Alaveteli Fork](https://github.com/openaustralia/alaveteli) onto your machine
+2. Create a sub-folder at the same level as the Alaveteli folder called `alaveteli-themes`
+3. Pull a copy of the Right to Know repository into the `alaveteli-themes` directory.
+4. Copy `alaveteli\config\general.yml.example` to `alaveteli\config\general-righttoknow.yml` and modify the file. An exmaple of our current `general.yml` file can be found in the [infrastructure repository](https://github.com/openaustralia/infrastructure/blob/main/roles/internal/righttoknow/templates/general.yml).
+5. Continue following the instructions on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
+
+## Contributing
 
 If you want to modify the customised look and feel of Right To Know then you
 should edit this repository however if it's something more general you probably
@@ -38,13 +41,12 @@ want to edit the upstream
 To contribute an enhancement or a fix to this theme:
 
 * Fork the project on GitHub.
-* Make a topic branch from the `production` branch.
+* Make a topic branch from the `staging` branch.
 * Make your changes and test.
 * Commit the changes without making changes to any files that aren't related to your enhancement or fix.
-* Send a pull request against the `production` branch.
+* Send a pull request against the `staging` branch.
 
-Authorities
------------
+## Authorities
 
 ### Adding new authorities
 
@@ -80,12 +82,12 @@ isn’t always available, especially when they exist within a bigger department.
 This is the order of preference for the authority’s request email:
 
 1. Specific FOI address for sub-department agency (e.g.
-   foi@special_agency.gov.au)
+   <foi@special_agency.gov.au>)
 2. Specific address for sub-department agency at department (e.g.
-   special_agency@department.gov.au)
-3. Specific FOI address for department (e.g. foi@department.gov.au)
-4. Generic address for department (e.g. info@department.gov.au)
-5. Address for a specific person at the agency (e.g. jane.zhang@dept.gov.au)
+   <special_agency@department.gov.au>)
+3. Specific FOI address for department (e.g. <foi@department.gov.au>)
+4. Generic address for department (e.g. <info@department.gov.au>)
+5. Address for a specific person at the agency (e.g. <jane.zhang@dept.gov.au>)
 
 A person’s address is the absolute last resort.
 
@@ -107,12 +109,12 @@ basic description of the authority. For example:
 
 #### Short name
 
-You can add abbreviated version of the authority’s name as it’s *short name*.
+You can add abbreviated version of the authority’s name as it’s _short name_.
 These are really useful because the common name for an agency might not be it’s
 full formal name. For example, people commonly search “ABS” when looking for
 the “Australian Bureau of Statistics”.
 
-It’s very important to only add acronyms or abbreviations that people *really* do use.
+It’s very important to only add acronyms or abbreviations that people _really_ do use.
 These are displayed on authority pages and lists of authorities, and having lots
 of irrelevant short names adds unnecessary noise to the page.
 
@@ -159,49 +161,49 @@ This how we want Right To Know's categories organised:
 
 | Title | Description | Tag |
 |-------|-------------|-----|
-| Agriculture | part of the Agriculture portfolio | `agriculture`
-| Attorney-General | part of the Attorney-General portfolio | `attorney_general`
-| Communications | part of the Communications portfolio | `communications`
-| Defence | part of the Defence portfolio | `defence`
-| Education and Training | part of the Education and Training portfolio | `education_and_training`
-| Employment | part of the Employment portfolio | `employment`
-| Environment | part of the Environment portfolio | `environment`
-| Finance | part of the Finance portfolio | `finance`
-| Foreign Affairs and Trade | part of the Foreign Affairs and Trade portfolio | `foreign_affairs_and_trade`
-| Health | part of the Health portfolio | `health`
-| Immigration & Border Protection | part of the Immigration & Border Protection portfolio | `immigration_and_border_protection`
-| Industry and Science | part of the Industry and Science portfolio | `industry_and_science`
-| Infrastructure and Regional Development | part of the Infrastructure and Regional Development portfolio | `infrastructure_and_regional_development`
-| Prime Minister | part of the Prime Minister portfolio | `prime_minister`
-| Social Services | part of the Social Services portfolio | `social_services`
-| Treasury | part of the Treasury portfolio | `treasury`
-| Veterans' Affairs | part of the Veterans' Affairs portfolio | `veterans_affairs`
-| All Federal authorities | a Federal authority | `federal`
+| Agriculture | part of the Agriculture portfolio | `agriculture` |
+| Attorney-General | part of the Attorney-General portfolio | `attorney_general` |
+| Communications | part of the Communications portfolio | `communications` |
+| Defence | part of the Defence portfolio | `defence` |
+| Education and Training | part of the Education and Training portfolio | `education_and_training` |
+| Employment | part of the Employment portfolio | `employment` |
+| Environment | part of the Environment portfolio | `environment` |
+| Finance | part of the Finance portfolio | `finance` |
+| Foreign Affairs and Trade | part of the Foreign Affairs and Trade portfolio | `foreign_affairs_and_trade` |
+| Health | part of the Health portfolio | `health` |
+| Immigration & Border Protection | part of the Immigration & Border Protection portfolio | `immigration_and_border_protection` |
+| Industry and Science | part of the Industry and Science portfolio | `industry_and_science` |
+| Infrastructure and Regional Development | part of the Infrastructure and Regional Development portfolio | `infrastructure_and_regional_development` |
+| Prime Minister | part of the Prime Minister portfolio | `prime_minister` |
+| Social Services | part of the Social Services portfolio | `social_services` |
+| Treasury | part of the Treasury portfolio | `treasury` |
+| Veterans' Affairs | part of the Veterans' Affairs portfolio | `veterans_affairs` |
+| All Federal authorities | a Federal authority | `federal` |
 
 #### State and Territory
 
 | Title | Description | Tag |
 |-------|-------------|-----|
-| ACT | an ACT authority | `ACT_state`
-| New South Wales | a NSW authority | `NSW_state`
-| Northern Territory | a Northern Territory authority | `NT_state`
-| Queensland | a Queensland authority | `QLD_state`
-| South Australia | a South Australian authority | `SA_state`
-| Tasmania | a Tasmanian authority | `TAS_state`
-| Victoria | a Victorian authority | `VIC_state`
-| Western Australia | a Western Australian authority | `WA_state`
+| ACT | an ACT authority | `ACT_state` |
+| New South Wales | a NSW authority | `NSW_state` |
+| Northern Territory | a Northern Territory authority | `NT_state` |
+| Queensland | a Queensland authority | `QLD_state` |
+| South Australia | a South Australian authority | `SA_state` |
+| Tasmania | a Tasmanian authority | `TAS_state` |
+| Victoria | a Victorian authority | `VIC_state` |
+| Western Australia | a Western Australian authority | `WA_state` |
 
 #### Local
 
 | Title | Description | Tag |
 |-------|-------------|-----|
-| New South Wales | a NSW Council | `NSW_council`
-| Northern Territory | a Northern Territory Council | `NT_council`
-| Queensland | a Queensland Council | `QLD_council`
-| South Australia | a South Australian Council | `SA_council`
-| Tasmania | a Tasmanian Council | `TAS_council`
-| Victoria | a Victorian Council | `VIC_council`
-| Western Australia | a Western Australian Council | `WA_council`
+| New South Wales | a NSW Council | `NSW_council` |
+| Northern Territory | a Northern Territory Council | `NT_council` |
+| Queensland | a Queensland Council | `QLD_council` |
+| South Australia | a South Australian Council | `SA_council` |
+| Tasmania | a Tasmanian Council | `TAS_council` |
+| Victoria | a Victorian Council | `VIC_council` |
+| Western Australia | a Western Australian Council | `WA_council` |
 
 ### Adding more jurisdictions
 
