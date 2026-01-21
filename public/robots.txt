@@ -1,0 +1,37 @@
+# See http://www.robotstxt.org/wc/norobots.html for documentation on how to use
+# the robots.txt file
+
+# Mainly to reduce server load from bots, we block pages which are actions, and
+# searches. We also block /feed/, as RSS readers (rightly, I think) don't seem
+# to check robots.txt.
+
+# This file uses the non-standard extension characters * and $, which
+# are supported by Google and Yahoo! and the 'Allow' directive, which
+# is supported by Google.
+
+#   http://code.google.com/web/controlcrawlindex/docs/robots_txt.html
+#   http://help.yahoo.com/l/us/yahoo/search/webcrawler/slurp-02.html
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: *
+Disallow: */annotate/*
+Disallow: */new/*
+Disallow: */search/*
+Disallow: */similar/*
+Disallow: */track/*
+Disallow: */upload/*
+Disallow: */user/contact/*
+Disallow: */feed/*
+Disallow: */profile/*
+Disallow: */signin*
+Disallow: */tor*
+Allow: */request/*/response/*/attach/*
+Disallow: */request/*/response/*
+Disallow: */request/*/download*
+Disallow: */body/*/view_email$
+Disallow: */change_request/*
+Disallow: */outgoing_messages/*/mail_server_logs*
+Disallow: */outgoing_messages/*/delivery_status*
+Disallow: *?*update_status=1*
