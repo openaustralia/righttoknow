@@ -64,13 +64,13 @@
     If you think a request that's been previously reported should be taken down, but a decision has been made not to remove it from public view, you can use the form in the sidebar of the request page to contact the administrators.
   </p></dd>
 <dt id="how_many">
-  How many people use WhatDoTheyKnow?
+  How many people use <%= site_name %>?
   <a href="#how_many">#</a></dt>
   <dd><p>
-    We have over <%= number_with_delimiter(User.count.round(-4), locale: @locale) %> registered users. Around 15% to 20% of requests to UK Central Government are made through WhatDoTheyKnow.
+    We have over <%= number_with_delimiter(User.count.round(-4), locale: @locale) %> registered users. 
   </p>
   <p>
-    But that's just the people who request information. Most visitors to our site don't make requests themselves. They benefit from being able to access information in the requests and responses of others. Around six million people per year visit the site.
+    But that's just the people who request information. Most visitors to our site don't make requests themselves. They benefit from being able to access information in the requests and responses of others. 
   </p></dd>
 
   <dt id="updates">How can I keep up with news about <%= site_name %>? <a href="#updates">#</a> </dt>
