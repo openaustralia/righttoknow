@@ -6,6 +6,8 @@
 # classes are reloaded, but initialization is not run each time.
 # See http://stackoverflow.com/questions/7072758/plugin-not-reloading-in-development-mode
 #
+require_dependency 'legislation'
+
 Legislation.class_eval do
   def self.all
     [
