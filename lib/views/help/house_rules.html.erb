@@ -2,85 +2,35 @@
 <%= render :partial => 'sidebar' %>
 <div id="left_column_flip" class="left_column_flip">
   <h1><%=@title %></h1>
-  <h2> How we expect people to use and behave on the site </h2>
+  <h2>How to use this site</h2>
   <p>
-    We have house rules to maintain a safe, legal, considerate, and productive environment to
-    help you hold governments to account. If you break the rules it takes significant amounts of time to
-    deal with and risks our ability to run the service.
+    These rules help keep <%= site_name %> safe, legal and useful for everyone.
+    If rules are broken, our team has to spend time fixing problems instead of
+    improving the service.
   </p>
   <p>
-    You can find information on how we handle requests to remove personal information on 
+    You can find information about how we handle requests to remove personal information on
     our <a href="<%= help_privacy_path(:anchor => 'delete_requests') %>">privacy page.</a>
   </p>
   <p>
-    Please keep to the rules.
+    Please follow these rules.
   </p>
-  <ul>
-    <li>
-      Use <%= site_name %> only to request specific information, not for general
-      correspondence with public authorities, and certainly not for
-      correspondence about your own personal circumstances.
-    </li>
-    <li>
-      Do not include potentially defamatory/potential libellous comments (such
-      as allegations) in your requests and annotations.
-    </li>
-    <li>
-      Do not post information that is unlawful, harassing, defamatory, abusive,
-      threatening, harmful, obscene, discriminatory or profane.
-    </li>
-    <li>
-      Do not use <%= site_name %> to request your personal information from
-      authorities. You should request this information directly from the authority.
-    </li>
-    <li>
-      Keep messages sent via our service concise and tightly focused on the
-      subject of the request for information. Heed our
-      <%= link_to help_requesting_path(anchor: 'responsible') do -%>
-        advice on making responsible and effective requests.
-      <% end %>
-    </li>
-    <li>
-      Do not try to impersonate someone else.
-    </li>
-    <li>
-      Do not use any language likely to offend in your requests and annotations.
-    </li>
-    <li>
-      No spamming.
-    </li>
-    <li>
-      Do not make vexatious requests (requests with no serious purpose, or which
-      are intended to disrupt the operation of a public body). The Office of
-      the Australian Information Commissioner has
-      <a href="https://www.oaic.gov.au/freedom-of-information/foi-guidelines/part-12-vexatious-applicant-declarations#grounds-for-declaration">
-      published guidance on vexatious behaviour</a>.
-    </li>
-    <li>
-      Do not use our service to request other people’s personal information and
-      do not include such information in requests, annotations or follow-ups.
-    </li>
-    <li>
-      Do not try to evade the actions of site administrators by, for example,
-      creating new accounts to evade a ban, or a rate-limiting cap, or by
-      republishing material which you know has been removed by moderators.
-    </li>
-  </ul>
+  <%= render partial: 'help/house_rules/list_of_house_rules' %>
   <h2>What happens if you break these rules</h2>
   <p>
-    If you break any of the rules there are a number of actions we may take.
-    These include removing your request/annotation, or reminding you of our house rules.
-    In more serious or repeated cases, we will likely suspend your account.
+    If you break these rules, we may remove your content, remind you of the
+    rules, or suspend your account.
   </p>
   <p>
-    In some cases, breaking these rules could lead to legal action being taken
-    against you by the authorities or an aggrieved party.
+    In serious cases, legal action may be taken against you by an authority or
+    an affected person or organisation.
   </p>
 
-  <h2> What to do if you believe someone has broken these rules </h2>
-    <p>
-    Each request, annotation and email has a "Report" button. Use this if you feel that someone has broken these rules.
-    </p>
+  <h2>What to do if you think someone has broken these rules</h2>
+  <p>
+    Each request, annotation and email has a "Report" button. Use it if you
+    think someone has broken these rules.
+  </p>
 
 
   <%= render partial: 'history' %>
