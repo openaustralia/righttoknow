@@ -1,0 +1,81 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: ["staging"]
+  push:
+    branches: ["staging"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: alaveteli_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout Alaveteli
+        uses: actions/checkout@v4
+        with:
+          repository: openaustralia/alaveteli
+          ref: production
+          path: alaveteli
+
+      - name: Checkout theme
+        uses: actions/checkout@v4
+        with:
+          path: alaveteli/lib/themes/righttoknow
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.9
+          working-directory: alaveteli
+          bundler-cache: true
+
+      - name: Configure database
+        working-directory: alaveteli
+        run: |
+          cat > config/database.yml << 'EOF'
+          test:
+            adapter: postgresql
+            database: alaveteli_test
+            username: postgres
+            password: postgres
+            host: localhost
+            port: 5432
+          EOF
+
+      - name: Setup general config
+        working-directory: alaveteli
+        run: |
+          if [ -f config/general.yml-example ]; then
+            cp config/general.yml-example config/general.yml
+          fi
+
+      - name: Setup test database
+        working-directory: alaveteli
+        env:
+          RAILS_ENV: test
+        run: bundle exec rake db:create db:schema:load
+
+      - name: Run theme specs
+        working-directory: alaveteli
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rspec lib/themes/righttoknow/spec/ \
+            --exclude-pattern "**/features/**/*" \
+            --format progress
