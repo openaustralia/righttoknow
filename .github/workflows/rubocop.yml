@@ -1,20 +1,14 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# pulled from repo
-name: "Rubocop"
+name: Rubocop
 
 on:
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: ["staging"]
+
+permissions:
+  contents: read
 
 jobs:
   rubocop:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,9 +16,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2.9
-
-      - name: Install rubocop
-        run: gem install rubocop -v 1.80.2
+          bundler-cache: true
 
       - name: Run rubocop
-        run: rubocop
+        run: bundle exec rubocop
