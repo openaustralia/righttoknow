@@ -123,7 +123,9 @@ RSpec.describe PublicBody do
       it { is_expected.to eq(AlaveteliConfiguration.reply_late_after_days) }
     end
   end
+end
 
+RSpec.describe PublicBody do
   # working_or_calendar_days determines whether the deadline is counted in
   # working days or calendar days, which varies by jurisdiction.
   describe '#working_or_calendar_days' do
