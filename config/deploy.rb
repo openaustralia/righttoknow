@@ -8,6 +8,14 @@ set :use_sudo,    false
 
 set :rbenv_type, :user
 
+# net-ssh misinterprets the ^ modifier syntax in ~/.ssh/config Ciphers entries,
+# leaving the client cipher list empty and causing algorithm negotiation to fail.
+# Setting encryption explicitly bypasses that and still matches all server ciphers.
+set :ssh_options, {
+  encryption: %w[chacha20-poly1305@openssh.com aes256-gcm@openssh.com
+                 aes128-gcm@openssh.com aes256-ctr aes192-ctr aes128-ctr]
+}
+
 # Merge theme gems into alaveteli's bundle so they are on Rails' load path.
 # Deployment mode (bundle config deployment true) rejects a modified Gemfile,
 # so we disable it and rely on the shared bundle path for persistence.
