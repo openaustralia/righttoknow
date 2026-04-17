@@ -1,1 +1,7 @@
 inherit_from: .rubocop_todo.yml
+
+# Gemfile.theme is a secondary Bundler gemfile uploaded at deploy time and
+# eval_gemfile'd into alaveteli's Gemfile. The name follows Bundler convention.
+Naming/FileName:
+  Exclude:
+    - 'Gemfile.theme'
