@@ -116,12 +116,25 @@ bundle exec cap production xapian:destroy_and_rebuild_index
 
 ### First-time server setup
 
-To create the shared directories on a new server after the infrastructure repo has provisioned it:
+After the [infrastructure repo](https://github.com/openaustralia/infrastructure) has provisioned the host, the shared path needs the config files in place before the first deploy. The deploy itself auto-creates any missing shared directories (cache, logs, storage, xapian indexes, vendored bundle, etc.) on each run via `deploy:check_shared`.
 
-```bash
-bundle exec cap staging deploy:setup
-bundle exec cap production deploy:setup
-```
+One-time bootstrap per server:
+
+1. Ensure `<deploy_to>/shared/` exists (`ssh deploy@<host> 'mkdir -p <deploy_to>/shared'`).
+2. Place the shared config files at the **top level of `shared/`** (basename only, not under `shared/config/`). The expected files — drawn from `SHARED_FILES` in `alaveteli/config/general-righttoknow.yml` — are:
+   - `general.yml`
+   - `database.yml`
+   - `sidekiq.yml`
+   - `storage.yml`
+   - `user_spam_scorer.yml`
+   - `rails_env.rb`
+   - `newrelic.yml`
+   - `foi-live-creation.png`
+   - `foi-user-use.png`
+   - `rbenv-version`
+3. Run the first deploy: `bundle exec cap <stage> deploy`.
+
+`deploy:check_shared` runs at the start of every deploy and fails fast if any required file is missing.
 
 ## Authorities
 
