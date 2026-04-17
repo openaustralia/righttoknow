@@ -120,12 +120,27 @@ namespace :deploy do
     end
   end
 
-  desc 'Write branch name to BRANCH file alongside the REVISION file written by Cap 3'
-  task :write_branch do
+  # Cap 3 deploys via git archive which strips .git, breaking runtime git
+  # commands used by alaveteli (git branch, git log -1, git remote show).
+  # This task creates a minimal .git in the release directory backed by the
+  # bare repo's object store so those commands work without modification.
+  desc 'Create a minimal .git in the release so runtime git commands work'
+  task :setup_git do
     on roles(:app) do
-      within release_path do
-        execute :bash, '-c', "echo '#{fetch(:branch)}' > BRANCH"
-      end
+      commit  = capture(:cat, release_path.join('REVISION')).strip
+      branch  = fetch(:branch)
+      git_dir = release_path.join('.git')
+      objects_dir = git_dir.join('objects')
+
+      execute :mkdir, '-p',
+              git_dir.join('refs', 'heads'),
+              objects_dir.join('info')
+
+      execute :bash, '-c', "echo 'ref: refs/heads/#{branch}' > #{git_dir.join('HEAD')}"
+      execute :bash, '-c', "echo '#{commit}' > #{git_dir.join('refs', 'heads', branch)}"
+      execute :bash, '-c', "echo '#{repo_path.join('objects')}' > #{objects_dir.join('info', 'alternates')}"
+      execute :bash, '-c',
+              "printf '[remote \"origin\"]\\n\\turl = #{fetch(:repo_url)}\\n' > #{git_dir.join('config')}"
     end
   end
 
@@ -140,7 +155,7 @@ namespace :deploy do
 end
 
 before 'deploy:starting',            'deploy:check_shared'
-after  'deploy:set_current_revision', 'deploy:write_branch'
+after  'deploy:set_current_revision', 'deploy:setup_git'
 after  'deploy:symlink:shared',       'deploy:symlink_configuration'
 
 before 'bundler:install',          'themes:pre_bundle_setup'
