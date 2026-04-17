@@ -138,5 +138,6 @@ before 'bundler:install',          'themes:pre_bundle_setup'
 before 'deploy:assets:precompile', 'themes:install'
 after  'deploy:assets:precompile', 'deploy:assets:link_non_digest'
 
-before 'deploy:migrate', 'deploy:web:disable'
-after  'deploy:migrate', 'deploy:web:enable'
+before 'deploy:migrate',   'deploy:web:disable'
+after  'deploy:migrate',   'deploy:web:enable'
+after  'deploy:finishing', 'deploy:restart'
