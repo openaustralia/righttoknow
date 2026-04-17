@@ -14,7 +14,11 @@ group :development do
 end
 
 group :deployment do
-  gem 'capistrano', '~> 2.15.11'
-  gem 'net-ssh', '~> 7.2.0'
+  gem 'capistrano', '~> 3.19'
+  gem 'capistrano-bundler', '~> 2.1'
+  gem 'capistrano-rails', '~> 1.6'
+  gem 'capistrano-rbenv', '~> 2.2'
+  gem 'capistrano-git-with-submodules', '~> 2.0'
+  gem 'net-ssh', '~> 7.2'
   gem 'net-ssh-gateway', '>= 1.1.0', '< 3.0.0'
 end
