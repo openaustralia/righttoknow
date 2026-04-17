@@ -120,6 +120,15 @@ namespace :deploy do
     end
   end
 
+  desc 'Write branch name to BRANCH file alongside the REVISION file written by Cap 3'
+  task :write_branch do
+    on roles(:app) do
+      within release_path do
+        execute :bash, '-c', "echo '#{fetch(:branch)}' > BRANCH"
+      end
+    end
+  end
+
   %i[start stop restart].each do |t|
     desc "#{t.to_s.capitalize} Alaveteli service defined in /etc/init.d/"
     task t do
@@ -130,8 +139,9 @@ namespace :deploy do
   end
 end
 
-before 'deploy:starting',       'deploy:check_shared'
-after  'deploy:symlink:shared', 'deploy:symlink_configuration'
+before 'deploy:starting',            'deploy:check_shared'
+after  'deploy:set_current_revision', 'deploy:write_branch'
+after  'deploy:symlink:shared',       'deploy:symlink_configuration'
 
 before 'bundler:install',          'themes:pre_bundle_setup'
 before 'deploy:assets:precompile', 'themes:install'
