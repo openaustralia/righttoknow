@@ -3,7 +3,6 @@
 require 'yaml'
 
 set :application, 'alaveteli'
-set :repo_url,    'https://github.com/openaustralia/alaveteli.git'
 set :use_sudo,    false
 
 set :rbenv_type, :user
