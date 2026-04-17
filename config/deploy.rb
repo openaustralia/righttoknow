@@ -8,6 +8,12 @@ set :use_sudo,    false
 
 set :rbenv_type, :user
 
+# Merge theme gems into alaveteli's bundle so they are on Rails' load path.
+# Deployment mode (bundle config deployment true) rejects a modified Gemfile,
+# so we disable it and rely on the shared bundle path for persistence.
+set :bundle_config, {}
+set :bundle_without, %w[development test deployment].join(':')
+
 # Read the Ruby version from the server's shared rbenv-version file,
 # matching the version installed by the infrastructure repo.
 task :set_rbenv_ruby do
@@ -30,15 +36,14 @@ namespace :themes do
     end
   end
 
-  desc 'Install gems declared in the theme Gemfile into the shared bundle'
-  task :bundle_install do
+  desc 'Upload theme Gemfile and inject into alaveteli Gemfile before bundle install'
+  task :pre_bundle_setup do
     on roles(:app) do
-      theme_gemfile = release_path.join('lib', 'themes', 'righttoknow', 'Gemfile')
-      next unless test("[ -f #{theme_gemfile} ]")
-      within release_path do
-        execute :bundle, 'install', '--gemfile', theme_gemfile,
-                '--without', 'development deployment'
-      end
+      theme_dir = release_path.join('lib', 'themes', 'righttoknow')
+      execute :mkdir, '-p', theme_dir
+      upload! 'Gemfile', "#{theme_dir}/Gemfile"
+      execute :bash, '-c',
+              "echo \"\\neval_gemfile '#{theme_dir}/Gemfile'\" >> #{release_path.join('Gemfile')}"
     end
   end
 end
@@ -121,8 +126,8 @@ end
 before 'deploy:starting',       'deploy:check_shared'
 after  'deploy:symlink:shared', 'deploy:symlink_configuration'
 
+before 'bundler:install',          'themes:pre_bundle_setup'
 before 'deploy:assets:precompile', 'themes:install'
-after  'themes:install',           'themes:bundle_install'
 after  'deploy:assets:precompile', 'deploy:assets:link_non_digest'
 
 before 'deploy:migrate', 'deploy:web:disable'
