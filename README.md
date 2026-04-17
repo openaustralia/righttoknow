@@ -1,5 +1,28 @@
 # Right To Know
 
+- [Right To Know](#right-to-know)
+  - [Development](#development)
+  - [Development Environment - Simple Steps](#development-environment---simple-steps)
+  - [Contributing](#contributing)
+  - [Deployment](#deployment)
+    - [Prerequisites](#prerequisites)
+    - [Deploy commands](#deploy-commands)
+    - [First-time server setup](#first-time-server-setup)
+  - [Authorities](#authorities)
+    - [Adding new authorities](#adding-new-authorities)
+      - [Should an agency be added?](#should-an-agency-be-added)
+      - [Format of state name in authority names](#format-of-state-name-in-authority-names)
+      - [Request email](#request-email)
+      - [Public notes](#public-notes)
+      - [Short name](#short-name)
+      - [Removing an authority](#removing-an-authority)
+    - [Jurisdictions](#jurisdictions)
+    - [Categories](#categories)
+      - [Federal](#federal)
+      - [State and Territory](#state-and-territory)
+      - [Local](#local)
+    - [Adding more jurisdictions](#adding-more-jurisdictions)
+
 [Right To Know](https://www.righttoknow.org.au/) lets you make and browse
 Freedom of Information (FOI) requests in Australia. It is powered by the open
 source FOI request platform [Alaveteli](http://www.alaveteli.org/).
