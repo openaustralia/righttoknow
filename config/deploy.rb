@@ -19,7 +19,11 @@ set :bundle_without, %w[development test deployment].join(':')
 task :set_rbenv_ruby do
   on roles(:app) do
     rbenv_version_file = "#{fetch(:deploy_to)}/shared/rbenv-version"
-    set :rbenv_ruby, capture(:cat, rbenv_version_file).strip if test("[ -f #{rbenv_version_file} ]")
+    if test("[ -f #{rbenv_version_file} ]")
+      set :rbenv_ruby, capture(:cat, rbenv_version_file).strip
+    else
+      warn "Warning: #{rbenv_version_file} not found; :rbenv_ruby not set"
+    end
   end
 end
 before 'deploy:starting', :set_rbenv_ruby
