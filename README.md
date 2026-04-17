@@ -36,9 +36,9 @@ repository's
 
 At present, we [use a fork of Alaveteli](https://github.com/openaustralia/alaveteli) which contains minor changes to the core to support us. Our plan is to transition to using upstream as soon as possible.
 
-As of 9 Dec 2025, we are currently running [Alaveteli 0.42.0.2](https://github.com/openaustralia/alaveteli/tree/0.42.0.2) using Ruby 2.7.8.
+As of 17 April 2026, we are currently running [Alaveteli 0.44.1.0](https://github.com/openaustralia/alaveteli/tree/0.44.1.0) using Ruby 3.2.9.
 
-If there is a bug in the core software that can be shared by all this should be made in the above Alaveteli repository and open a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
+If there is a fix or enhancement that is not specific to Right to Know/Australia changes should be submitted to the upstream [Alaveteli repository](https://github.com/mysociety/alaveteli) via a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
 
 However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
 
