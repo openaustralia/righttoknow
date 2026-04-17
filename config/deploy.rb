@@ -29,6 +29,18 @@ namespace :themes do
       end
     end
   end
+
+  desc 'Install gems declared in the theme Gemfile into the shared bundle'
+  task :bundle_install do
+    on roles(:app) do
+      theme_gemfile = release_path.join('lib', 'themes', 'righttoknow', 'Gemfile')
+      next unless test("[ -f #{theme_gemfile} ]")
+      within release_path do
+        execute :bundle, 'install', '--gemfile', theme_gemfile,
+                '--without', 'development deployment'
+      end
+    end
+  end
 end
 
 namespace :xapian do
@@ -110,6 +122,7 @@ before 'deploy:starting',       'deploy:check_shared'
 after  'deploy:symlink:shared', 'deploy:symlink_configuration'
 
 before 'deploy:assets:precompile', 'themes:install'
+after  'themes:install',           'themes:bundle_install'
 after  'deploy:assets:precompile', 'deploy:assets:link_non_digest'
 
 before 'deploy:migrate', 'deploy:web:disable'
