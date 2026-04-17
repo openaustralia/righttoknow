@@ -3,8 +3,10 @@
 require 'capistrano/setup'
 require 'capistrano/deploy'
 
-require 'capistrano/scm/git_with_submodules'
-install_plugin Capistrano::SCM::GitWithSubmodules
+require 'capistrano/scm/git'
+install_plugin Capistrano::SCM::Git
+require 'capistrano/scm/git-with-submodules'
+install_plugin Capistrano::SCM::Git::WithSubmodules
 
 require 'capistrano/bundler'
 require 'capistrano/rails/assets'
