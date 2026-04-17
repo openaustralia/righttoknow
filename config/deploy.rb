@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler/capistrano'
 
 set :stage, 'staging' unless exists? :stage
@@ -25,7 +27,7 @@ set(:rbenv_ruby_version) do
 end
 
 if rbenv_ruby_version
-  set(:rbenv_path) { capture("echo $HOME/.rbenv").strip }
+  set(:rbenv_path) { capture('echo $HOME/.rbenv').strip }
   set(:rbenv_shims_path) { File.join(rbenv_path, 'shims') }
   set :default_environment, {
     'PATH' => [rbenv_shims_path, '$PATH'].join(':')
@@ -52,7 +54,6 @@ set(:shared_children) do
 end
 
 namespace :deploy do
-
   desc 'Check that shared files and directories exist before deploying'
   task :check_shared do
     general_config = YAML.safe_load(capture("cat #{shared_path}/general.yml"))
@@ -62,10 +63,10 @@ namespace :deploy do
   end
   before 'deploy:symlink_configuration', 'deploy:check_shared'
 
-  [:start, :stop, :restart].each do |t|
+  %i[start stop restart].each do |t|
     desc "#{t.to_s.capitalize} Alaveteli service defined in /etc/init.d/"
     task t, roles: :app, except: { no_release: true } do
-      run "/etc/init.d/#{ daemon_name } #{ t }"
+      run "/etc/init.d/#{daemon_name} #{t}"
     end
   end
 
@@ -82,11 +83,9 @@ namespace :deploy do
       ]
     end
 
-    if rbenv_ruby_version
-      commands << "ln -snf #{shared_path}/rbenv-version #{release_path}/.rbenv-version"
-    end
+    commands << "ln -snf #{shared_path}/rbenv-version #{release_path}/.rbenv-version" if rbenv_ruby_version
 
-    run commands.join(" && ")
+    run commands.join(' && ')
   end
 
   namespace :assets do
@@ -100,7 +99,7 @@ namespace :deploy do
     general_config = YAML.safe_load(capture("cat #{shared_path}/general.yml"))
     shared_dirs = Array(general_config['SHARED_DIRECTORIES']).map { |d| d.chomp('/') }
     dirs_to_create = shared_dirs.map { |d| "#{shared_path}/#{File.basename(d)}" }
-    run dirs_to_create.map { |d| "mkdir -p #{d}" }.join(" && ")
+    run dirs_to_create.map { |d| "mkdir -p #{d}" }.join(' && ')
   end
 end
 
