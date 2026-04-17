@@ -46,6 +46,60 @@ To contribute an enhancement or a fix to this theme:
 * Commit the changes without making changes to any files that aren't related to your enhancement or fix.
 * Send a pull request against the `staging` branch.
 
+## Deployment
+
+The application is deployed using [Capistrano 3](https://capistranorb.com/). Deployment is run from this repository against the [alaveteli](https://github.com/openaustralia/alaveteli) codebase.
+
+### Prerequisites
+
+* SSH access to the deployment servers as the `deploy` user
+* Gems installed: `bundle install --with deployment`
+* The server must have `shared/rbenv-version`, `shared/general.yml`, and all other shared files in place (managed by the [infrastructure repo](https://github.com/openaustralia/infrastructure))
+
+### Deploy commands
+
+Deploy to staging:
+
+```bash
+bundle exec cap staging deploy
+```
+
+Deploy to production:
+
+```bash
+bundle exec cap production deploy
+```
+
+Run database migrations only (maintenance page shown automatically):
+
+```bash
+bundle exec cap staging deploy:migrate
+bundle exec cap production deploy:migrate
+```
+
+Restart the application without deploying:
+
+```bash
+bundle exec cap staging deploy:restart
+bundle exec cap production deploy:restart
+```
+
+Rebuild the Xapian search index:
+
+```bash
+bundle exec cap staging xapian:destroy_and_rebuild_index
+bundle exec cap production xapian:destroy_and_rebuild_index
+```
+
+### First-time server setup
+
+To create the shared directories on a new server after the infrastructure repo has provisioned it:
+
+```bash
+bundle exec cap staging deploy:setup
+bundle exec cap production deploy:setup
+```
+
 ## Authorities
 
 ### Adding new authorities
