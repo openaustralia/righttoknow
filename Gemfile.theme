@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+# Runtime gems required by the RightToKnow theme at boot.
+#
+# Uploaded by `themes:pre_bundle_setup` in config/deploy.rb and merged into
+# Alaveteli's Gemfile at deploy time via `eval_gemfile`. The theme's main
+# Gemfile holds dev/deployment tooling (capistrano, rubocop, guard) — only
+# production-runtime gems belong here.
+
+source 'https://rubygems.org'

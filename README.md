@@ -1,5 +1,28 @@
 # Right To Know
 
+- [Right To Know](#right-to-know)
+  - [Development](#development)
+  - [Development Environment - Simple Steps](#development-environment---simple-steps)
+  - [Contributing](#contributing)
+  - [Deployment](#deployment)
+    - [Prerequisites](#prerequisites)
+    - [Deploy commands](#deploy-commands)
+    - [First-time server setup](#first-time-server-setup)
+  - [Authorities](#authorities)
+    - [Adding new authorities](#adding-new-authorities)
+      - [Should an agency be added?](#should-an-agency-be-added)
+      - [Format of state name in authority names](#format-of-state-name-in-authority-names)
+      - [Request email](#request-email)
+      - [Public notes](#public-notes)
+      - [Short name](#short-name)
+      - [Removing an authority](#removing-an-authority)
+    - [Jurisdictions](#jurisdictions)
+    - [Categories](#categories)
+      - [Federal](#federal)
+      - [State and Territory](#state-and-territory)
+      - [Local](#local)
+    - [Adding more jurisdictions](#adding-more-jurisdictions)
+
 [Right To Know](https://www.righttoknow.org.au/) lets you make and browse
 Freedom of Information (FOI) requests in Australia. It is powered by the open
 source FOI request platform [Alaveteli](http://www.alaveteli.org/).
@@ -13,9 +36,9 @@ repository's
 
 At present, we [use a fork of Alaveteli](https://github.com/openaustralia/alaveteli) which contains minor changes to the core to support us. Our plan is to transition to using upstream as soon as possible.
 
-As of 9 Dec 2025, we are currently running [Alaveteli 0.42.0.2](https://github.com/openaustralia/alaveteli/tree/0.42.0.2) using Ruby 2.7.8.
+As of 17 April 2026, we are currently running [Alaveteli 0.44.1.0](https://github.com/openaustralia/alaveteli/tree/0.44.1.0) using Ruby 3.2.9.
 
-If there is a bug in the core software that can be shared by all this should be made in the above Alaveteli repository and open a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
+If there is a fix or enhancement that is not specific to Right to Know/Australia changes should be submitted to the upstream [Alaveteli repository](https://github.com/mysociety/alaveteli) via a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
 
 However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
 
@@ -45,6 +68,73 @@ To contribute an enhancement or a fix to this theme:
 * Make your changes and test.
 * Commit the changes without making changes to any files that aren't related to your enhancement or fix.
 * Send a pull request against the `staging` branch.
+
+## Deployment
+
+The application is deployed using [Capistrano 3](https://capistranorb.com/). Deployment is run from this repository against the [alaveteli](https://github.com/openaustralia/alaveteli) codebase.
+
+### Prerequisites
+
+* SSH access to the deployment servers as the `deploy` user
+* Gems installed: `bundle install --with deployment`
+* The server must have `shared/rbenv-version`, `shared/general.yml`, and all other shared files in place (managed by the [infrastructure repo](https://github.com/openaustralia/infrastructure))
+
+### Deploy commands
+
+Deploy to staging:
+
+```bash
+bundle exec cap staging deploy
+```
+
+Deploy to production:
+
+```bash
+bundle exec cap production deploy
+```
+
+Run database migrations only (maintenance page shown automatically):
+
+```bash
+bundle exec cap staging deploy:migrate
+bundle exec cap production deploy:migrate
+```
+
+Restart the application without deploying:
+
+```bash
+bundle exec cap staging deploy:restart
+bundle exec cap production deploy:restart
+```
+
+Rebuild the Xapian search index:
+
+```bash
+bundle exec cap staging xapian:destroy_and_rebuild_index
+bundle exec cap production xapian:destroy_and_rebuild_index
+```
+
+### First-time server setup
+
+After the [infrastructure repo](https://github.com/openaustralia/infrastructure) has provisioned the host, the shared path needs the config files in place before the first deploy. The deploy itself auto-creates any missing shared directories (cache, logs, storage, xapian indexes, vendored bundle, etc.) on each run via `deploy:check_shared`.
+
+One-time bootstrap per server:
+
+1. Ensure `<deploy_to>/shared/` exists (`ssh deploy@<host> 'mkdir -p <deploy_to>/shared'`).
+2. Place the shared config files at the **top level of `shared/`** (basename only, not under `shared/config/`). The expected files — drawn from `SHARED_FILES` in `alaveteli/config/general-righttoknow.yml` — are:
+   - `general.yml`
+   - `database.yml`
+   - `sidekiq.yml`
+   - `storage.yml`
+   - `user_spam_scorer.yml`
+   - `rails_env.rb`
+   - `newrelic.yml`
+   - `foi-live-creation.png`
+   - `foi-user-use.png`
+   - `rbenv-version`
+3. Run the first deploy: `bundle exec cap <stage> deploy`.
+
+`deploy:check_shared` runs at the start of every deploy and fails fast if any required file is missing.
 
 ## Authorities
 
