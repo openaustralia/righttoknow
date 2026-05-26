@@ -9,7 +9,7 @@ group :development do
   gem 'rack-livereload'
   gem 'rb-fsevent'
   gem 'rb-inotify'
-  gem 'rubocop', '~> 1.57.1', require: false
+  gem 'rubocop', require: false
   gem 'ruby-lsp', require: false
 end
 

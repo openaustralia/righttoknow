@@ -73,7 +73,8 @@ namespace :xapian do
   task :destroy_and_rebuild_index do
     on roles(:app) do
       within current_path do
-        execute :bundle, "exec rake xapian:destroy_and_rebuild_index models='PublicBody User InfoRequestEvent' RAILS_ENV=#{fetch(:rails_env)}"
+        execute :bundle,
+                "exec rake xapian:destroy_and_rebuild_index models='PublicBody User InfoRequestEvent' RAILS_ENV=#{fetch(:rails_env)}"
       end
     end
   end
@@ -89,7 +90,9 @@ namespace :deploy do
     on roles(:app) do
       general_config = YAML.safe_load(capture(:cat, "#{shared_path}/general.yml"))
       shared_files = Array(general_config['SHARED_FILES']).map { |f| shared_path.join(File.basename(f)) }
-      shared_dirs  = Array(general_config['SHARED_DIRECTORIES']).map { |d| shared_path.join(File.basename(d.chomp('/'))) }
+      shared_dirs  = Array(general_config['SHARED_DIRECTORIES']).map do |d|
+        shared_path.join(File.basename(d.chomp('/')))
+      end
 
       missing_files = shared_files.reject { |f| test("[ -f #{f} ]") }
       raise "Missing shared files:\n#{missing_files.join("\n")}" unless missing_files.empty?
@@ -118,7 +121,10 @@ namespace :deploy do
       end
 
       rbenv_version_path = shared_path.join('rbenv-version')
-      execute :ln, '-snf', rbenv_version_path, release_path.join('.rbenv-version') if test("[ -f #{rbenv_version_path} ]")
+      if test("[ -f #{rbenv_version_path} ]")
+        execute :ln, '-snf', rbenv_version_path,
+                release_path.join('.rbenv-version')
+      end
     end
   end
 
