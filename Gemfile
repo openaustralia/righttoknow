@@ -20,6 +20,7 @@ group :deployment do
   gem 'capistrano-maintenance', '~> 1.2'
   gem 'capistrano-rails', '~> 1.6'
   gem 'capistrano-rbenv', '~> 2.2'
+  gem "capistrano-tagging3", "~> 2.0"
   gem 'net-ssh', '~> 7.2.0'
   gem 'net-ssh-gateway', '>= 1.1.0', '< 3.0.0'
 end
