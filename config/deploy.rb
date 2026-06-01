@@ -28,6 +28,9 @@ set :bundle_without, %w[development test deployment].join(':')
 set :maintenance_basename, 'down'
 set :maintenance_dirname,  -> { current_path.join('public') }
 
+# Tagging options
+set :tagging3_format, ':stage_:release'
+
 # Read the Ruby version from the server's shared rbenv-version file,
 # matching the version installed by the infrastructure repo.
 task :set_rbenv_ruby do
