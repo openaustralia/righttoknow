@@ -259,6 +259,24 @@
     </div>
 
     <div id="request_form" class="request_form">
+      <% if !@batch && @info_request.public_body.info_requests_hidden_count >= 2 %>
+        <fieldset id="request_personal_switch" class="request_personal_switch">
+          <legend>Are you asking for <strong>personal information</strong> that should be confidential?</legend>
+          <p>This includes <em>police incident reports</em>, <em>court records</em>, <em>medical records</em>, <em>paperwork for insurance or court</em>, etc.</p>
+          <input class="visually-hidden" type="radio" name="personal_request" id="request_personal_switch_yes" value="yes" />
+          <label for="request_personal_switch_yes">Yes</label>
+          <input class="visually-hidden" type="radio" name="personal_request" id="request_personal_switch_no" value="no" />
+          <label for="request_personal_switch_no">No</label>
+          <div class="request_personal_message">
+            <p><strong>Email your request</strong> directly to <%= @info_request.public_body.name %>:</p>
+            <p class="request_email"><%= mail_to @info_request.public_body.request_email, @info_request.public_body.request_email, subject: "Request for personal information" %></p>
+            <p>
+              You <%= link_to "cannot make requests for personal information", help_requesting_path(:anchor => "data_protection") %>
+              using this site. If you do you will be posting your information publicly on the internet for anyone to see.</p>
+          </div>
+        </fieldset>
+      <% end %>
+
       <% if @batch || @info_request.public_body.questions.blank? %>
         <%= render 'form', f: f %>
       <% else %>
