@@ -26,8 +26,6 @@ end
 %w[.].each do |dir|
   path = File.join(File.dirname(__FILE__), dir)
   $LOAD_PATH.insert(0, path)
-  ActiveSupport::Dependencies.autoload_paths << path
-  ActiveSupport::Dependencies.autoload_once_paths.delete(path)
 end
 
 # Monkey patch app code
