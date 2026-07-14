@@ -670,6 +670,18 @@ a.correspondence__header__date:visited {
   display:inline;
 }
 
+.describe_state_form .input-label-aligned {
+  input[type="radio"],
+  .icon-standalone,
+  label {
+    vertical-align: middle;
+  }
+
+  .icon-standalone {
+    margin: 0 0.25em;
+  }
+}
+
 #link_box {
   font-family: $font-family;
   border-radius: 0;
