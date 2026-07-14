@@ -8,9 +8,7 @@
     margin-right: 20px;
     margin-bottom: 10px;
     vertical-align: middle;
-    transition: opacity .2s ease-in-out;
-    -moz-transition: opacity .2s ease-in-out;
-    -webkit-transition: opacity .2s ease-in-out;
+    @include transition-safe(opacity .2s ease-in-out);
   }
 
   .logos {

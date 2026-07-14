@@ -1,3 +1,4 @@
+@import "responsive/rtk/mixins";
 @import "responsive/rtk/footer";
 @import "responsive/rtk/request_personal_message";
 @import "responsive/rtk/supporting_orgs";
@@ -14,24 +15,23 @@
 /* General styling of nav menu items */
 %menu-item {
   text-decoration: none;
-  color: transparentize($color_white, 0.2);
-  @include ie8 {
-    color: $color_white;
-  }
-  transition: background-color 0.5s ease-out;
+  // Dark text on the cyan header: 4.6:1 on the topnav, 7.5:1 on the banner
+  // (white text fails WCAG AA on both)
+  color: $color_black;
+  @include transition-safe(background-color 0.5s ease-out);
   &:hover,
   &:active,
   &:focus {
-    background-color: darken($color_primary, 15%);
+    background-color: $color_neutral_dark;
     color: $color_white;
   }
-
+  @include focus-state;
 }
 
 /* Selected menu item */
 %selected-menu-item {
   font-weight: bold;
-  color: $color_primary;
+  color: $color_black;
   background-color: $color_neutral_light;
   &:hover,
   &:active,
@@ -43,7 +43,7 @@
 .js-loaded {
   .account-link {
     &:after {
-      border-top-color: rgba(255,255,255,0.4);
+      border-top-color: rgba(0, 0, 0, 0.4);
     }
   }
 }
@@ -60,17 +60,17 @@
     box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.1);
   }
   li {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
   }
   a:link,
   a:visited {
-    color: #fff;
+    color: $color_black;
     cursor: pointer;
     text-decoration: none;
     &:hover,
     &:active,
     &:focus {
-      color: #fff;
+      color: $color_black;
       background-color: rgba(0, 0, 0, 0.1);
     }
     @include respond-min( $main_menu-mobile_menu_cutoff ){
@@ -100,13 +100,15 @@
 .sign_in_link,
 .sign_in_link:link,
 .sign_in_link:visited {
-  color: #fff;
+  color: $color_black;
   text-decoration: none;
   &:hover,
   &:active,
   &:focus {
-    color: #fff;
+    color: $color_black;
+    text-decoration: underline;
   }
+  @include focus-state;
 }
 
 .pro-pill {
@@ -154,14 +156,6 @@ form input[type="tel"],
 form input[type="number"] {
     border-radius: 0;
     background-color: $form_input-bg;
-    /* Set a fixed height for text inputs in older IE 8 */
-    @include ie8{
-        height: 2.3125em;
-    }
-    /* Do the same in px for IE < 7 */
-    @include lte-ie7{
-        height: 22px;
-    }
 }
 
 input.use-datepicker[type=text] {
@@ -177,7 +171,7 @@ input.use-datepicker[type=text] {
   display: inline-block;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 300ms ease-out;
+  @include transition-safe(background-color 300ms ease-out);
   margin-bottom: 0;
   font-family: $font-family;
   @if $size == large {
@@ -187,8 +181,9 @@ input.use-datepicker[type=text] {
   &:active,
   &:focus {
     text-decoration: none;
-    transition: background-color 300ms ease-out;
+    @include transition-safe(background-color 300ms ease-out);
   }
+  @include focus-state;
   @if $disabled {
     opacity: 0.333;
     transition: none;
@@ -205,17 +200,22 @@ input.use-datepicker[type=text] {
 
 @mixin button-primary($args...) {
   @include button-base($args...);
-  color: $color_white;
+  color: $button-color;
   background-color: $button-bg;
   border: none;
+  &:visited {
+    // Also beats core's hardcoded `.button:visited { color: #ffffff }`
+    color: $button-color;
+  }
   &:hover,
   &:active,
   &:focus,
   &:visited:hover,
   &:visited:active,
   &:visited:focus {
+    // 4.6:1 with $button-color on the darkened cyan
     background-color: darken($button-bg, 10%);
-    color: $color_white;
+    color: $button-color;
   }
 }
 
@@ -253,6 +253,13 @@ form input[type=submit], a.link_button_green, a.link_button_green_large {
 
 a.link_button_green_large {
   @include button-primary($size: large);
+}
+
+// Core leaves .button on Foundation's default blue with white text (3.9:1,
+// fails WCAG AA) and hardcodes `.button:visited { color: #fff }`; restyle to
+// the theme's accessible pairing.
+.button {
+  @include button-primary;
 }
 
 
@@ -315,7 +322,6 @@ a.link_button_green_large {
   border-bottom: none;
   a {
     @extend %menu-item;
-    color: transparentize($color_white, 0.1);
     @media( min-width: $main_menu-mobile_menu_cutoff ) {
       padding: 0.875em 1em;
     }
@@ -324,13 +330,6 @@ a.link_button_green_large {
   /* Show which section is currently selected */
   li.selected a {
     @extend %selected-menu-item;
-  }
-
-  /* Vertically align the label image for older IE*/
-  @include ie8 {
-    img {
-      margin-top: 0.626em;
-    }
   }
 }
 
@@ -344,14 +343,17 @@ a.link_button_green_large {
   padding-top: 0.7em;
   background-color: $color_white;
   border: none;
-  transition: all 0.3s ease-out;
-  color: $color_primary;
+  @include transition-safe(all 0.3s ease-out);
+  // $color_primary on white is 1.7:1; the link colour passes at 6.9:1
+  color: $link-color;
   border-radius: 0;
   font-size: inherit;
+  @include focus-state;
 }
 
 .greeting {
-  color: $body-bg;
+  // Sand on the cyan banner was 1.5:1; dark text passes at 7.5:1
+  color: $color_black;
 }
 /* Notices, errors */
 
@@ -414,8 +416,8 @@ a.link_button_green_large {
 
 p.locale-list-trigger {
   margin-bottom: 0;
-  color: $color_white;
-  color: rgba(255, 255, 255, 0.8);
+  // Dark text: white on the cyan mobile switcher was 1.7:1
+  color: $color_black;
   @include respond-min($main_menu-mobile_menu_cutoff) {
     margin-top: 0;
     border: 1px solid desaturate(lighten($color_primary, 3%), 5%);
@@ -429,7 +431,7 @@ p.locale-list-trigger {
   position: relative;
   z-index: 999;
   border-radius: 3px;
-  color: $color_white;
+  color: $color_black;
   @include respond-min($main_menu-mobile_menu_cutoff) {
     padding: 0.66em 2em 0.66em 0.66em;
   }
@@ -443,10 +445,7 @@ p.locale-list-trigger {
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    @include ie8 {
-      border-top: 5px solid $color_white;
-    }
-    border-top: 5px solid rgba(255,255,255,0.4);
+    border-top: 5px solid rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -478,7 +477,7 @@ p.locale-list-trigger {
 
 .locale-list li {
   list-style-type: none;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
   @include respond-min($main_menu-mobile_menu_cutoff) {
     border-color: $color_dark_grey;
     display: block;
@@ -498,11 +497,15 @@ p.locale-list-trigger {
 .locale-list .available-languages a:link,
 .locale-list .available-languages a:visited {
   text-decoration: none;
-  transition: background-color 0.5s ease-out;
-  color: #fff;
+  @include transition-safe(background-color 0.5s ease-out);
+  // Dark on the cyan mobile switcher, white on the dark grey desktop dropdown
+  color: $color_black;
+  // Comfortable tap target on touch screens
+  display: block;
+  padding: 0.75em 1em;
   @include respond-min($main_menu-mobile_menu_cutoff) {
     background-color: darken($color_dark_grey, 10%);
-    display: block;
+    color: $color_white;
     padding: 0.5em 1em;
     width: 100%;
   }
@@ -512,11 +515,11 @@ p.locale-list-trigger {
 .locale-list .available-languages a:focus {
   border-bottom: none;
   background-color: rgba(0,0,0,0.1);
+  color: $color_black;
   @include respond-min($main_menu-mobile_menu_cutoff) {
     background-color: darken($color_mid_grey, 10%);
+    color: $color_white;
   }
-  color: $color_white;
-
 }
 
 /* JS interactivity */
@@ -526,10 +529,11 @@ p.locale-list-trigger {
 }
 
 .locale-list.active .current-locale {
-  color: $color_white;
+  color: $color_black;
   border-color: $color_primary;
   @include respond-min($main_menu-mobile_menu_cutoff) {
     background-color: darken($color_dark_grey, 10%);
+    color: $color_white;
     border-color: $color_black;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
@@ -537,10 +541,10 @@ p.locale-list-trigger {
 }
 
 .locale-list.active .current-locale:after {
-  @include ie8 {
-    border-top-color: $color_white;
+  border-top-color: rgba(0, 0, 0, 0.4);
+  @include respond-min($main_menu-mobile_menu_cutoff) {
+    border-top-color: rgba(255, 255, 255, 0.4);
   }
-  border-top-color: rgba(255,255,255,0.4);
 }
 
   .locale-list .locale-list-trigger,
@@ -561,15 +565,16 @@ p.locale-list-trigger {
 
   .rsp_menu_button{
     position: absolute;
-    top: 9px; // vertically centre the button in the header
+    top: 6px; // vertically centre the button in the header
     right: 4px; // 15px for margin minus 9 for background offset
     @extend .image-replacement;
     background-image: image-url('hamburger.png');
     background-repeat: no-repeat;
-    background-position: center 10px;
+    background-position: center;
     background-size: 28px 26px;
+    // 44x44px minimum touch target
     width: 44px;
-    height: 38px;
+    height: 44px;
     padding: 0;
     /* Make sure clickable area covers image */
     a {
@@ -580,7 +585,7 @@ p.locale-list-trigger {
 
   &:target {
     .rsp_menu_button {
-      top: 9px;
+      top: 6px;
       right: 4px;
     }
   }
@@ -600,6 +605,7 @@ p.locale-list-trigger {
       color: lighten($color_primary, 10%);
       text-decoration: underline;
     }
+    @include focus-state;
   }
 }
 
@@ -630,7 +636,7 @@ p.locale-list-trigger {
   .action-menu__button {
     @include button-secondary();
     &:after {
-      border-color: #a5a5a5 transparent transparent transparent;
+      border-color: $color_mid_grey transparent transparent transparent;
       right: 7%;
     }
   }
@@ -663,7 +669,8 @@ div.correspondence {
 
 a.correspondence__header__date,
 a.correspondence__header__date:visited {
-  color: #777;
+  // 5.3:1 on the white correspondence card (#777 was a marginal 4.5:1)
+  color: $color_dark_grey;
 }
 
 .describe_state_form input[type="radio"] + label {
@@ -714,7 +721,7 @@ a.correspondence__header__date:visited {
     }
   }
   .sidebar__section.pro-upsell {
-    background-color: #faf785;
+    background-color: $color_pale_yellow;
     padding: 0.85em;
   }
 }
@@ -766,12 +773,11 @@ a.correspondence__header__date:visited {
 .view_html_prefix {
   font-family: $font-family;
   background-color: $color_primary;
-  color: transparentize($color_white, 0.2);
-  @include ie8 {
-    color: $color_white;
-  }
+  // Dark on cyan: 7.5:1 (the 80%-white text was 1.5:1)
+  color: $color_black;
   a {
-    color: $color_white;
+    color: $color_black;
+    text-decoration: underline;
   }
   .view_html_logo, .view_html_description, .view_html_download_link {
     padding-top: 1em;
@@ -856,21 +862,12 @@ dt {
   box-shadow: 0 1px 2px transparentize($color_black, 0.75);
   padding: 1em;
   border-radius: 100%;
-  color: $color_white;
+  color: $color_black;
   @include respond-min( $main_menu-mobile_menu_cutoff ){
     left: 50%;
     margin-left: -1.75em;
     bottom: -1em;
     top: auto;
-  }
-}
-
-.learn-more-foi {
-  @include respond-min( $main_menu-mobile_menu_cutoff ){
-    margin-top: 3em;
-  }
-  a {
-    @include button-secondary;
   }
 }
 
@@ -909,7 +906,7 @@ dt {
 }
 
 .homepage-hero {
-  background-color: #020e16;
+  background-color: $color_hero_bg;
   background-image: image-url('homepage-background-small.jpg');
   background-repeat: no-repeat;
   background-position: center top;
@@ -947,10 +944,8 @@ dt {
   }
 
   .new-request__description {
+    // 8.7:1 on the dark card background
     color: transparentize($color_white, 0.2);
-    @include ie8 {
-      color: $color_white;
-    }
   }
   .new-request__make-new-requests {
     @include button-base;
@@ -963,8 +958,6 @@ dt {
     }
   }
 }
-
-@import "responsive/rtk/footer";
 
 .request_listing .head, .body_listing .head, .user_listing .head {
   // Provide a tiny bit of extra room at the top of headers in lists so that
@@ -989,5 +982,19 @@ dt {
 
   h2 {
     font-size: 1.65em;
+  }
+}
+
+/* Print */
+// Core's print stylesheet handles its own chrome; hide the theme's additions
+@media print {
+  .oaf-footer,
+  #frontpage_supporting {
+    display: none;
+  }
+
+  .homepage-hero {
+    background: none;
+    color: $color_black;
   }
 }

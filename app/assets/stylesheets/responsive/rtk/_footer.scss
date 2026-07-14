@@ -15,7 +15,8 @@ $oaf-footer-divider-color: #4C4C4C;
 $oaf-footer-donate-background-color: #434343;
 $oaf-footer-donate-text-color: #fff;
 $oaf-footer-donate-button-background-color: $button-bg;
-$oaf-footer-donate-button-text-color: #fff !default;
+// Dark text on the brand cyan button (white on cyan fails WCAG AA)
+$oaf-footer-donate-button-text-color: $color_black !default;
 $oaf-footer-donate-button-hover-background-color: darken($oaf-footer-donate-button-background-color, 5%) !default;
 $oaf-footer-donate-button-hover-text-color: $oaf-footer-donate-button-text-color !default;
 
@@ -26,8 +27,6 @@ $oaf-footer-breakpoint-sm: 42em;
 $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi' !default;
 
 .oaf-footer {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   background-color: $oaf-footer-background-color;
   color: $oaf-footer-text-color;
@@ -45,8 +44,6 @@ $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
   }
 
   *, *:before, *:after {
-    -webkit-box-sizing: inherit;
-    -moz-box-sizing: inherit;
     box-sizing: inherit;
   }
 
@@ -57,6 +54,8 @@ $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
     &:focus {
       color: $oaf-footer-link-hover-text-color;
     }
+
+    @include focus-state;
   }
 }
 

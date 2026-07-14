@@ -1,3 +1,8 @@
+// NOTE: Alaveteli core hardcodes most of its colours (see core
+// responsive/_global_style.scss and _request_style.scss), so the variables
+// below only affect rules written in this theme (custom.scss and rtk/*).
+// To restyle a core-rendered element you must override its selector in
+// custom.scss, not just change a variable here.
 $main_menu-mobile_menu_cutoff: 58em;
 $row-width: 64em;
 $body-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -25,6 +30,8 @@ $color_light_grey: #e2dfd9;
 $color_mid_grey: #959287;
 $color_dark_grey: #6c6b68;
 $color_cyan: #00dcf0;
+$color_pale_yellow: #faf785;
+$color_hero_bg: #020e16;
 
 $color_neutral_light: $color_sand;
 $color_neutral_dark: $color_black;
@@ -35,13 +42,15 @@ $body-bg: $color_neutral_light;
 
 $body-font-color: $color_neutral_dark;
 $link-color: darken($color_blue, 30%);
-$action-color: $color_green;
 $font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 $form_input-bg: $color_white;
 $form-label-font-color: $color_black;
 
-$button-bg: darken($color_cyan, 10%);
-$button-color: $color_white;
+// Dark text on the brand cyan: 7.5:1 contrast (WCAG AA). White text on any
+// usable shade of the cyan fails AA, so buttons use the full-strength brand
+// colour with dark text instead.
+$button-bg: $color_cyan;
+$button-color: $color_black;
 
 $status-success: darken($color_green, 18%);
 $status-failure: darken($color_red, 10%);
