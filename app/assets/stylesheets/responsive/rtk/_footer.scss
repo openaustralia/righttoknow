@@ -1,3 +1,8 @@
+// OAF canonical footer
+// Markup: lib/views/general/_responsive_footer.html.erb
+// Canonical attribution block shape comes from the OAF Design System
+// (ui_kits/_shared/oaf-canonical-footer.jsx) - don't paraphrase the copy.
+
 $oaf-footer-background-color: $color_black;
 $oaf-footer-text-color: lighten($color_mid_grey, 4%); // tweak color to pass WCAG AA contrast check
 $oaf-footer-site-name-text-color: #fff;
@@ -5,53 +10,32 @@ $oaf-footer-site-name-text-color: #fff;
 $oaf-footer-link-text-color: $color_white;
 $oaf-footer-link-hover-text-color: $button-bg;
 
-$oaf-footer-site-name-font-size: 1.5em !default;
-$oaf-footer-site-name-margin-bottom: 0.5em !default;
-$oaf-footer-site-name-line-height: 1em !default;
-
-$oaf-footer-border-top: none !default;
 $oaf-footer-divider-color: #4C4C4C;
 
 $oaf-footer-donate-background-color: #434343;
 $oaf-footer-donate-text-color: #fff;
 $oaf-footer-donate-button-background-color: $button-bg;
-$oaf-footer-donate-button-text-color: #fff !default;
-$oaf-footer-donate-button-hover-background-color: darken($oaf-footer-donate-button-background-color, 5%) !default;
-$oaf-footer-donate-button-hover-text-color: $oaf-footer-donate-button-text-color !default;
-
-$oaf-footer-legal-text-color: $oaf-footer-text-color;
+$oaf-footer-donate-button-text-color: #fff;
+$oaf-footer-donate-button-hover-background-color: darken($oaf-footer-donate-button-background-color, 5%);
 
 $oaf-footer-breakpoint-sm: 42em;
 
-$high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi' !default;
-
 .oaf-footer {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   background-color: $oaf-footer-background-color;
   color: $oaf-footer-text-color;
-  padding: 2em 0;
+  margin-top: 3em;
+  padding: 2.5em 0;
   font-size: 1em;
   line-height: 1.5em;
-  border-top: $oaf-footer-border-top;
-
-  @media (min-height: 700px) {
-    padding: 3em 0;
-  }
-
-  @media (min-height: 900px) {
-    padding: 4em 0;
-  }
 
   *, *:before, *:after {
-    -webkit-box-sizing: inherit;
-    -moz-box-sizing: inherit;
     box-sizing: inherit;
   }
 
   a {
     color: $oaf-footer-link-text-color;
+    text-decoration: none;
 
     &:hover,
     &:focus {
@@ -60,46 +44,56 @@ $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
   }
 }
 
+.oaf-footer__inner {
+  max-width: $row-width;
+  margin: 0 auto;
+  padding: 0 0.9375em;
+}
+
 .oaf-footer__divider {
+  border: 0;
   border-top: 1px solid $oaf-footer-divider-color;
   margin: 2em 0;
+}
 
-  @media (min-height: 900px) {
-    margin: 3em 0;
+/* Row 1 - site name / links / donate */
+
+.oaf-footer__grid--site {
+  @media (min-width: $oaf-footer-breakpoint-sm) {
+    display: flex;
+    gap: 2em;
+  }
+}
+
+.oaf-footer__about {
+  @media (min-width: $oaf-footer-breakpoint-sm) {
+    flex: 5 1 0;
   }
 }
 
 .oaf-footer__site-name {
-  font-size: $oaf-footer-site-name-font-size;
-  line-height: $oaf-footer-site-name-line-height;
+  font-size: 1.5em;
+  line-height: 1.2;
   font-weight: bold;
-  margin: 0 0 $oaf-footer-site-name-margin-bottom 0;
+  margin: 0 0 0.5em 0;
   color: $oaf-footer-site-name-text-color;
 }
 
 .oaf-footer__links {
   font-size: 1em;
   line-height: 1.2em;
+  display: flex;
+  gap: 2em;
 
-  @media (min-width: $oaf-footer-breakpoint-sm){
-    overflow: auto;
-    margin: 0 -1em;
-
-    // Line up top of .oaf-footer__links with top of .oaf-footer__site-description
-    $factor: $oaf-footer-site-name-font-size / 1em;
-    padding-top: ( $oaf-footer-site-name-line-height*$factor + $oaf-footer-site-name-margin-bottom*$factor );
+  @media (min-width: $oaf-footer-breakpoint-sm) {
+    flex: 4 1 0;
   }
 
   ul {
     margin: 0;
     padding: 0;
     list-style: none;
-
-    @media (min-width: $oaf-footer-breakpoint-sm){
-      float: left;
-      width: 50%;
-      padding: 0 1em;
-    }
+    flex: 1 1 50%;
   }
 
   li {
@@ -117,8 +111,14 @@ $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
   padding: 1.5em;
   border-radius: 0.3em;
   margin-top: 1em;
+  align-self: flex-start;
 
-  @media (min-width: $oaf-footer-breakpoint-sm){
+  p {
+    margin-top: 0;
+  }
+
+  @media (min-width: $oaf-footer-breakpoint-sm) {
+    flex: 3 1 0;
     margin-top: 0;
   }
 }
@@ -126,112 +126,132 @@ $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi
 .oaf-footer__donate__button {
   display: inline-block;
   background-color: $oaf-footer-donate-button-background-color;
-  color: $oaf-footer-donate-button-text-color !important;
+  color: $oaf-footer-donate-button-text-color;
   padding: 0.5em 1em;
   border-radius: 0.3em;
   font-weight: bold;
-  text-decoration: none;
 
   &:hover,
   &:focus {
-    text-decoration: none;
     background-color: $oaf-footer-donate-button-hover-background-color;
-    color: $oaf-footer-donate-button-hover-text-color !important;
+    color: $oaf-footer-donate-button-text-color;
   }
 }
 
-.oaf-footer__orgs {
-  overflow: auto;
-  margin: 0 -1em;
+/* Rows 2 and 3 - other services / find us */
+
+.oaf-footer__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em 2em;
+
+  & + & {
+    margin-top: 1.25em;
+  }
 }
 
-.oaf-footer__org {
-  float: left;
-  padding: 0 1em;
+.oaf-footer__eyebrow {
+  font-size: 0.6875em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: $oaf-footer-text-color;
+  margin: 0;
 }
 
-.oaf-footer__org__logo {
-  display: block;
-  margin-top: 0em;
-  height: 0;
-  overflow: hidden;
-  padding-top: 27px;
+.oaf-footer__services__list,
+.oaf-footer__social__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1.5em;
 }
 
-.oaf-footer__org__logo--oaf {
-  margin-top: 5px;
-  width: 267px;
-  background-size: 267px 24px;
-  background: transparent image-url('footer/oaf_logo_white.png') 0 0 no-repeat;
-  // https://css-tricks.com/a-complete-guide-to-svg-fallbacks/
-  background-image: image-url('footer/oaf_logo_white.svg'),
-                    linear-gradient(transparent, transparent);
+.oaf-footer__social__list {
+  align-items: center;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.25em 0;
+  }
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+/* Row 4 - canonical OAF attribution */
+
+.oaf-footer__grid--attribution {
+  @media (min-width: $oaf-footer-breakpoint-sm) {
+    display: flex;
+    gap: 2.5em;
+    align-items: flex-start;
+  }
+}
+
+.oaf-footer__attribution {
+  min-width: 0;
+
+  @media (min-width: $oaf-footer-breakpoint-sm) {
+    flex: 1 1 auto;
+  }
+}
+
+.oaf-footer__attribution-intro {
+  margin: 0 0 0.75em;
+  font-size: 0.8125em;
+}
+
+.oaf-footer__wordmark {
+  display: inline-block;
+
+  img {
+    display: block;
+    height: 24px;
+    width: auto;
+  }
 }
 
 .oaf-footer__legal {
-  font-size: 0.8em;
-  line-height: 1.5em;
-  color: $oaf-footer-legal-text-color;
-}
+  font-size: 0.875em;
+  line-height: 1.6;
+  margin-top: 1em;
+  max-width: 42em;
 
-.oaf-footer__badges {
-  margin: 0 -4px;
-  padding: 0;
-  list-style: none;
+  p {
+    margin: 0 0 1em;
 
-  @media (min-width: $oaf-footer-breakpoint-sm){
-    text-align: right;
-  }
-
-  li {
-    margin: 0 4px;
-    display: inline-block;
-  }
-}
-
-.oaf-footer__badge {
-  display: inline-block;
-  width: 32px;
-  height: 0;
-  padding-top: 32px;
-  overflow: hidden;
-  border-radius: 100%;
-}
-
-.oaf-footer__badge--github {
-  background-size: 32px 32px;
-  background: transparent image-url('footer/icon-github.png') 0 0 no-repeat;
-  // https://css-tricks.com/a-complete-guide-to-svg-fallbacks/
-  background-image: image-url('footer/icon-github-white.svg'),
-                    linear-gradient(transparent, transparent);
-}
-
-.oaf-footer {
-  margin-top: 5em;
-  a {
-    text-decoration: none;
-  }
-  .row {
-    @include grid-row();
-  }
-
-  .col-sm-5,
-  .col-sm-4,
-  .col-sm-3 {
-    @include grid-column(12);
-  }
-
-  @media (min-width: $oaf-footer-breakpoint-sm) {
-    .col-sm-5 {
-      @include grid-column(5);
+    &:last-child {
+      margin-bottom: 0;
     }
+  }
+}
 
-    .col-sm-4 {
-      @include grid-column(4);
-    }
+.oaf-footer__acknowledgement {
+  padding-top: 1em;
+  border-top: 1px solid $oaf-footer-divider-color;
+}
 
-    .col-sm-3 {
-      @include grid-column(3);
-    }
+.oaf-footer__acnc {
+  display: block;
+  flex-shrink: 0;
+  width: 150px;
+  // ACNC clear space: at least 5mm of empty space on every side of the tick.
+  // Nothing (text, rules, image edges) may sit inside it, and it stays the
+  // footer background colour - the disc built into the mark is the only white.
+  margin: 5mm;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 }

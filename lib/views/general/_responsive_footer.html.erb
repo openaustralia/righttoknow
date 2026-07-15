@@ -1,74 +1,112 @@
 <div class="oaf-footer" role="contentinfo">
-    <div class="row">
+  <div class="oaf-footer__inner">
 
-        <div class="col-sm-5">
-            <h2 class="oaf-footer__site-name"><%= site_name %></h2>
-            <div class="oaf-footer__site-description">
-                <p>A site to help anyone submit a Freedom of Information request. <%= site_name %> also publishes and archives requests and responses, building a massive archive of information.</p>
-                <p>Powered by <%= link_to 'Alaveteli',  help_alaveteli_path %>.</p>
-            </div>
+    <div class="oaf-footer__grid oaf-footer__grid--site">
+      <div class="oaf-footer__about">
+        <h2 class="oaf-footer__site-name"><%= site_name %></h2>
+        <div class="oaf-footer__site-description">
+          <p>A site to help anyone submit a Freedom of Information request. <%= site_name %> also publishes and archives requests and responses, building a massive archive of information.</p>
+          <p>Powered by <%= link_to 'Alaveteli', help_alaveteli_path %>.</p>
         </div>
+      </div>
 
-        <div class="col-sm-4">
-            <nav class="oaf-footer__links">
-                <ul>
-                    <li role="presentation"><%= link_to 'Make a request', select_authority_path %></li>
-                    <li role="presentation"><%= link_to 'Browse requests', request_list_successful_path %></li>
-                    <li role="presentation"><%= link_to 'View authorities', list_public_bodies_default_path %></li>
-                    <% if feature_enabled?(:alaveteli_pro) %>
-                      <li role="presentation"><%= link_to 'Journalist?', account_request_index_path %></li>
-	                   <% end %>
-					<% if feature_enabled?(:pro_pricing) %>
-                      <li role="presentation"><%= link_to 'Pro Terms', pro_page_path(:id => 'legal') %></li>
-                    <% end %>
-                </ul>
-                <ul>
-                    <li role="presentation"><%= link_to 'Help', help_path %></li>
-                    <li role="presentation"><%= link_to 'House Rules', help_house_rules_path%></li>
-                    <li role="presentation"><%= link_to 'Contact us', help_contact_path %></li>
-                    <li role="presentation"><%= link_to 'Privacy', help_privacy_path %></li>
-                    <li role="presentation"><%= link_to 'API', help_api_path %></li>
-                </ul>
-            </nav>
-        </div>
+      <nav class="oaf-footer__links">
+        <ul>
+          <li><%= link_to 'Make a request', select_authority_path %></li>
+          <li><%= link_to 'Browse requests', request_list_successful_path %></li>
+          <li><%= link_to 'View authorities', list_public_bodies_default_path %></li>
+          <% if feature_enabled?(:alaveteli_pro) %>
+            <li><%= link_to 'Journalist?', account_request_index_path %></li>
+          <% end %>
+          <% if feature_enabled?(:pro_pricing) %>
+            <li><%= link_to 'Pro Terms', pro_page_path(:id => 'legal') %></li>
+          <% end %>
+        </ul>
+        <ul>
+          <li><%= link_to 'Help', help_path %></li>
+          <li><%= link_to 'House Rules', help_house_rules_path %></li>
+          <li><%= link_to 'Contact us', help_contact_path %></li>
+          <li><%= link_to 'Privacy', help_privacy_path %></li>
+          <li><%= link_to 'API', help_api_path %></li>
+        </ul>
+      </nav>
 
-        <div class="col-sm-3">
-            <div class="oaf-footer__donate">
-                <p>Your donations keep this site and others like it running</p>
-                <a href="https://www.oaf.org.au/donate/" class="oaf-footer__donate__button">Donate now</a>
-            </div>
-        </div>
+      <div class="oaf-footer__donate">
+        <p>Your donations keep this site and others like it running</p>
+        <a href="https://www.oaf.org.au/donate/" class="oaf-footer__donate__button">Donate now</a>
+      </div>
     </div>
-    <hr class="oaf-footer__divider" role="presentation">
-    <div class="row">
-        <div class="col-sm-5">
-            <div class="oaf-footer__orgs">
-                <p class="oaf-footer__org">
-                    Built by
-                    <a href="https://www.oaf.org.au/" class="oaf-footer__org__logo oaf-footer__org__logo--oaf">OpenAustralia Foundation</a>
-                </p>
-            </div>
-        </div>
 
-        <div class="col-sm-4">
-            <div class="oaf-footer__legal">
-                <p>
-                    <a href="https://www.oaf.org.au/">OpenAustralia Foundation</a> is a public digital online library.
-                    We are a <a href="https://www.acnc.gov.au/charity/55c2c06e21ac71e9359a0590b9fc100e">registered charity</a> in Australia - company limited by guarantee.
-                    ABN&nbsp;<a href="https://www.abr.business.gov.au/ABN/View/24138089942">24&nbsp;138&nbsp;089&nbsp;942</a>.
-                </p>
-                <p>
-                  We acknowledge the traditional owners of the land now known as Australia.
-                We pay our respects to their elders past, present and emerging.
-                </p>
-            </div>
-        </div>
+    <hr class="oaf-footer__divider">
 
-        <div class="col-sm-3">
-            <ul class="oaf-footer__badges">
-                <li role="presentation"><a href="https://github.com/openaustralia/righttoknow/" class="oaf-footer__badge oaf-footer__badge--github">Github</a></li>
-            </ul>
-        </div>
-
+    <div class="oaf-footer__row oaf-footer__services">
+      <h2 class="oaf-footer__eyebrow">Other services</h2>
+      <ul class="oaf-footer__services__list">
+        <li><a href="https://www.planningalerts.org.au">Planning Alerts</a></li>
+        <li><a href="https://theyvoteforyou.org.au">They Vote for You</a></li>
+        <li><a href="https://www.openaustralia.org.au">OpenAustralia.org.au</a></li>
+      </ul>
     </div>
+
+    <div class="oaf-footer__row oaf-footer__social">
+      <h2 class="oaf-footer__eyebrow">Find us</h2>
+      <ul class="oaf-footer__social__list">
+        <li>
+          <a href="https://github.com/openaustralia" aria-label="OAF source on GitHub">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span>GitHub</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://bsky.app/profile/oaf.org.au" aria-label="OAF on Bluesky">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z"/></svg>
+            <span>Bluesky</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://social.oaf.org.au/@oaf" aria-label="OAF on Mastodon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.043-1.52.043-1.67.003-.512.168-3.63-.024-5.545zm-3.748 9.195h-2.561V8.29c0-1.309-.55-1.976-1.67-1.976-1.23 0-1.846.79-1.846 2.35v3.403h-2.546V8.663c0-1.56-.617-2.35-1.848-2.35-1.112 0-1.668.668-1.67 1.977v6.218H4.822V8.102c0-1.31.337-2.35 1.011-3.12.696-.77 1.608-1.164 2.74-1.164 1.311 0 2.302.5 2.962 1.498l.638 1.06.638-1.06c.66-.999 1.65-1.498 2.96-1.498 1.13 0 2.043.395 2.74 1.164.675.77 1.012 1.81 1.012 3.12z"/></svg>
+            <span>Mastodon</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/company/openaustralia-foundation" aria-label="OAF on LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            <span>LinkedIn</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <hr class="oaf-footer__divider">
+
+    <div class="oaf-footer__grid oaf-footer__grid--attribution">
+      <div class="oaf-footer__attribution">
+        <p class="oaf-footer__attribution-intro">Built and maintained by</p>
+        <a href="https://www.oaf.org.au/" class="oaf-footer__wordmark">
+          <%= image_tag 'footer/oaf-wordmark-white.svg', alt: 'OpenAustralia Foundation', width: 267, height: 24 %>
+        </a>
+        <div class="oaf-footer__legal">
+          <p>
+            <a href="https://www.oaf.org.au/">OpenAustralia Foundation</a> is a
+            <a href="https://www.acnc.gov.au/charity/charities/6bf25724-39af-e811-a960-000d3ad24282/profile">registered charity</a>
+            in Australia - company limited by guarantee.
+            ABN&nbsp;<a href="https://www.abr.business.gov.au/ABN/View/24138089942">24&nbsp;138&nbsp;089&nbsp;942</a>.
+          </p>
+          <p class="oaf-footer__acknowledgement">
+            OpenAustralia Foundation acknowledges the traditional Owners of Country
+            throughout Australia and acknowledges their continuing connection to land,
+            waters and community. We pay our respects to the people, the cultures and
+            the Elders past and present.
+          </p>
+        </div>
+      </div>
+      <a href="https://www.acnc.gov.au/charity/charities/6bf25724-39af-e811-a960-000d3ad24282/profile"
+         class="oaf-footer__acnc"
+         aria-label="ACNC Registered Charity - view OpenAustralia Foundation on the charity register">
+        <%= image_tag 'footer/acnc-registered-charity.svg', alt: 'ACNC Registered Charity', width: 150, height: 150 %>
+      </a>
+    </div>
+
+  </div>
 </div>
