@@ -615,10 +615,11 @@ a.correspondence__header__date:visited {
 /* Help pages */
 
 dt {
-  font-weight: 700;
+  font-weight: 600;
   @include respond-min( $main_menu-mobile_menu_cutoff ){
-    font-size: 2em;
-    line-height: 1.1em;
+    font-size: 1.375em;
+    line-height: 1.3;
+    margin-top: 1.5em;
   }
 }
 
@@ -629,6 +630,10 @@ dt {
   }
   li {
     margin-bottom: 0.5em;
+  }
+  // Cap the measure so paragraphs stay readable on wide screens
+  p, dd {
+    max-width: 42em;
   }
 }
 
@@ -658,11 +663,8 @@ dt {
 
 .steps__step-box {
   background-color: $color_white;
-  padding: 2em;
+  padding: 1.5em;
   box-shadow: 0 1px 2px transparentize($color_black, 0.75);
-  @include respond-min( $main_menu-mobile_menu_cutoff ){
-    min-height: 11em;
-  }
   p {
     line-height: 1.5em;
     color: $color_neutral_dark;
@@ -724,11 +726,12 @@ dt {
   background-image: image-url('homepage-background-small.jpg');
   background-repeat: no-repeat;
   background-position: center top;
+  background-size: cover;
   color: $color_white;
-  padding: 2em 0 5em;
+  padding: 2em 0 3em;
   position: relative;
   @include respond-min($main_menu-mobile_menu_cutoff) {
-    padding: 5em 0 8em;
+    padding: 3em 0 4em;
     background-image: image-url('homepage-background.jpg');
   }
 
@@ -748,7 +751,7 @@ dt {
   .new-request__content {
     background-color: $color_neutral_dark;
     border-radius: 5px;
-    padding: 1.888888889em;
+    padding: 1.5em;
   }
 
   .new-request__title {
@@ -778,6 +781,26 @@ dt {
   // Provide a tiny bit of extra room at the top of headers in lists so that
   // the top of letters don't get chopped off
   margin-top: 0.1em;
+  font-weight: 600;
+}
+
+/* Tighter vertical rhythm and clearer hierarchy in request/authority lists */
+.request_listing, .body_listing, .user_listing {
+  margin-top: 1.125em;
+}
+
+.request_listing {
+  .desc {
+    font-style: normal;
+    color: $color_dark_grey;
+    font-size: 0.9375em;
+    margin-bottom: 1em;
+  }
+  .bottomline {
+    @include respond-min( $main_menu-mobile_menu_cutoff ){
+      margin-bottom: 1em;
+    }
+  }
 }
 
 .marketing__roles__researcher {
