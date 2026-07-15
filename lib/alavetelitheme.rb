@@ -54,7 +54,7 @@ Rails.application.config.assets.precompile.unshift(LOOSE_THEME_ASSETS)
 
 def prepend_theme_assets
   # Prepend the asset directories in this theme to the asset path:
-  %w[stylesheets images javascripts].each do |asset_type|
+  %w[stylesheets images javascripts fonts].each do |asset_type|
     theme_asset_path = File.join(File.dirname(__FILE__),
                                  '..',
                                  'app',

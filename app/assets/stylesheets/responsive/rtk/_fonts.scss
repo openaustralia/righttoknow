@@ -1,0 +1,51 @@
+// Fira Sans - the OAF family web font (self-hosted, latin subset, SIL OFL).
+// Files live in app/assets/fonts; the system stack in $body-font-family
+// covers the flash before these load (font-display: swap).
+
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: font-url("fira-sans-v18-latin-300.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: font-url("fira-sans-v18-latin-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: font-url("fira-sans-v18-latin-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: font-url("fira-sans-v18-latin-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: font-url("fira-sans-v18-latin-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: font-url("fira-sans-v18-latin-700.woff2") format("woff2");
+}
