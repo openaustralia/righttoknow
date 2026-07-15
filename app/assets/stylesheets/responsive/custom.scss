@@ -1,3 +1,4 @@
+@import "responsive/rtk/fonts";
 @import "responsive/rtk/mixins";
 @import "responsive/rtk/request_personal_message";
 @import "responsive/rtk/supporting_orgs";
@@ -85,6 +86,12 @@ body{
 
 .entirebody {
   font-family: $font-family;
+}
+
+// Fira Sans 700 reads heavy at display sizes - semibold carries the same
+// hierarchy with less shouting
+h1, h2, h3 {
+  font-weight: 600;
 }
 
 a {
