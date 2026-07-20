@@ -57,6 +57,9 @@ Rails.configuration.to_prepare do
         { status: 'expired', message: _('Coupon code has expired.') }
       elsif mismatched_currency?(coupon)
         { status: 'invalid', message: _('Coupon code is invalid.') }
+      elsif mismatched_interval?(price, coupon)
+        { status: 'invalid',
+          message: _('This coupon code cannot be used with this plan.') }
       else
         coupon_preview_payload(price, coupon)
       end
@@ -78,6 +81,17 @@ Rails.configuration.to_prepare do
       coupon.amount_off && coupon.currency &&
         coupon.currency.downcase !=
           AlaveteliConfiguration.iso_currency_code.downcase
+    end
+
+    # A coupon can carry an `interval` metadata restriction (e.g. "month") to
+    # limit it to a single billing interval. Stripe's coupon applies_to is
+    # product-scoped only and can't distinguish the monthly price from the
+    # annual price within the Pro product, so SubscriptionsController#create
+    # enforces this restriction itself. The preview must refuse it too,
+    # otherwise we'd advertise a discount that checkout then rejects.
+    def mismatched_interval?(price, coupon)
+      required = coupon.metadata.to_h[:interval]
+      required.present? && required != price.recurring&.[]('interval')
     end
 
     # Replicates the arithmetic in
@@ -123,6 +137,32 @@ Rails.configuration.to_prepare do
       return humanized if humanized.present?
 
       coupon.name if coupon.respond_to?(:name)
+    end
+  end
+
+  # Enforce coupon `interval` metadata restrictions at checkout. Stripe's
+  # coupon applies_to is product-scoped only, so it can't stop a coupon meant
+  # for a single interval (e.g. a monthly-only coupon) from discounting the
+  # annual price within the same product. We block the mismatch here.
+  #
+  # This must halt via a before_action redirect rather than just setting
+  # flash[:error]: SubscriptionsController#create runs its subscription-creating
+  # block unconditionally and only checks flash[:error] afterwards, so a late
+  # error would still charge the customer at full price before redirecting.
+  AlaveteliPro::SubscriptionsController.class_eval do
+    before_action :check_coupon_matches_price, only: [:create]
+
+    private
+
+    def check_coupon_matches_price
+      return unless @coupon && @price
+
+      required = @coupon.metadata.to_h[:interval]
+      return if required.blank?
+      return if required == @price.recurring&.[]('interval')
+
+      flash[:error] = _('This coupon code cannot be used with this plan.')
+      json_redirect_to plan_path(@price)
     end
   end
 end
