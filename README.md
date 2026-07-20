@@ -4,6 +4,8 @@
   - [Development](#development)
   - [Development Environment - Simple Steps](#development-environment---simple-steps)
   - [Seeding test data](#seeding-test-data)
+  - [Pro subscriptions](#pro-subscriptions)
+    - [Restricting a coupon to a billing interval](#restricting-a-coupon-to-a-billing-interval)
   - [Contributing](#contributing)
   - [Deployment](#deployment)
     - [Prerequisites](#prerequisites)
@@ -110,6 +112,35 @@ Optional environment variables:
 The script is idempotent: re-running it reuses existing authorities and
 categories and won't stack additional seeded requests onto authorities that
 already have them.
+
+## Pro subscriptions
+
+### Restricting a coupon to a billing interval
+
+Stripe coupons can only be limited to a **product**, not to an individual
+**price**. Because the Pro monthly and annual plans are two prices under one
+product, Stripe's own `applies_to` restriction cannot stop a coupon from
+discounting both. Some coupons are meant for a single plan (for example, a
+monthly-only referral coupon).
+
+The theme enforces a per-interval restriction itself, driven by coupon
+**metadata** so the rule lives with the coupon in Stripe (no code change or
+deploy needed to add or adjust restricted coupons):
+
+- Add a metadata key `interval` to the coupon in the Stripe dashboard, set to
+  the billing interval the coupon is allowed on: `day`, `week`, `month` or
+  `year`. A monthly-only coupon takes `interval` = `month`.
+- A coupon **without** an `interval` metadata key is unrestricted and applies to
+  any plan, exactly as before.
+
+With `interval` set, [`lib/controller_patches.rb`](lib/controller_patches.rb)
+blocks the coupon at checkout on a non-matching plan (before any subscription is
+created) and the live plan-page price preview refuses it too, so a discount is
+never advertised that checkout would then reject.
+
+For extra defence-in-depth you can also set the coupon's native `applies_to`
+products to the Pro product; this stops it discounting any other product, though
+it still can't separate monthly from annual.
 
 ## Contributing
 

@@ -66,7 +66,7 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
     end
   end
 
-  describe 'GET #coupon_preview' do
+  describe 'GET #coupon_preview' do # rubocop:disable Metrics/BlockLength
     context 'without a signed-in user' do
       before do
         get :coupon_preview, params: { price_id: 'pro', coupon_code: 'X' }
@@ -173,6 +173,56 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
 
         it 'refuses to apply a mismatched-currency discount' do
           expect(json['status']).to eq('invalid')
+        end
+      end
+
+      # A coupon carrying an `interval` metadata restriction (e.g. a
+      # monthly-only coupon) must only preview against a price with a matching
+      # billing interval. Stripe's product-scoped applies_to can't distinguish
+      # the monthly and annual prices within the Pro product, so the restriction
+      # lives in coupon metadata and is enforced here and at checkout (see
+      # lib/controller_patches.rb).
+      context 'with a coupon restricted to the matching interval' do
+        before do
+          # pro_price is monthly (StripeMock defaults recurring.interval to
+          # "month").
+          stripe_helper.create_coupon(
+            id: 'MONTHLYONLY', percent_off: 50, amount_off: nil, currency: nil,
+            metadata: { interval: 'month' }
+          )
+          get :coupon_preview,
+              params: { price_id: 'pro', coupon_code: 'MONTHLYONLY' }
+        end
+
+        it 'previews the discount' do
+          expect(json['status']).to eq('valid')
+          expect(json['amount']).to eq(money(2475)) # 4500 - 50% + 10% tax
+        end
+      end
+
+      context 'with a coupon restricted to a non-matching interval' do
+        let!(:annual_price) do
+          stripe_helper.create_price(
+            id: 'annual_price', product: product.id, unit_amount: 45_000,
+            recurring: { interval: 'year', interval_count: 1 }
+          )
+        end
+
+        before do
+          allow(AlaveteliConfiguration).to receive(:stripe_prices)
+            .and_return('pro' => 'pro', 'annual_price' => 'annual')
+          stripe_helper.create_coupon(
+            id: 'MONTHLYONLY', percent_off: 50, amount_off: nil, currency: nil,
+            metadata: { interval: 'month' }
+          )
+          get :coupon_preview,
+              params: { price_id: 'annual', coupon_code: 'MONTHLYONLY' }
+        end
+
+        it 'refuses to apply the coupon to the wrong plan' do
+          expect(json['status']).to eq('invalid')
+          expect(json['message'])
+            .to eq('This coupon code cannot be used with this plan.')
         end
       end
 
