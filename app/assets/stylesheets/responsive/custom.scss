@@ -822,3 +822,18 @@ dt {
     font-size: 1.65em;
   }
 }
+
+/*
+ * Pricing
+ */
+
+.price-label-option {
+  a {
+    color: $color_white;
+    &:hover,
+    &:active,
+    &:focus {
+      color: $color_yellow;
+    }
+  }
+}

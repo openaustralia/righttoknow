@@ -1,0 +1,36 @@
+<div class="pricing__tiers">
+  <div class="pricing__tier pricing__tier--primary">
+    <div class="pricing__tier__heading">
+      <h2><%= _('Professional') %></h2>
+
+      <p class="pricing__tier__subhead">
+        <%= _('For journalists, academics and power users') %>
+      </p>
+
+      <p class="price-label">
+        <span class="price-label__amount">
+          <%= format_currency(@prices[0].unit_amount_with_tax, no_cents_if_whole: true) %>
+        </span>
+
+        <%= billing_interval(@prices[0]) %>
+      </p>
+
+      <p class="price-label-option">
+        <%= link_to alternative_price_text(@prices[1]), plan_path(@prices[1]) %>
+      </p>
+    </div>
+
+    <div class="pricing__tier__content">
+      <h3><%= _('Featuring') %></h3>
+
+      <ul class="pricing__tier__features">
+        <li><%= _('Public requests for information') %></li>
+        <li><%= _('Private requests for information') %></li>
+        <li><%= _('Dashboard and workflow features') %></li>
+        <li><%= _('Friendly support') %></li>
+      </ul>
+
+      <%= link_to _('Sign up'), plan_path(@prices[0]), class: 'button button-pop' %>
+    </div>
+  </div>
+</div>
