@@ -837,3 +837,30 @@ dt {
     }
   }
 }
+
+// Live coupon price preview (see alaveteli_pro/coupon_preview.js)
+.plan-overview__original {
+  color: $color_dark_grey;
+  text-decoration: line-through;
+  margin-right: 0.5em;
+}
+
+.plan-overview__saving {
+  color: darken($color_green, 10%);
+  font-size: 0.875em;
+  text-align: right;
+  margin: 0.25em 0 0;
+}
+
+.plan-coupon__feedback {
+  font-size: 0.875em;
+  margin: 0.4em 0 0;
+
+  &--valid {
+    color: darken($color_green, 10%);
+  }
+
+  &--invalid {
+    color: $error-color;
+  }
+}

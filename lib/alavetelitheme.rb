@@ -5,7 +5,8 @@ theme_name.gsub!('-', '_')
 THEME_NAME = theme_name
 
 Rails.application.config.assets.precompile << ['event_tracking.js',
-                                               'personal_message_toggler.js']
+                                               'personal_message_toggler.js',
+                                               'alaveteli_pro/coupon_preview.js']
 
 module ActionController
   class Base
