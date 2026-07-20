@@ -3,6 +3,7 @@
 - [Right To Know](#right-to-know)
   - [Development](#development)
   - [Development Environment - Simple Steps](#development-environment---simple-steps)
+  - [Seeding test data](#seeding-test-data)
   - [Contributing](#contributing)
   - [Deployment](#deployment)
     - [Prerequisites](#prerequisites)
@@ -51,6 +52,64 @@ A shortened version:
 3. Pull a copy of the Right to Know repository into the `alaveteli-themes` directory.
 4. Copy `alaveteli\config\general.yml.example` to `alaveteli\config\general-righttoknow.yml` and modify the file. An exmaple of our current `general.yml` file can be found in the [infrastructure repository](https://github.com/openaustralia/infrastructure/blob/main/roles/internal/righttoknow/templates/general.yml).
 5. Continue following the instructions on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
+
+## Seeding test data
+
+[`script/seed_test_data.rb`](script/seed_test_data.rb) fills a development or
+test environment with a realistic subset of production data so authority
+listings, jurisdiction logic and request states behave like the real site.
+
+It creates:
+
+* A handful of **real authorities** per jurisdiction tag, taken from
+  production's public `all-authorities.csv` export (public information only —
+  name, tags, URL slug — no request PII). Every seeded authority is given a
+  **dummy `@example.com` request email** so the environment can never contact a
+  real authority.
+* **Dummy requests** per authority spread across a range of statuses, with a
+  subset of authorities carrying 3+ `requester_only` (prominence) requests.
+* A **browse-by-category taxonomy** synthesised from the jurisdiction tags on
+  the imported authorities. This is _not_ a copy of production's own category
+  structure — production does not publish its category definitions.
+
+The script refuses to run in `production`.
+
+Run it against the Alaveteli **app** (not this theme repo) with `rails runner`:
+
+```bash
+bundle exec rails runner \
+  ../alaveteli-themes/righttoknow/script/seed_test_data.rb
+```
+
+or inside Docker:
+
+```bash
+docker compose run --rm app \
+  bundle exec rails runner \
+  alaveteli-themes/righttoknow/script/seed_test_data.rb
+```
+
+Authorities and the browse-by-category page work immediately. Search and the
+request listings are Xapian-backed and will **not** show seeded data until the
+index is updated — either re-run with `SEED_REBUILD_INDEX=1`, or run:
+
+```bash
+bundle exec rake xapian:destroy_and_rebuild_index \
+  models="PublicBody User InfoRequestEvent"
+```
+
+Optional environment variables:
+
+| Variable | Purpose |
+| -------- | ------- |
+| `SEED_CSV_URL` | Override the production authorities CSV URL. |
+| `SEED_CSV_PATH` | Read authorities from a local CSV instead of fetching (handy offline; expects the `all-authorities.csv` format). |
+| `SEED_BODIES_PER_TAG` | Number of authorities per jurisdiction tag (default `5`). |
+| `SEED_REBUILD_INDEX` | Set to `1` to update the Xapian index at the end so seeded data shows up in search and request listings. |
+
+The script is idempotent: re-running it reuses existing authorities and
+categories and won't stack additional seeded requests onto authorities that
+already have them.
 
 ## Contributing
 
