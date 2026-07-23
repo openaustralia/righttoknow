@@ -10,8 +10,8 @@ describe HelpPageHistory do
 
     context 'with a custom help page' do
       let(:template) do
-        double(inspect: 'lib/themes/righttoknow/lib/views/' \
-                        'help/house_rules.html.erb')
+        double(identifier: 'lib/themes/righttoknow/lib/views/' \
+                           'help/house_rules.html.erb')
       end
 
       it do
