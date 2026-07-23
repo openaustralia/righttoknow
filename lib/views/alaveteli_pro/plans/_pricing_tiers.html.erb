@@ -7,17 +7,21 @@
         <%= _('For journalists, academics and power users') %>
       </p>
 
-      <p class="price-label">
-        <span class="price-label__amount">
-          <%= format_currency(@prices[0].unit_amount_with_tax, no_cents_if_whole: true) %>
-        </span>
+      <% if @prices&.any? %>
+        <p class="price-label">
+          <span class="price-label__amount">
+            <%= format_currency(@prices.first.unit_amount_with_tax, no_cents_if_whole: true) %>
+          </span>
 
-        <%= billing_interval(@prices[0]) %>
-      </p>
+          <%= billing_interval(@prices.first) %>
+        </p>
 
-      <p class="price-label-option">
-        <%= link_to alternative_price_text(@prices[1]), plan_path(@prices[1]) %>
-      </p>
+        <% if @prices.second %>
+          <p class="price-label-option">
+            <%= link_to alternative_price_text(@prices.second), plan_path(@prices.second) %>
+          </p>
+        <% end %>
+      <% end %>
     </div>
 
     <div class="pricing__tier__content">
@@ -30,7 +34,9 @@
         <li><%= _('Friendly support') %></li>
       </ul>
 
-      <%= link_to _('Sign up'), plan_path(@prices[0]), class: 'button button-pop' %>
+      <% if @prices&.any? %>
+        <%= link_to _('Sign up'), plan_path(@prices.first), class: 'button button-pop' %>
+      <% end %>
     </div>
   </div>
 </div>
