@@ -1,3 +1,4 @@
+<% prices = Array(@prices).compact %>
 <div class="pricing__tiers">
   <div class="pricing__tier pricing__tier--primary">
     <div class="pricing__tier__heading">
@@ -7,18 +8,18 @@
         <%= _('For journalists, academics and power users') %>
       </p>
 
-      <% if @prices&.any? %>
+      <% if prices.any? %>
         <p class="price-label">
           <span class="price-label__amount">
-            <%= format_currency(@prices.first.unit_amount_with_tax, no_cents_if_whole: true) %>
+            <%= format_currency(prices.first.unit_amount_with_tax, no_cents_if_whole: true) %>
           </span>
 
-          <%= billing_interval(@prices.first) %>
+          <%= billing_interval(prices.first) %>
         </p>
 
-        <% if @prices.second %>
+        <% if prices.second %>
           <p class="price-label-option">
-            <%= link_to alternative_price_text(@prices.second), plan_path(@prices.second) %>
+            <%= link_to alternative_price_text(prices.second), plan_path(prices.second) %>
           </p>
         <% end %>
       <% end %>
@@ -34,8 +35,8 @@
         <li><%= _('Friendly support') %></li>
       </ul>
 
-      <% if @prices&.any? %>
-        <%= link_to _('Sign up'), plan_path(@prices.first), class: 'button button-pop' %>
+      <% if prices.any? %>
+        <%= link_to _('Sign up'), plan_path(prices.first), class: 'button button-pop' %>
       <% end %>
     </div>
   </div>
