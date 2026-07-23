@@ -82,10 +82,10 @@ $oaf-footer-breakpoint-sm: 42em;
 .oaf-footer__links {
   font-size: 1em;
   line-height: 1.2em;
-  display: flex;
-  gap: 2em;
 
   @media (min-width: $oaf-footer-breakpoint-sm) {
+    display: flex;
+    gap: 2em;
     flex: 4 1 0;
   }
 
@@ -93,7 +93,10 @@ $oaf-footer-breakpoint-sm: 42em;
     margin: 0;
     padding: 0;
     list-style: none;
-    flex: 1 1 50%;
+
+    @media (min-width: $oaf-footer-breakpoint-sm) {
+      flex: 1 1 50%;
+    }
   }
 
   li {
