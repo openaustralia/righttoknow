@@ -31,17 +31,56 @@ Rails.configuration.to_prepare do
   # PlansController#show (login required, pro membership not) and skips
   # html_response so it can render JSON.
   AlaveteliPro::PlansController.class_eval do
-    skip_before_action :html_response, only: [:coupon_preview]
+    # raise: false so that an upstream rename of the html_response callback
+    # degrades this action rather than failing to boot the whole application.
+    skip_before_action :html_response, only: [:coupon_preview], raise: false
     before_action :authenticate, only: [:coupon_preview]
 
     def coupon_preview
       price = AlaveteliPro::Price.retrieve(params[:price_id])
       return render(json: { status: 'error' }, status: :not_found) unless price
 
-      render json: coupon_preview_json(price, params[:coupon_code].to_s.strip)
+      code = params[:coupon_code].to_s.strip
+
+      # Only count attempts that actually reach Stripe. A blank code is answered
+      # from the price alone, so it must not consume the user's allowance - the
+      # field is cleared and retyped in the course of ordinary use.
+      if code.present?
+        if coupon_preview_rate_limiter.limit?(coupon_preview_rate_limit_id)
+          return render(
+            json: { status: 'error',
+                    message: _('Too many attempts. Please try again later.') },
+            status: :too_many_requests
+          )
+        end
+
+        coupon_preview_rate_limiter.record!(coupon_preview_rate_limit_id)
+      end
+
+      render json: coupon_preview_json(price, code)
     end
 
     private
+
+    # 30 coupon codes per user per hour: generous for somebody typing a code
+    # they hold (the JS debounces, so one attempt is normally one request),
+    # restrictive for anyone probing to find codes that exist. Built here rather
+    # than held in a constant because this runs inside a to_prepare block, where
+    # defining constants would be redefined on every reload in development.
+    def coupon_preview_rate_limiter
+      @coupon_preview_rate_limiter ||=
+        AlaveteliRateLimiter::RateLimiter.new(
+          AlaveteliRateLimiter::Rule.new(
+            :coupon_preview, 30, AlaveteliRateLimiter::Window.new(1, :hour)
+          )
+        )
+    end
+
+    # Rate limit per user rather than per IP: the action requires a login, and
+    # keying on IP would penalise everyone behind a shared address.
+    def coupon_preview_rate_limit_id
+      @user.id
+    end
 
     def coupon_preview_json(price, code)
       return empty_preview(price) if code.blank?
@@ -96,16 +135,33 @@ Rails.configuration.to_prepare do
 
     # Replicates the arithmetic in
     # AlaveteliPro::Subscription::Discount#coupon_reduction (which mixes into a
-    # Subscription and can't be called against a bare Price + Coupon). That
-    # method is the source of truth; keep this in sync with it. Tax is applied
-    # to the post-discount net, matching Taxable and the legacy tax_percent the
-    # real subscription is created with.
-    def coupon_preview_payload(price, coupon)
+    # Subscription and so can't be called against a bare Price + Coupon). That
+    # method is the source of truth, and spec/coupon_preview_parity_spec.rb
+    # asserts the two agree - if upstream changes, that spec fails rather than
+    # this quietly drifting.
+    #
+    # Deliberately does NOT round the percent_off reduction: upstream's
+    # coupon_reduction is a bare `plan.amount * coupon.percent_off / 100`. Real
+    # Stripe returns a fractional percent_off (percent_off_precise), so rounding
+    # here would show a price a cent away from the one the subscription page
+    # displays after purchase.
+    #
+    # Tax matches Taxable#tax exactly: rounded VAT added to the unrounded net.
+    # Kept separate from the formatting below so it can be compared directly
+    # against upstream's figure in spec/coupon_preview_parity_spec.rb. Comparing
+    # formatted strings would not do: format_currency rounds to the cent and
+    # would mask a sub-cent divergence.
+    def coupon_discounted_gross(price, coupon)
       net = price.unit_amount
-      reduction = coupon.amount_off || (net * coupon.percent_off / 100).round
+      reduction = coupon.amount_off || (net * coupon.percent_off / 100)
       discounted_net = [net - reduction, 0].max
       tax_rate = AlaveteliConfiguration.stripe_tax_rate.to_f
-      discounted_gross = discounted_net + (discounted_net * tax_rate).round
+
+      discounted_net + (discounted_net * tax_rate).round(0)
+    end
+
+    def coupon_preview_payload(price, coupon)
+      discounted_gross = coupon_discounted_gross(price, coupon)
       saving = price.unit_amount_with_tax - discounted_gross
 
       {
