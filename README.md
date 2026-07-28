@@ -61,14 +61,14 @@ listings, jurisdiction logic and request states behave like the real site.
 
 It creates:
 
-* A handful of **real authorities** per jurisdiction tag, taken from
+- A handful of **real authorities** per jurisdiction tag, taken from
   production's public `all-authorities.csv` export (public information only —
   name, tags, URL slug — no request PII). Every seeded authority is given a
   **dummy `@example.com` request email** so the environment can never contact a
   real authority.
-* **Dummy requests** per authority spread across a range of statuses, with a
+- **Dummy requests** per authority spread across a range of statuses, with a
   subset of authorities carrying 3+ `requester_only` (prominence) requests.
-* A **browse-by-category taxonomy** synthesised from the jurisdiction tags on
+- A **browse-by-category taxonomy** synthesised from the jurisdiction tags on
   the imported authorities. This is _not_ a copy of production's own category
   structure — production does not publish its category definitions.
 
@@ -120,11 +120,11 @@ want to edit the upstream
 
 To contribute an enhancement or a fix to this theme:
 
-* Fork the project on GitHub.
-* Make a topic branch from the `staging` branch.
-* Make your changes and test.
-* Commit the changes without making changes to any files that aren't related to your enhancement or fix.
-* Send a pull request against the `staging` branch.
+- Fork the project on GitHub.
+- Make a topic branch from the `staging` branch.
+- Make your changes and test.
+- Commit the changes without making changes to any files that aren't related to your enhancement or fix.
+- Send a pull request against the `staging` branch.
 
 ## Deployment
 
@@ -132,9 +132,9 @@ The application is deployed using [Capistrano 3](https://capistranorb.com/). Dep
 
 ### Prerequisites
 
-* SSH access to the deployment servers as the `deploy` user
-* Gems installed: `bundle install --with deployment`
-* The server must have `shared/rbenv-version`, `shared/general.yml`, and all other shared files in place (managed by the [infrastructure repo](https://github.com/openaustralia/infrastructure))
+- SSH access to the deployment servers as the `deploy` user
+- Gems installed: `bundle install --with deployment`
+- The server must have `shared/rbenv-version`, `shared/general.yml`, and all other shared files in place (managed by the [infrastructure repo](https://github.com/openaustralia/infrastructure))
 
 ### Deploy commands
 
@@ -307,7 +307,7 @@ This how we want Right To Know's categories organised:
 #### Federal
 
 | Title | Description | Tag |
-|-------|-------------|-----|
+| ------- | ------------- | ----- |
 | Agriculture | part of the Agriculture portfolio | `agriculture` |
 | Attorney-General | part of the Attorney-General portfolio | `attorney_general` |
 | Communications | part of the Communications portfolio | `communications` |
@@ -330,7 +330,7 @@ This how we want Right To Know's categories organised:
 #### State and Territory
 
 | Title | Description | Tag |
-|-------|-------------|-----|
+| ------- | ------------- | ----- |
 | ACT | an ACT authority | `ACT_state` |
 | New South Wales | a NSW authority | `NSW_state` |
 | Northern Territory | a Northern Territory authority | `NT_state` |
@@ -343,7 +343,7 @@ This how we want Right To Know's categories organised:
 #### Local
 
 | Title | Description | Tag |
-|-------|-------------|-----|
+| ------- | ------------- | ----- |
 | New South Wales | a NSW Council | `NSW_council` |
 | Northern Territory | a Northern Territory Council | `NT_council` |
 | Queensland | a Queensland Council | `QLD_council` |
@@ -356,12 +356,12 @@ This how we want Right To Know's categories organised:
 
 When adding authorities for jurisdictions we don't yet cover we need to:
 
-* Update help and other text:
-  * [https://www.righttoknow.org.au/help/unhappy#complaining](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/unhappy.html.erb#L58-L67)
-  * [https://www.righttoknow.org.au/help/requesting#missing_body](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L59-L70)
-  * [https://www.righttoknow.org.au/help/requesting#ico_help](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L265-L287)
-  * [https://www.righttoknow.org.au/body/list/all](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/public_body/_list_sidebar_extra.html.erb#L1-L3)
-* Upload the new authorities (with the correct tags, see above)
-* Add categories (see above)
+- Update help and other text:
+  - [https://www.righttoknow.org.au/help/unhappy#complaining](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/unhappy.html.erb#L58-L67)
+  - [https://www.righttoknow.org.au/help/requesting#missing_body](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L59-L70)
+  - [https://www.righttoknow.org.au/help/requesting#ico_help](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L265-L287)
+  - [https://www.righttoknow.org.au/body/list/all](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/public_body/_list_sidebar_extra.html.erb#L1-L3)
+- Upload the new authorities (with the correct tags, see above)
+- Add categories (see above)
 
 This project is tested with [BrowserStack](https://email.browserstack.com/c/eJwkyDtywyAQANDTmA4GMN-Cs2RW7K7NyBIRSFGOnyLtw-IXj1FQMTHoYKwNSbyLjcnTM9pcvdOBjKWYELJlHWMmH0UrIbGuDPDMkeHLVPZGa2dtMM44NRvS2g7Jg46L9lMyyu-O1ySYp5EbtN3L1yDaZfIZcwjOL3Ku-Hs8nKYN2kfxoPlGmquqfROfct-3Wka_J415Qv3nURbaH053YNXHS8Elfor9CwAA__9z00N9)
