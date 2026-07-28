@@ -47,6 +47,12 @@ require 'open-uri'
 # --- Safety -----------------------------------------------------------------
 # This script fabricates data and rewrites authority request emails. It must
 # never touch production.
+#
+# Note that this guard also rules out the STAGING server, not just production:
+# both stages run with RAILS_ENV=production (the infrastructure repo installs a
+# rails_env.rb that forces it), so Rails.env.production? is true on staging too.
+# That is deliberate - the intended target is the local Docker development
+# environment described in the README, not a deployed host.
 abort 'Refusing to run in production: this seeds dummy data.' if Rails.env.production?
 
 # --- Configuration ----------------------------------------------------------
