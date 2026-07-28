@@ -3,6 +3,9 @@
 - [Right To Know](#right-to-know)
   - [Development](#development)
   - [Development Environment - Simple Steps](#development-environment---simple-steps)
+  - [Seeding test data](#seeding-test-data)
+  - [Pro subscriptions](#pro-subscriptions)
+    - [Restricting a coupon to a billing interval](#restricting-a-coupon-to-a-billing-interval)
   - [Contributing](#contributing)
   - [Deployment](#deployment)
     - [Prerequisites](#prerequisites)
@@ -36,7 +39,11 @@ repository's
 
 At present, we [use a fork of Alaveteli](https://github.com/openaustralia/alaveteli) which contains minor changes to the core to support us. Our plan is to transition to using upstream as soon as possible.
 
-As of 17 April 2026, we are currently running [Alaveteli 0.44.1.0](https://github.com/openaustralia/alaveteli/tree/0.44.1.0) using Ruby 3.2.9.
+To find out which version of Alaveteli a site is currently running, ask the site
+rather than this README, which would only go stale:
+
+- Production: <https://www.righttoknow.org.au/version.json>
+- Staging: `https://staging.righttoknow.org.au/version.json`
 
 If there is a fix or enhancement that is not specific to Right to Know/Australia changes should be submitted to the upstream [Alaveteli repository](https://github.com/mysociety/alaveteli) via a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
 
@@ -54,6 +61,93 @@ A shortened version:
 4. Copy `alaveteli\config\general.yml.example` to `alaveteli\config\general-righttoknow.yml` and modify the file. An exmaple of our current `general.yml` file can be found in the [infrastructure repository](https://github.com/openaustralia/infrastructure/blob/main/roles/internal/righttoknow/templates/general.yml).
 5. Continue following the instructions on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
 
+## Seeding test data
+
+[`script/seed_test_data.rb`](script/seed_test_data.rb) fills a development or
+test environment with a realistic subset of production data so authority
+listings, jurisdiction logic and request states behave like the real site.
+
+It creates:
+
+- A handful of **real authorities** per jurisdiction tag, taken from
+  production's public `all-authorities.csv` export (public information only —
+  name, tags, URL slug — no request PII). Every seeded authority is given a
+  **dummy `@example.com` request email** so the environment can never contact a
+  real authority.
+- **Dummy requests** per authority spread across a range of statuses, with a
+  subset of authorities carrying 3+ `requester_only` (prominence) requests.
+- A **browse-by-category taxonomy** synthesised from the jurisdiction tags on
+  the imported authorities. This is _not_ a copy of production's own category
+  structure — production does not publish its category definitions.
+
+The script refuses to run in `production`.
+
+Run it against the Alaveteli **app** (not this theme repo) with `rails runner`:
+
+```bash
+bundle exec rails runner \
+  ../alaveteli-themes/righttoknow/script/seed_test_data.rb
+```
+
+or inside Docker:
+
+```bash
+docker compose run --rm app \
+  bundle exec rails runner \
+  alaveteli-themes/righttoknow/script/seed_test_data.rb
+```
+
+Authorities and the browse-by-category page work immediately. Search and the
+request listings are Xapian-backed and will **not** show seeded data until the
+index is updated — either re-run with `SEED_REBUILD_INDEX=1`, or run:
+
+```bash
+bundle exec rake xapian:destroy_and_rebuild_index \
+  models="PublicBody User InfoRequestEvent"
+```
+
+Optional environment variables:
+
+| Variable              | Purpose                                                                                                          |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `SEED_CSV_URL`        | Override the production authorities CSV URL.                                                                     |
+| `SEED_CSV_PATH`       | Read authorities from a local CSV instead of fetching (handy offline; expects the `all-authorities.csv` format). |
+| `SEED_BODIES_PER_TAG` | Number of authorities per jurisdiction tag (default `5`).                                                        |
+| `SEED_REBUILD_INDEX`  | Set to `1` to update the Xapian index at the end so seeded data shows up in search and request listings.         |
+
+The script is idempotent: re-running it reuses existing authorities and
+categories and won't stack additional seeded requests onto authorities that
+already have them.
+
+## Pro subscriptions
+
+### Restricting a coupon to a billing interval
+
+Stripe coupons can only be limited to a **product**, not to an individual
+**price**. Because the Pro monthly and annual plans are two prices under one
+product, Stripe's own `applies_to` restriction cannot stop a coupon from
+discounting both. Some coupons are meant for a single plan (for example, a
+monthly-only referral coupon).
+
+The theme enforces a per-interval restriction itself, driven by coupon
+**metadata** so the rule lives with the coupon in Stripe (no code change or
+deploy needed to add or adjust restricted coupons):
+
+- Add a metadata key `interval` to the coupon in the Stripe dashboard, set to
+  the billing interval the coupon is allowed on: `day`, `week`, `month` or
+  `year`. A monthly-only coupon takes `interval` = `month`.
+- A coupon **without** an `interval` metadata key is unrestricted and applies to
+  any plan, exactly as before.
+
+With `interval` set, [`lib/controller_patches.rb`](lib/controller_patches.rb)
+blocks the coupon at checkout on a non-matching plan (before any subscription is
+created) and the live plan-page price preview refuses it too, so a discount is
+never advertised that checkout would then reject.
+
+For extra defence-in-depth you can also set the coupon's native `applies_to`
+products to the Pro product; this stops it discounting any other product, though
+it still can't separate monthly from annual.
+
 ## Contributing
 
 If you want to modify the customised look and feel of Right To Know then you
@@ -63,11 +157,11 @@ want to edit the upstream
 
 To contribute an enhancement or a fix to this theme:
 
-* Fork the project on GitHub.
-* Make a topic branch from the `staging` branch.
-* Make your changes and test.
-* Commit the changes without making changes to any files that aren't related to your enhancement or fix.
-* Send a pull request against the `staging` branch.
+- Fork the project on GitHub.
+- Make a topic branch from the `staging` branch.
+- Make your changes and test.
+- Commit the changes without making changes to any files that aren't related to your enhancement or fix.
+- Send a pull request against the `staging` branch.
 
 ## Deployment
 
@@ -75,9 +169,9 @@ The application is deployed using [Capistrano 3](https://capistranorb.com/). Dep
 
 ### Prerequisites
 
-* SSH access to the deployment servers as the `deploy` user
-* Gems installed: `bundle install --with deployment`
-* The server must have `shared/rbenv-version`, `shared/general.yml`, and all other shared files in place (managed by the [infrastructure repo](https://github.com/openaustralia/infrastructure))
+- SSH access to the deployment servers as the `deploy` user
+- Gems installed: `bundle install --with deployment`
+- The server must have `shared/rbenv-version`, `shared/general.yml`, and all other shared files in place (managed by the [infrastructure repo](https://github.com/openaustralia/infrastructure))
 
 ### Deploy commands
 
@@ -231,7 +325,7 @@ forget to also add the appropriate category tag, described in the section
 below, for the authority you're adding.
 
 | Jurisdiction | Tag       |
-|--------------|-----------|
+| ------------ | --------- |
 | Federal      | `federal` |
 | ACT          | `ACT`     |
 | NSW          | `NSW`     |
@@ -249,62 +343,62 @@ This how we want Right To Know's categories organised:
 
 #### Federal
 
-| Title | Description | Tag |
-|-------|-------------|-----|
-| Agriculture | part of the Agriculture portfolio | `agriculture` |
-| Attorney-General | part of the Attorney-General portfolio | `attorney_general` |
-| Communications | part of the Communications portfolio | `communications` |
-| Defence | part of the Defence portfolio | `defence` |
-| Education and Training | part of the Education and Training portfolio | `education_and_training` |
-| Employment | part of the Employment portfolio | `employment` |
-| Environment | part of the Environment portfolio | `environment` |
-| Finance | part of the Finance portfolio | `finance` |
-| Foreign Affairs and Trade | part of the Foreign Affairs and Trade portfolio | `foreign_affairs_and_trade` |
-| Health | part of the Health portfolio | `health` |
-| Immigration & Border Protection | part of the Immigration & Border Protection portfolio | `immigration_and_border_protection` |
-| Industry and Science | part of the Industry and Science portfolio | `industry_and_science` |
+| Title                                   | Description                                                   | Tag                                       |
+| --------------------------------------- | ------------------------------------------------------------- | ----------------------------------------- |
+| Agriculture                             | part of the Agriculture portfolio                             | `agriculture`                             |
+| Attorney-General                        | part of the Attorney-General portfolio                        | `attorney_general`                        |
+| Communications                          | part of the Communications portfolio                          | `communications`                          |
+| Defence                                 | part of the Defence portfolio                                 | `defence`                                 |
+| Education and Training                  | part of the Education and Training portfolio                  | `education_and_training`                  |
+| Employment                              | part of the Employment portfolio                              | `employment`                              |
+| Environment                             | part of the Environment portfolio                             | `environment`                             |
+| Finance                                 | part of the Finance portfolio                                 | `finance`                                 |
+| Foreign Affairs and Trade               | part of the Foreign Affairs and Trade portfolio               | `foreign_affairs_and_trade`               |
+| Health                                  | part of the Health portfolio                                  | `health`                                  |
+| Immigration & Border Protection         | part of the Immigration & Border Protection portfolio         | `immigration_and_border_protection`       |
+| Industry and Science                    | part of the Industry and Science portfolio                    | `industry_and_science`                    |
 | Infrastructure and Regional Development | part of the Infrastructure and Regional Development portfolio | `infrastructure_and_regional_development` |
-| Prime Minister | part of the Prime Minister portfolio | `prime_minister` |
-| Social Services | part of the Social Services portfolio | `social_services` |
-| Treasury | part of the Treasury portfolio | `treasury` |
-| Veterans' Affairs | part of the Veterans' Affairs portfolio | `veterans_affairs` |
-| All Federal authorities | a Federal authority | `federal` |
+| Prime Minister                          | part of the Prime Minister portfolio                          | `prime_minister`                          |
+| Social Services                         | part of the Social Services portfolio                         | `social_services`                         |
+| Treasury                                | part of the Treasury portfolio                                | `treasury`                                |
+| Veterans' Affairs                       | part of the Veterans' Affairs portfolio                       | `veterans_affairs`                        |
+| All Federal authorities                 | a Federal authority                                           | `federal`                                 |
 
 #### State and Territory
 
-| Title | Description | Tag |
-|-------|-------------|-----|
-| ACT | an ACT authority | `ACT_state` |
-| New South Wales | a NSW authority | `NSW_state` |
-| Northern Territory | a Northern Territory authority | `NT_state` |
-| Queensland | a Queensland authority | `QLD_state` |
-| South Australia | a South Australian authority | `SA_state` |
-| Tasmania | a Tasmanian authority | `TAS_state` |
-| Victoria | a Victorian authority | `VIC_state` |
-| Western Australia | a Western Australian authority | `WA_state` |
+| Title              | Description                    | Tag         |
+| ------------------ | ------------------------------ | ----------- |
+| ACT                | an ACT authority               | `ACT_state` |
+| New South Wales    | a NSW authority                | `NSW_state` |
+| Northern Territory | a Northern Territory authority | `NT_state`  |
+| Queensland         | a Queensland authority         | `QLD_state` |
+| South Australia    | a South Australian authority   | `SA_state`  |
+| Tasmania           | a Tasmanian authority          | `TAS_state` |
+| Victoria           | a Victorian authority          | `VIC_state` |
+| Western Australia  | a Western Australian authority | `WA_state`  |
 
 #### Local
 
-| Title | Description | Tag |
-|-------|-------------|-----|
-| New South Wales | a NSW Council | `NSW_council` |
-| Northern Territory | a Northern Territory Council | `NT_council` |
-| Queensland | a Queensland Council | `QLD_council` |
-| South Australia | a South Australian Council | `SA_council` |
-| Tasmania | a Tasmanian Council | `TAS_council` |
-| Victoria | a Victorian Council | `VIC_council` |
-| Western Australia | a Western Australian Council | `WA_council` |
+| Title              | Description                  | Tag           |
+| ------------------ | ---------------------------- | ------------- |
+| New South Wales    | a NSW Council                | `NSW_council` |
+| Northern Territory | a Northern Territory Council | `NT_council`  |
+| Queensland         | a Queensland Council         | `QLD_council` |
+| South Australia    | a South Australian Council   | `SA_council`  |
+| Tasmania           | a Tasmanian Council          | `TAS_council` |
+| Victoria           | a Victorian Council          | `VIC_council` |
+| Western Australia  | a Western Australian Council | `WA_council`  |
 
 ### Adding more jurisdictions
 
 When adding authorities for jurisdictions we don't yet cover we need to:
 
-* Update help and other text:
-  * [https://www.righttoknow.org.au/help/unhappy#complaining](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/unhappy.html.erb#L58-L67)
-  * [https://www.righttoknow.org.au/help/requesting#missing_body](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L59-L70)
-  * [https://www.righttoknow.org.au/help/requesting#ico_help](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L265-L287)
-  * [https://www.righttoknow.org.au/body/list/all](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/public_body/_list_sidebar_extra.html.erb#L1-L3)
-* Upload the new authorities (with the correct tags, see above)
-* Add categories (see above)
+- Update help and other text:
+  - [https://www.righttoknow.org.au/help/unhappy#complaining](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/unhappy.html.erb#L58-L67)
+  - [https://www.righttoknow.org.au/help/requesting#missing_body](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L59-L70)
+  - [https://www.righttoknow.org.au/help/requesting#ico_help](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/help/requesting.html.erb#L265-L287)
+  - [https://www.righttoknow.org.au/body/list/all](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/public_body/_list_sidebar_extra.html.erb#L1-L3)
+- Upload the new authorities (with the correct tags, see above)
+- Add categories (see above)
 
 This project is tested with [BrowserStack](https://email.browserstack.com/c/eJwkyDtywyAQANDTmA4GMN-Cs2RW7K7NyBIRSFGOnyLtw-IXj1FQMTHoYKwNSbyLjcnTM9pcvdOBjKWYELJlHWMmH0UrIbGuDPDMkeHLVPZGa2dtMM44NRvS2g7Jg46L9lMyyu-O1ySYp5EbtN3L1yDaZfIZcwjOL3Ku-Hs8nKYN2kfxoPlGmquqfROfct-3Wka_J415Qv3nURbaH053YNXHS8Elfor9CwAA__9z00N9)

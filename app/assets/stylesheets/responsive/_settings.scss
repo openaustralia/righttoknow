@@ -1,6 +1,6 @@
 $main_menu-mobile_menu_cutoff: 58em;
 $row-width: 64em;
-$body-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$body-font-family: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 $base-font-size: 16px;
 
 // Specify the filename and dimensions of your logo file here
@@ -17,8 +17,6 @@ $color_blue: #4faded;
 $color_green: #62b356;
 $color_yellow: #ffd836;
 $color_red: #e04b4b;
-$color_violet: #a94ca6;
-$color_purple: #5c377f;
 $color_white: #ffffff;
 $color_off_white: #f3f1eb;
 $color_light_grey: #e2dfd9;
@@ -35,11 +33,11 @@ $body-bg: $color_neutral_light;
 
 $body-font-color: $color_neutral_dark;
 $link-color: darken($color_blue, 30%);
-$action-color: $color_green;
-$font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family: $body-font-family;
 $form_input-bg: $color_white;
 $form-label-font-color: $color_black;
 
+// WCAG: do not lighten - white text on the brand cyan fails AA contrast
 $button-bg: darken($color_cyan, 10%);
 $button-color: $color_white;
 
@@ -53,3 +51,17 @@ $action-color: $color_orange;
 
 $banner_inner_bg: $color_primary;
 $topnav_bg: darken($color_primary, 10%);
+
+// Derived tokens - named results of the colour maths used across the theme
+// Note: avoid Foundation variable names here (e.g. $button-bg-hover) - the
+// theme settings load before Foundation's components, so a shared name would
+// override Foundation's !default values.
+$button-hover-bg: darken($button-bg, 10%);
+$link-hover-color: darken($link-color, 10%);
+$color_sand_dark: desaturate(darken($color_sand, 10%), 5%);
+$color_sand_darker: desaturate(darken($color_sand, 20%), 5%);
+$notice-bg: desaturate(lighten($notice-color, 30%), 10%);
+$error-bg: desaturate(lighten($error-color, 30%), 10%);
+$action-bg: desaturate(lighten($action-color, 30%), 10%);
+$hero-cta-bg: desaturate(darken($color_secondary, 10%), 5%);
+$hero-cta-bg-hover: darken($color_secondary, 20%);

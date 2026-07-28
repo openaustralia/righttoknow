@@ -9,8 +9,11 @@
     margin-bottom: 10px;
     vertical-align: middle;
     transition: opacity .2s ease-in-out;
-    -moz-transition: opacity .2s ease-in-out;
-    -webkit-transition: opacity .2s ease-in-out;
+    opacity: 0.6;
+
+    &:hover {
+      opacity: 0.85;
+    }
   }
 
   .logos {
@@ -20,78 +23,14 @@
     }
   }
 
-  img#openforum_logo {
-    opacity: 0.6;
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-
-  img#cpd_logo {
-    opacity: 0.65;
-    &:hover {
-      opacity: 0.85;
-    }
-  }
-
-  img#getup_logo {
-    opacity: 0.7;
-    &:hover {
-      opacity: 0.9;
-    }
-  }
-
-  img#crikey_logo {
-    opacity: 0.50;
-    &:hover {
-      opacity: 0.70;
-    }
-  }
-
-  img#newmatilda_logo {
-    opacity: 0.7;
-    &:hover {
-      opacity: 0.9;
-    }
-  }
-
-  img#blueprintforfreespeech_logo {
-    opacity: 0.65;
-    &:hover {
-      opacity: 0.85;
-    }
+  img#efa_logo,
+  img#tia_logo,
+  img#mysociety_logo,
+  img#opennorth_logo {
+    margin-right: 16px;
   }
 
   img#efa_logo {
-    margin-right: 16px;
     padding-bottom: 6px;
-    opacity: 0.55;
-    &:hover {
-      opacity: 0.75;
-    }
-  }
-
-  img#tia_logo {
-    margin-right: 16px;
-    opacity: 0.5;
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-
-  img#mysociety_logo {
-    margin-right: 16px;
-    opacity: 0.65;
-    &:hover {
-      opacity: 0.85;
-    }
-  }
-
-  img#opennorth_logo {
-    margin-right: 16px;
-    opacity: 0.65;
-    &:hover {
-      opacity: 0.85;
-    }
   }
 }
