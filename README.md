@@ -37,6 +37,12 @@ repository's
 
 At present, we [use a fork of Alaveteli](https://github.com/openaustralia/alaveteli) which contains minor changes to the core to support us. Our plan is to transition to using upstream as soon as possible.
 
+To find out which version of Alaveteli a site is currently running, ask the site
+rather than this README, which would only go stale:
+
+- Production: <https://www.righttoknow.org.au/version.json>
+- Staging: `https://staging.righttoknow.org.au/version.json`
+
 If there is a fix or enhancement that is not specific to Right to Know/Australia changes should be submitted to the upstream [Alaveteli repository](https://github.com/mysociety/alaveteli) via a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
 
 However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
@@ -100,12 +106,12 @@ bundle exec rake xapian:destroy_and_rebuild_index \
 
 Optional environment variables:
 
-| Variable | Purpose |
-| -------- | ------- |
-| `SEED_CSV_URL` | Override the production authorities CSV URL. |
-| `SEED_CSV_PATH` | Read authorities from a local CSV instead of fetching (handy offline; expects the `all-authorities.csv` format). |
-| `SEED_BODIES_PER_TAG` | Number of authorities per jurisdiction tag (default `5`). |
-| `SEED_REBUILD_INDEX` | Set to `1` to update the Xapian index at the end so seeded data shows up in search and request listings. |
+| Variable              | Purpose                                                                                                          |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `SEED_CSV_URL`        | Override the production authorities CSV URL.                                                                     |
+| `SEED_CSV_PATH`       | Read authorities from a local CSV instead of fetching (handy offline; expects the `all-authorities.csv` format). |
+| `SEED_BODIES_PER_TAG` | Number of authorities per jurisdiction tag (default `5`).                                                        |
+| `SEED_REBUILD_INDEX`  | Set to `1` to update the Xapian index at the end so seeded data shows up in search and request listings.         |
 
 The script is idempotent: re-running it reuses existing authorities and
 categories and won't stack additional seeded requests onto authorities that
@@ -288,7 +294,7 @@ forget to also add the appropriate category tag, described in the section
 below, for the authority you're adding.
 
 | Jurisdiction | Tag       |
-|--------------|-----------|
+| ------------ | --------- |
 | Federal      | `federal` |
 | ACT          | `ACT`     |
 | NSW          | `NSW`     |
@@ -306,51 +312,51 @@ This how we want Right To Know's categories organised:
 
 #### Federal
 
-| Title | Description | Tag |
-| ------- | ------------- | ----- |
-| Agriculture | part of the Agriculture portfolio | `agriculture` |
-| Attorney-General | part of the Attorney-General portfolio | `attorney_general` |
-| Communications | part of the Communications portfolio | `communications` |
-| Defence | part of the Defence portfolio | `defence` |
-| Education and Training | part of the Education and Training portfolio | `education_and_training` |
-| Employment | part of the Employment portfolio | `employment` |
-| Environment | part of the Environment portfolio | `environment` |
-| Finance | part of the Finance portfolio | `finance` |
-| Foreign Affairs and Trade | part of the Foreign Affairs and Trade portfolio | `foreign_affairs_and_trade` |
-| Health | part of the Health portfolio | `health` |
-| Immigration & Border Protection | part of the Immigration & Border Protection portfolio | `immigration_and_border_protection` |
-| Industry and Science | part of the Industry and Science portfolio | `industry_and_science` |
+| Title                                   | Description                                                   | Tag                                       |
+| --------------------------------------- | ------------------------------------------------------------- | ----------------------------------------- |
+| Agriculture                             | part of the Agriculture portfolio                             | `agriculture`                             |
+| Attorney-General                        | part of the Attorney-General portfolio                        | `attorney_general`                        |
+| Communications                          | part of the Communications portfolio                          | `communications`                          |
+| Defence                                 | part of the Defence portfolio                                 | `defence`                                 |
+| Education and Training                  | part of the Education and Training portfolio                  | `education_and_training`                  |
+| Employment                              | part of the Employment portfolio                              | `employment`                              |
+| Environment                             | part of the Environment portfolio                             | `environment`                             |
+| Finance                                 | part of the Finance portfolio                                 | `finance`                                 |
+| Foreign Affairs and Trade               | part of the Foreign Affairs and Trade portfolio               | `foreign_affairs_and_trade`               |
+| Health                                  | part of the Health portfolio                                  | `health`                                  |
+| Immigration & Border Protection         | part of the Immigration & Border Protection portfolio         | `immigration_and_border_protection`       |
+| Industry and Science                    | part of the Industry and Science portfolio                    | `industry_and_science`                    |
 | Infrastructure and Regional Development | part of the Infrastructure and Regional Development portfolio | `infrastructure_and_regional_development` |
-| Prime Minister | part of the Prime Minister portfolio | `prime_minister` |
-| Social Services | part of the Social Services portfolio | `social_services` |
-| Treasury | part of the Treasury portfolio | `treasury` |
-| Veterans' Affairs | part of the Veterans' Affairs portfolio | `veterans_affairs` |
-| All Federal authorities | a Federal authority | `federal` |
+| Prime Minister                          | part of the Prime Minister portfolio                          | `prime_minister`                          |
+| Social Services                         | part of the Social Services portfolio                         | `social_services`                         |
+| Treasury                                | part of the Treasury portfolio                                | `treasury`                                |
+| Veterans' Affairs                       | part of the Veterans' Affairs portfolio                       | `veterans_affairs`                        |
+| All Federal authorities                 | a Federal authority                                           | `federal`                                 |
 
 #### State and Territory
 
-| Title | Description | Tag |
-| ------- | ------------- | ----- |
-| ACT | an ACT authority | `ACT_state` |
-| New South Wales | a NSW authority | `NSW_state` |
-| Northern Territory | a Northern Territory authority | `NT_state` |
-| Queensland | a Queensland authority | `QLD_state` |
-| South Australia | a South Australian authority | `SA_state` |
-| Tasmania | a Tasmanian authority | `TAS_state` |
-| Victoria | a Victorian authority | `VIC_state` |
-| Western Australia | a Western Australian authority | `WA_state` |
+| Title              | Description                    | Tag         |
+| ------------------ | ------------------------------ | ----------- |
+| ACT                | an ACT authority               | `ACT_state` |
+| New South Wales    | a NSW authority                | `NSW_state` |
+| Northern Territory | a Northern Territory authority | `NT_state`  |
+| Queensland         | a Queensland authority         | `QLD_state` |
+| South Australia    | a South Australian authority   | `SA_state`  |
+| Tasmania           | a Tasmanian authority          | `TAS_state` |
+| Victoria           | a Victorian authority          | `VIC_state` |
+| Western Australia  | a Western Australian authority | `WA_state`  |
 
 #### Local
 
-| Title | Description | Tag |
-| ------- | ------------- | ----- |
-| New South Wales | a NSW Council | `NSW_council` |
-| Northern Territory | a Northern Territory Council | `NT_council` |
-| Queensland | a Queensland Council | `QLD_council` |
-| South Australia | a South Australian Council | `SA_council` |
-| Tasmania | a Tasmanian Council | `TAS_council` |
-| Victoria | a Victorian Council | `VIC_council` |
-| Western Australia | a Western Australian Council | `WA_council` |
+| Title              | Description                  | Tag           |
+| ------------------ | ---------------------------- | ------------- |
+| New South Wales    | a NSW Council                | `NSW_council` |
+| Northern Territory | a Northern Territory Council | `NT_council`  |
+| Queensland         | a Queensland Council         | `QLD_council` |
+| South Australia    | a South Australian Council   | `SA_council`  |
+| Tasmania           | a Tasmanian Council          | `TAS_council` |
+| Victoria           | a Victorian Council          | `VIC_council` |
+| Western Australia  | a Western Australian Council | `WA_council`  |
 
 ### Adding more jurisdictions
 
