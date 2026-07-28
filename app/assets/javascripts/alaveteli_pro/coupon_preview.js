@@ -17,7 +17,12 @@
   var originalEl = document.getElementById('js-plan-original');
   var savingEl = document.getElementById('js-plan-saving');
   var feedbackEl = document.getElementById('js-coupon-feedback');
-  if (!input || !priceEl) { return; }
+  // Every one of these is dereferenced below, in reset() or apply() or when
+  // reading data-original. Bail out if the template stops rendering any of them,
+  // rather than throwing and taking the whole preview down with it.
+  if (!input || !amountEl || !priceEl || !originalEl || !savingEl || !feedbackEl) {
+    return;
+  }
 
   var url = wrap.getAttribute('data-preview-url');
   var original = amountEl.getAttribute('data-original');
