@@ -131,12 +131,19 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do
   # THE discriminating case. With an Integer percent_off, Ruby's integer division
   # already truncates, so rounding the result is a no-op and a rounding bug hides
   # completely. Real Stripe sends a fractional percent_off (percent_off_precise),
-  # and only then do "round the reduction" and "don't" give different answers:
-  # 4499 * 12.5 / 100 is 562.375, which rounds to 562.
+  # and only then do "round the reduction" and "don't" diverge.
+  #
+  # 900 at 12.5% off with 10% tax is chosen deliberately: it is one of the price
+  # points where the divergence survives formatting and a person sees a different
+  # price. Rounding the reduction gives 866 (£8.66); not rounding gives 866.5,
+  # which formats as £8.67. Most price points hide the difference behind
+  # format_currency's rounding to the cent, so a spec that only asserted the
+  # rendered string would pass on the wrong arithmetic at most values - hence the
+  # numeric assertion as well.
   context 'with a fractional percent_off' do
     let!(:price) do
       stripe_helper.create_price(
-        id: 'pro', product: product.id, unit_amount: 4499
+        id: 'pro', product: product.id, unit_amount: 900
       )
     end
 
@@ -149,6 +156,21 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do
     it 'computes the same amount upstream would display' do
       @coupon_code = 'TWELVEHALF'
       expect(theme_gross('pro', @coupon_code)).to eq upstream_gross('pro')
+    end
+
+    it 'renders the same price a person would be shown after purchase' do
+      @coupon_code = 'TWELVEHALF'
+      get :coupon_preview,
+          params: { price_id: 'pro', coupon_code: @coupon_code }
+
+      expected = controller.helpers
+                           .format_currency(upstream_gross('pro'), no_cents_if_whole: true)
+
+      expect(JSON.parse(response.body).fetch('amount')).to eq expected
+      # £ because iso_currency_code is stubbed to GBP above. Rounding the
+      # reduction would render £8.66 here - a different price, not a rounding
+      # curiosity.
+      expect(expected).to eq '£8.67'
     end
   end
 
