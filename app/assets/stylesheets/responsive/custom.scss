@@ -143,9 +143,35 @@ a.link_button_green_large {
 
 /* Popups */
 
+// Core's responsive/_popups_style.scss styles .popup as a dark banner and forces
+// white text and white links. We keep the pale green banner, so mirror core's
+// full selector list to restore readable text. The theme loads after core
+// (all.scss:133 vs :20), so matching specificity wins. Keep in sync on upgrade.
 .popup {
   background-color: $notice-bg;
   border: 3px solid $notice-color;
+  color: $body-font-color;
+
+  a,
+  a:visited {
+    color: $link-color;
+  }
+
+  a:hover,
+  a:active,
+  a:focus,
+  a:visited:hover,
+  a:visited:active,
+  a:visited:focus {
+    color: $link-hover-color;
+  }
+
+  // Core's white `.popup a` rule (0,1,1) also captures the dismiss x, which core
+  // otherwise colours via `.popup__close` (0,1,0). Restore that colour so the x
+  // is not swept up by the link rules above.
+  a.popup__close {
+    color: $body-font-color;
+  }
 }
 
 
