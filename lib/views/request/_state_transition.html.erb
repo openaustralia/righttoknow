@@ -1,0 +1,8 @@
+<% state, text = state_transition %>
+<% id_suffix ||= nil %>
+
+<div class="input-label-aligned">
+  <%= classification_radio_button state, id_suffix: id_suffix %>
+  <i class="icon-standalone icon_<%= state %>"></i>
+  <%= classification_label state, text, id_suffix: id_suffix %>
+</div>

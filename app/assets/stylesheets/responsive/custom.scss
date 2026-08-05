@@ -1,44 +1,7 @@
-@import "responsive/rtk/footer";
+@import "responsive/rtk/fonts";
+@import "responsive/rtk/mixins";
 @import "responsive/rtk/request_personal_message";
 @import "responsive/rtk/supporting_orgs";
-
-/* Mixin styles */
-
-/* Hide text when it's replaced by an image */
-.image-replacement {
-  overflow: hidden;
-  text-indent: 150%;
-  white-space: nowrap;
-}
-
-/* General styling of nav menu items */
-%menu-item {
-  text-decoration: none;
-  color: transparentize($color_white, 0.2);
-  @include ie8 {
-    color: $color_white;
-  }
-  transition: background-color 0.5s ease-out;
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: darken($color_primary, 15%);
-    color: $color_white;
-  }
-
-}
-
-/* Selected menu item */
-%selected-menu-item {
-  font-weight: bold;
-  color: $color_primary;
-  background-color: $color_neutral_light;
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: $color_neutral_light;
-  }
-}
 
 .js-loaded {
   .account-link {
@@ -125,6 +88,12 @@ body{
   font-family: $font-family;
 }
 
+// Fira Sans 700 reads heavy at display sizes - semibold carries the same
+// hierarchy with less shouting
+h1, h2, h3 {
+  font-weight: 600;
+}
+
 a {
   color: $link-color;
   &:visited {
@@ -133,7 +102,7 @@ a {
   &:hover,
   &:active,
   &:focus {
-    color: darken($link-color, 10%);
+    color: $link-hover-color;
   }
 }
 
@@ -154,14 +123,6 @@ form input[type="tel"],
 form input[type="number"] {
     border-radius: 0;
     background-color: $form_input-bg;
-    /* Set a fixed height for text inputs in older IE 8 */
-    @include ie8{
-        height: 2.3125em;
-    }
-    /* Do the same in px for IE < 7 */
-    @include lte-ie7{
-        height: 22px;
-    }
 }
 
 input.use-datepicker[type=text] {
@@ -170,81 +131,6 @@ input.use-datepicker[type=text] {
 }
 
 /* Button styles */
-
-@mixin button-base($size: normal, $disabled: false) {
-  padding: 0.5em 1.25em;
-  border-radius: 3px;
-  display: inline-block;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 300ms ease-out;
-  margin-bottom: 0;
-  font-family: $font-family;
-  @if $size == large {
-    font-size: 2.2em;
-  }
-  &:hover,
-  &:active,
-  &:focus {
-    text-decoration: none;
-    transition: background-color 300ms ease-out;
-  }
-  @if $disabled {
-    opacity: 0.333;
-    transition: none;
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: inherit;
-      color: inherit;
-      cursor: default;
-      transition: none;
-    }
-  }
-}
-
-@mixin button-primary($args...) {
-  @include button-base($args...);
-  color: $color_white;
-  background-color: $button-bg;
-  border: none;
-  &:hover,
-  &:active,
-  &:focus,
-  &:visited:hover,
-  &:visited:active,
-  &:visited:focus {
-    background-color: darken($button-bg, 10%);
-    color: $color_white;
-  }
-}
-
-@mixin button-secondary($args...) {
-  @include button-base($args...);
-  background-color: desaturate(darken($color_sand, 10%), 5%);
-  color: $color_black;
-  font-weight: normal;
-  &:hover,
-  &:active,
-  &:focus {
-    color: $color_black;
-    background-color: desaturate(darken($color_sand, 20%), 5%);
-  }
-}
-
-@mixin button-tertiary($args...) {
-  @include button-base($args...);
-  background-color: desaturate(darken($color_sand, 5%), 5%);;
-  color: $color_black;
-  font-weight: normal;
-  border: 1px solid desaturate(darken($color_sand, 15%),5%);
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: darken($color_sand, 7.5%);
-    border: 1px solid desaturate(darken($color_sand, 25%),5%);
-  }
-}
 
 form input[type=submit], a.link_button_green, a.link_button_green_large {
   @include button-primary;
@@ -255,33 +141,37 @@ a.link_button_green_large {
   @include button-primary($size: large);
 }
 
-
-/* Action Bar Mixins */
-
-@mixin follow-button {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  margin-bottom: 0;
-}
-
-@mixin follower-count {
-  color: $color_dark_grey;
-  padding: 0.56em 1.25em;
-  border: 1px solid $color_light_grey;
-  position: relative;
-  left: -3px;
-  line-height: 1.6em;
-  border-left: 0;
-  border-radius: 3px;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
 /* Popups */
 
+// Core's responsive/_popups_style.scss styles .popup as a dark banner and forces
+// white text and white links. We keep the pale green banner, so mirror core's
+// full selector list to restore readable text. The theme loads after core
+// (all.scss:133 vs :20), so matching specificity wins. Keep in sync on upgrade.
 .popup {
-  background-color: desaturate(lighten($notice-color, 30%),10%);
+  background-color: $notice-bg;
   border: 3px solid $notice-color;
+  color: $body-font-color;
+
+  a,
+  a:visited {
+    color: $link-color;
+  }
+
+  a:hover,
+  a:active,
+  a:focus,
+  a:visited:hover,
+  a:visited:active,
+  a:visited:focus {
+    color: $link-hover-color;
+  }
+
+  // Core's white `.popup a` rule (0,1,1) also captures the dismiss x, which core
+  // otherwise colours via `.popup__close` (0,1,0). Restore that colour so the x
+  // is not swept up by the link rules above.
+  a.popup__close {
+    color: $body-font-color;
+  }
 }
 
 
@@ -324,13 +214,6 @@ a.link_button_green_large {
   /* Show which section is currently selected */
   li.selected a {
     @extend %selected-menu-item;
-  }
-
-  /* Vertically align the label image for older IE*/
-  @include ie8 {
-    img {
-      margin-top: 0.626em;
-    }
   }
 }
 
@@ -380,17 +263,17 @@ a.link_button_green_large {
 }
 
 #notice {
-  background-color: desaturate(lighten($notice-color, 30%),10%);
+  background-color: $notice-bg;
   border-color: $notice-color;
 }
 
 #error, #hidden_request, .warning {
-  background-color: desaturate(lighten($error-color, 30%),10%);
+  background-color: $error-bg;
   border-color: $error-color;
 }
 
 .undescribed_requests {
-  background-color: desaturate(lighten($action-color, 30%),10%);
+  background-color: $action-bg;
   border-color: $action-color;
 }
 
@@ -443,9 +326,6 @@ p.locale-list-trigger {
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    @include ie8 {
-      border-top: 5px solid $color_white;
-    }
     border-top: 5px solid rgba(255,255,255,0.4);
   }
 }
@@ -537,9 +417,6 @@ p.locale-list-trigger {
 }
 
 .locale-list.active .current-locale:after {
-  @include ie8 {
-    border-top-color: $color_white;
-  }
   border-top-color: rgba(255,255,255,0.4);
 }
 
@@ -586,34 +463,6 @@ p.locale-list-trigger {
   }
 }
 
-
-/* Footer */
-#footer {
-  background-color: $color_neutral_dark;
-  color: darken($color_neutral_light, 10%);
-  a {
-    text-decoration: none;
-    color: $color_white;
-    &:hover,
-    &:active,
-    &:focus {
-      color: lighten($color_primary, 10%);
-      text-decoration: underline;
-    }
-  }
-}
-
-.footer__about {
-  h2 {
-    color: $color_white;
-  }
-}
-
-.footer__final {
-  .row {
-    border-top: 1px solid lighten($color_neutral_dark, 6%);
-  }
-}
 
 /* Request page */
 .request-header__action-bar__actions {
@@ -670,6 +519,18 @@ a.correspondence__header__date:visited {
   display:inline;
 }
 
+.describe_state_form .input-label-aligned {
+  input[type="radio"],
+  .icon-standalone,
+  label {
+    vertical-align: middle;
+  }
+
+  .icon-standalone {
+    margin: 0 0.25em;
+  }
+}
+
 #link_box {
   font-family: $font-family;
   border-radius: 0;
@@ -684,7 +545,7 @@ a.correspondence__header__date:visited {
   padding: 0;
 
   form{
-    background-color: desaturate(lighten($action-color, 30%),10%);
+    background-color: $action-bg;
     border-color: $action-color;
     h2 {
       margin-top: 0;
@@ -755,9 +616,6 @@ a.correspondence__header__date:visited {
   font-family: $font-family;
   background-color: $color_primary;
   color: transparentize($color_white, 0.2);
-  @include ie8 {
-    color: $color_white;
-  }
   a {
     color: $color_white;
   }
@@ -783,10 +641,11 @@ a.correspondence__header__date:visited {
 /* Help pages */
 
 dt {
-  font-weight: 700;
+  font-weight: 600;
   @include respond-min( $main_menu-mobile_menu_cutoff ){
-    font-size: 2em;
-    line-height: 1.1em;
+    font-size: 1.375em;
+    line-height: 1.3;
+    margin-top: 1.5em;
   }
 }
 
@@ -797,6 +656,10 @@ dt {
   }
   li {
     margin-bottom: 0.5em;
+  }
+  // Cap the measure so paragraphs stay readable on wide screens
+  p, dd {
+    max-width: 42em;
   }
 }
 
@@ -826,11 +689,8 @@ dt {
 
 .steps__step-box {
   background-color: $color_white;
-  padding: 2em;
+  padding: 1.5em;
   box-shadow: 0 1px 2px transparentize($color_black, 0.75);
-  @include respond-min( $main_menu-mobile_menu_cutoff ){
-    min-height: 11em;
-  }
   p {
     line-height: 1.5em;
     color: $color_neutral_dark;
@@ -850,15 +710,6 @@ dt {
     margin-left: -1.75em;
     bottom: -1em;
     top: auto;
-  }
-}
-
-.learn-more-foi {
-  @include respond-min( $main_menu-mobile_menu_cutoff ){
-    margin-top: 3em;
-  }
-  a {
-    @include button-secondary;
   }
 }
 
@@ -901,11 +752,12 @@ dt {
   background-image: image-url('homepage-background-small.jpg');
   background-repeat: no-repeat;
   background-position: center top;
+  background-size: cover;
   color: $color_white;
-  padding: 2em 0 5em;
+  padding: 2em 0 3em;
   position: relative;
   @include respond-min($main_menu-mobile_menu_cutoff) {
-    padding: 5em 0 8em;
+    padding: 3em 0 4em;
     background-image: image-url('homepage-background.jpg');
   }
 
@@ -925,7 +777,7 @@ dt {
   .new-request__content {
     background-color: $color_neutral_dark;
     border-radius: 5px;
-    padding: 1.888888889em;
+    padding: 1.5em;
   }
 
   .new-request__title {
@@ -936,18 +788,15 @@ dt {
 
   .new-request__description {
     color: transparentize($color_white, 0.2);
-    @include ie8 {
-      color: $color_white;
-    }
   }
   .new-request__make-new-requests {
     @include button-base;
-    background-color: desaturate(darken($color_secondary, 10%), 5%);
+    background-color: $hero-cta-bg;
     color: $color_black;
     &:hover,
     &:active,
     &:focus {
-      background-color: darken($color_secondary, 20%);
+      background-color: $hero-cta-bg-hover;
     }
   }
 }
@@ -958,6 +807,26 @@ dt {
   // Provide a tiny bit of extra room at the top of headers in lists so that
   // the top of letters don't get chopped off
   margin-top: 0.1em;
+  font-weight: 600;
+}
+
+/* Tighter vertical rhythm and clearer hierarchy in request/authority lists */
+.request_listing, .body_listing, .user_listing {
+  margin-top: 1.125em;
+}
+
+.request_listing {
+  .desc {
+    font-style: normal;
+    color: $color_dark_grey;
+    font-size: 0.9375em;
+    margin-bottom: 1em;
+  }
+  .bottomline {
+    @include respond-min( $main_menu-mobile_menu_cutoff ){
+      margin-bottom: 1em;
+    }
+  }
 }
 
 .marketing__roles__researcher {
@@ -977,5 +846,47 @@ dt {
 
   h2 {
     font-size: 1.65em;
+  }
+}
+
+/*
+ * Pricing
+ */
+
+.price-label-option {
+  a {
+    color: $color_white;
+    &:hover,
+    &:active,
+    &:focus {
+      color: $color_yellow;
+    }
+  }
+}
+
+// Live coupon price preview (see alaveteli_pro/coupon_preview.js)
+.plan-overview__original {
+  color: $color_dark_grey;
+  text-decoration: line-through;
+  margin-right: 0.5em;
+}
+
+.plan-overview__saving {
+  color: darken($color_green, 10%);
+  font-size: 0.875em;
+  text-align: right;
+  margin: 0.25em 0 0;
+}
+
+.plan-coupon__feedback {
+  font-size: 0.875em;
+  margin: 0.4em 0 0;
+
+  &--valid {
+    color: darken($color_green, 10%);
+  }
+
+  &--invalid {
+    color: $error-color;
   }
 }

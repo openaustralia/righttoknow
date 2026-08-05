@@ -1,9 +1,24 @@
-$body-bg: #f7eee1;
-$button-bg: #8b9352;
-$heading-color: #3d3b38;
-$status-success: #aab26e;
-$status-failure: #ff7959;
-$status-pending: #e69e5d;
+// Palette copied from responsive/_settings.scss — this bundle compiles
+// standalone for embedding on third-party sites, so it can't import the
+// theme settings. Keep these in sync with _settings.scss.
+$color_sand: #f3f1eb;
+$color_black: #333333;
+$color_blue: #4faded;
+$color_green: #62b356;
+$color_orange: #f4a140;
+$color_red: #e04b4b;
+$color_cyan: #00dcf0;
+$color_dark_grey: #6c6b68;
+
+$body-bg: $color_sand;
+// Dark text on the brand cyan (white on cyan fails WCAG AA)
+$button-bg: $color_cyan;
+$button-color: $color_black;
+$link-color: darken($color_blue, 30%);
+$heading-color: $color_black;
+$status-success: darken($color_green, 18%);
+$status-failure: darken($color_red, 10%);
+$status-pending: darken($color_orange, 28%);
 
 /* CSS Mini Reset */
 
@@ -44,14 +59,14 @@ body {
 }
 
 a{
-  color: #336c86;
+  color: $link-color;
   text-decoration: none;
 }
 
 a:hover,
 a:focus,
 a:active {
-    color: #333;
+    color: $color_black;
 }
 
 /* Button styles */
@@ -144,7 +159,7 @@ a:active {
     font-weight: normal;
     font-size: 0.875em;
     line-height: 1.1em;
-    color: #555;
+    color: $color_dark_grey;
     text-transform: capitalize;
 }
 
@@ -163,11 +178,13 @@ a:active {
 }
 
 .alaveteli-widget__count {
-    font-size: 55px;
-    line-height: 55px;
+    // 3.4375em = 55px at the 16px base, but scales with user font settings
+    font-size: 3.4375em;
+    line-height: 1;
     text-align: center;
     font-weight: bold;
-    color: $button-bg;
+    // The brand cyan fails contrast on light backgrounds; use the link colour
+    color: $link-color;
 }
 
 .alaveteli-widget__bottom {
@@ -184,7 +201,7 @@ a:active {
 
 .alaveteli-widget__button {
     @extend .button-base;
-    color: #fff;
+    color: $button-color;
     background-color: $button-bg;
     border: none;
     position: relative;
@@ -196,13 +213,17 @@ a:active {
     &:visited:active,
     &:visited:focus {
         background-color: darken($button-bg, 10%);
-        color: #fff;
+        color: $button-color;
+    }
+    &:focus-visible {
+        outline: 3px solid $color_black;
+        outline-offset: 2px;
     }
 }
 
 .alaveteli-widget__button--sign-in-to-track {
   @extend .alaveteli-widget__button;
-  font-size: 13px;
+  font-size: 0.8125em;
 }
 
 .alaveteli-widget__button--unsubscribe,

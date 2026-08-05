@@ -5,7 +5,8 @@ theme_name.gsub!('-', '_')
 THEME_NAME = theme_name
 
 Rails.application.config.assets.precompile << ['event_tracking.js',
-                                               'personal_message_toggler.js']
+                                               'personal_message_toggler.js',
+                                               'alaveteli_pro/coupon_preview.js']
 
 module ActionController
   class Base
@@ -26,13 +27,12 @@ end
 %w[.].each do |dir|
   path = File.join(File.dirname(__FILE__), dir)
   $LOAD_PATH.insert(0, path)
-  ActiveSupport::Dependencies.autoload_paths << path
-  ActiveSupport::Dependencies.autoload_once_paths.delete(path)
 end
 
 # Monkey patch app code
 ['controller_patches.rb',
  'model_patches.rb',
+ 'helper_patches.rb',
  'patch_mailer_paths.rb'].each do |patch|
   require File.expand_path "../#{patch}", __FILE__
 end
@@ -56,7 +56,7 @@ Rails.application.config.assets.precompile.unshift(LOOSE_THEME_ASSETS)
 
 def prepend_theme_assets
   # Prepend the asset directories in this theme to the asset path:
-  %w[stylesheets images javascripts].each do |asset_type|
+  %w[stylesheets images javascripts fonts].each do |asset_type|
     theme_asset_path = File.join(File.dirname(__FILE__),
                                  '..',
                                  'app',
