@@ -1,42 +1,10 @@
 <h1 class="pricing__title centered"><%= _('Pricing') %></h1>
 
-<div class="pricing__tiers">
-  <div class="pricing__tier pricing__tier--primary">
-
-    <div class="pricing__tier__heading">
-      <h2><%= _('Professional') %></h2>
-      <p class="pricing__tier__subhead"><%= _('For journalists, academics and power users') %></p>
-      <p class="price-label">
-        <% if @plan.interval == 'month' %>
-          <%= _('<span class="price-label__amount">{{monthly_price}}</span> ' \
-                'per user, per month',
-                monthly_price: format_currency(
-                                 @plan.amount_with_tax,
-                                 no_cents_if_whole: true)) %>
-        <% elsif @plan.interval == 'year' %>
-          <%= _('<span class="price-label__amount">{{yearly_price}}</span> ' \
-                'per user, per year',
-                yearly_price: format_currency(
-                                @plan.amount_with_tax,
-                                no_cents_if_whole: true)) %>
-        <% end %>
-      </p>
-      <p class="pricing__tier__subhead pricing__tier__subhead--intro_pricing"><%= _('Introductory Pricing') %></p>
-    </div>
-
-    <div class="pricing__tier__content">
-      <h3><%= _('Featuring') %></h3>
-      <ul class="pricing__tier__features">
-        <li><%= _('Public requests for information') %></li>
-        <li><%= _('Private requests for information') %></li>
-        <li><%= _('Dashboard and workflow features') %></li>
-        <li><%= _('Friendly support') %></li>
-      </ul>
-      <%= link_to _('Sign up'), plan_path('pro'), :class => 'button button-pop' %>
-    </div>
-
-  </div>
-</div>
+<%# Theme _pricing_tiers partial (0.45 Prices API): renders a single Professional %>
+<%# tier from @prices[0] (monthly) with an "or {{amount}} annually" link to %>
+<%# @prices[1] (annual), matching the WhatDoTheyKnow pricing layout. STRIPE_PRICES %>
+<%# is ordered monthly-then-annual in every environment. %>
+<%= render partial: 'alaveteli_pro/plans/pricing_tiers' %>
 
 <p class="pricing__free-message">
   <%= _('Don’t worry – <a href="{{signup_link}}">our free accounts</a> are still available and always will be.',
@@ -81,7 +49,7 @@
                   'contact details</strong> for {{authority_count}} authorities',
                   authority_count: PublicBody.is_requestable.count) %></li>
         <li><%= _('A <strong class="marketing-highlight">searchable archive</strong> of Freedom of Information requests') %></li>
-        <li><%= _('<strong class="marketing-highlight">Delivery verification</strong> for proof of receipt</strong>') %></li>
+        <li><%= _('<strong class="marketing-highlight">Delivery verification</strong> for proof of receipt') %></li>
         <li><%= _('A permanent, searchable, <strong class="marketing-highlight">public record</strong> of your request and the responses') %></li>
         <li><%= _('<strong class="marketing-highlight">Streamlined process</strong> for requesting internal reviews') %></li>
       </ul>
@@ -172,24 +140,5 @@
         </div>
       </li>
     </ul>
-  </div>
-<% end %>
-
-<% if feature_enabled?(:pro_pricing_faqs) %>
-  <div class="pricing__faqs">
-    <h2 class="pricing__faqs__title">Frequently Asked Questions</h2>
-    <dl class="pricing__faqs__list">
-      <dt class="faqs__term">How do I cancel my account?</dt>
-      <dd class="faqs__def">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at porttitor orci, nec sollicitudin turpis. Donec vel nisl justo. Praesent blandit ex ut massa faucibus, cursus tincidunt dui consectetur. In suscipit lorem felis. Sed elementum, augue euismod dignissim vulputate, ligula elit blandit sem, non vehicula nisl turpis ultricies nisi. Integer accumsan luctus hendrerit.</dd>
-
-      <dt class="faqs__term">What does my subscription fee go towards?</dt>
-      <dd class="faqs__def">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at porttitor orci, nec sollicitudin turpis. Donec vel nisl justo. Praesent blandit ex ut massa faucibus, cursus tincidunt dui consectetur. In suscipit lorem felis. Sed elementum, augue euismod dignissim vulputate, ligula elit blandit sem, non vehicula nisl turpis ultricies nisi. Integer accumsan luctus hendrerit.</dd>
-
-      <dt class="faqs__term">How do I change my payment details?</dt>
-      <dd class="faqs__def">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at porttitor orci, nec sollicitudin turpis. Donec vel nisl justo. Praesent blandit ex ut massa faucibus, cursus tincidunt dui consectetur. In suscipit lorem felis. Sed elementum, augue euismod dignissim vulputate, ligula elit blandit sem, non vehicula nisl turpis ultricies nisi. Integer accumsan luctus hendrerit.</dd>
-
-      <dt class="faqs__term">I’ve got a vouncher code</dt>
-      <dd class="faqs__def">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at porttitor orci, nec sollicitudin turpis. Donec vel nisl justo. Praesent blandit ex ut massa faucibus, cursus tincidunt dui consectetur. In suscipit lorem felis. Sed elementum, augue euismod dignissim vulputate, ligula elit blandit sem, non vehicula nisl turpis ultricies nisi. Integer accumsan luctus hendrerit.</dd>
-    </dl>
   </div>
 <% end %>

@@ -21,7 +21,7 @@ to your request '<%=request_link(@info_request) %>'?
 
 <ol>
 <li>Ask for an <strong>internal review</strong> at the public authority.</li>
-<li>Or go to an <strong>external reviewer</strong> such as an an Information Commissioner, Ombudsman, or Tribunal to review the decision or make a complaint.</li>
+<li>Or go to an <strong>external reviewer</strong> such as an Information Commissioner, Ombudsman, or Tribunal to review the decision or make a complaint.</li>
 <li>Either way, also <strong>use other means</strong> to answer your question.</li>
 </ol>
 
@@ -29,7 +29,7 @@ to your request '<%=request_link(@info_request) %>'?
 <p>In an internal review the request goes back to the original authority but gets handled by a different, often more senior, officer.</p>
 <p>
 <% if !@info_request.nil? %>
-    <%= link_to "Request an internal review", new_request_followup_path(:request_id => @info_request.id) + "?internal_review=1#followup", :class => 'link_button_green request-internal-review-action' %> and then write a message asking the authority to review your request.
+    <%= link_to "Request an internal review", new_request_followup_path(:request_url_title => @info_request.url_title) + "?internal_review=1#followup", :class => 'link_button_green request-internal-review-action' %> and then write a message asking the authority to review your request.
 <% else %>
     At the bottom of the relevant request page on <%= site_name %> choose
     "request an internal review". Then write a message asking for an internal
@@ -112,7 +112,7 @@ in your complaint or print out the whole page of your request and all attachment
 
 <h1 id="other_means">3. Using other means to answer your question <a class="hover_a" href="#other_means">#</a> </h1>
 
-<p>You can try persuing your problem or your research in other ways.
+<p>You can try pursuing your problem or your research in other ways.
 
 <ul>
 <li>Make a <strong>new Freedom of Information request</strong> for summary information, or for
