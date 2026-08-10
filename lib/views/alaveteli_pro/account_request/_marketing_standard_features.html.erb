@@ -5,8 +5,8 @@
     </h2>
 
     <p>
-      <%= _('<strong>{{pro_site_name}}</strong> runs on the UK’s ' \
-            'best-known FOI service',
+      <%= _('<strong>{{pro_site_name}}</strong> runs on Australia’s ' \
+            'best-known FOI library',
             pro_site_name: pro_site_name) %>
     </p>
   </div>
@@ -15,13 +15,14 @@
     <div class="marketing__section__content-items">
       <ul class="marketing__section__feature-list">
         <li>
-          <%= _('Up-to-date database of <strong class="marketing-highlight">' \
-                'contact details</strong> for {{authority_count}} authorities',
+          <%= _('Up-to-date <strong class="marketing-highlight">collection ' \
+                'of contact details</strong> for {{authority_count}} ' \
+                'authorities',
                 authority_count: PublicBody.is_requestable.count) %>
         </li>
 
         <li>
-          <%= _('A <strong class="marketing-highlight">searchable archive' \
+          <%= _('A <strong class="marketing-highlight">searchable library' \
                 '</strong> of Freedom of Information requests') %>
         </li>
 
