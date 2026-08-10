@@ -1,0 +1,32 @@
+<%= render partial: 'tabs' %>
+
+<div id="header_left" class="header_left">
+  <h1><%= @title %></h1>
+  <%= render :partial => 'request/request_search_form',
+             :locals => { :after_form_fields => render(:partial => 'request/request_filter_form') } %>
+
+  <%= render partial: 'category' if @category %>
+</div>
+
+<div id="header_right" class="sidebar header_right">
+  <h2><%= _("Follow these requests") %></h2>
+  <% if @track_thing %>
+    <%= render :partial => 'track/tracking_links', :locals => { :track_thing => @track_thing, :own_request => false, :location => 'main' } %>
+    <%= render :partial => 'track/rss_feed', :locals => { :track_thing => @track_thing, :location => 'main' } %>
+  <% end %>
+
+  <%= render partial: 'general/search_latest' %>
+  <%= render partial: 'general/help_requests' %>
+</div>
+
+<div style="clear:both"></div>
+
+<div class="results_section">
+  <% if key = request_list_cache_key %>
+    <% cache_if_caching_fragments(key, :expires_in => 5.minutes) do %>
+      <%= render :partial => 'list_results' %>
+    <% end %>
+  <% else %>
+    <%= render :partial => 'list_results' %>
+  <% end %>
+</div>
