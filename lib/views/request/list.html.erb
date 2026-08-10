@@ -1,3 +1,12 @@
+<%# Override the core "Search requests" title to make clear this is a
+    library of requests (issue #1036). Tag/category listings keep the
+    title set by RequestController#list. %>
+<% unless @tag %>
+  <% @title = @page > 1 ?
+       _("Search request library (page {{count}})", count: @page) :
+       _("Search request library") %>
+<% end %>
+
 <%= render partial: 'tabs' %>
 
 <div id="header_left" class="header_left">
