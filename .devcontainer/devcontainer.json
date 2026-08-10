@@ -1,0 +1,22 @@
+{
+  "name": "Right to Know (Alaveteli theme)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/alaveteli-themes/righttoknow",
+  "onCreateCommand": "/alaveteli-themes/righttoknow/.devcontainer/setup.sh",
+  "forwardPorts": [3000, 1080],
+  "portsAttributes": {
+    "3000": { "label": "Rails (Right to Know)", "onAutoForward": "notify" },
+    "1080": { "label": "MailHog (email)", "onAutoForward": "silent" }
+  },
+  "postAttachCommand": "echo 'Start the site with: cd /alaveteli && bin/rails server -b 0.0.0.0 — then open http://localhost:3000'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Shopify.ruby-lsp",
+        "manuelpuyol.erb-linter",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  }
+}

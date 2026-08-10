@@ -2,7 +2,10 @@
 
 - [Right To Know](#right-to-know)
   - [Development](#development)
-  - [Development Environment - Simple Steps](#development-environment---simple-steps)
+  - [Development environment](#development-environment)
+    - [Option 1: Dev Container (recommended)](#option-1-dev-container-recommended)
+    - [Option 2: Docker + Make](#option-2-docker--make)
+    - [Option 3: Manual setup](#option-3-manual-setup)
   - [Seeding test data](#seeding-test-data)
   - [Pro subscriptions](#pro-subscriptions)
     - [Restricting a coupon to a billing interval](#restricting-a-coupon-to-a-billing-interval)
@@ -49,17 +52,81 @@ If there is a fix or enhancement that is not specific to Right to Know/Australia
 
 However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
 
-## Development Environment - Simple Steps
+## Development environment
 
-We use Docker to create an Alaveteli instance. You can find more information on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
+This repository is an Alaveteli *theme* — it runs inside
+[our fork of Alaveteli](https://github.com/openaustralia/alaveteli). You don't
+need to check anything else out, though: the development environment below
+clones Alaveteli for you (the `staging` branch by default) and wires this
+theme into it, along with a working development configuration.
 
-A shortened version:
+The stack matches Alaveteli's own Docker environment: Rails app, Sidekiq,
+PostgreSQL, Redis, and [MailHog](https://github.com/mailhog/MailHog) to catch
+outgoing email (at <http://localhost:1080>).
 
-1. Pull a copy of our [Alaveteli Fork](https://github.com/openaustralia/alaveteli) onto your machine
-2. Create a sub-folder at the same level as the Alaveteli folder called `alaveteli-themes`
-3. Pull a copy of the Right to Know repository into the `alaveteli-themes` directory.
-4. Copy `alaveteli\config\general.yml.example` to `alaveteli\config\general-righttoknow.yml` and modify the file. An exmaple of our current `general.yml` file can be found in the [infrastructure repository](https://github.com/openaustralia/infrastructure/blob/main/roles/internal/righttoknow/templates/general.yml).
-5. Continue following the instructions on the [Alaveteli Website](https://alaveteli.org/docs/installing/docker/)
+### Option 1: Dev Container (recommended)
+
+Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers)
+(needs Docker installed) or [GitHub Codespaces](https://github.com/features/codespaces)
+(needs nothing installed at all).
+
+1. Open this repository in VS Code and choose **Reopen in Container** when
+   prompted (or create a Codespace on GitHub).
+2. Wait for setup to finish — the first run clones Alaveteli, installs gems,
+   and migrates and seeds the databases, so it takes a while.
+3. Start the server from the integrated terminal:
+
+   ```bash
+   cd /alaveteli && bin/rails server -b 0.0.0.0
+   ```
+
+4. Open <http://localhost:3000>. Log in as the development admin with the
+   username and password from `config/general-righttoknow.yml.example`
+   (`adminxxxx` / `passwordx`).
+
+Inside the container, Alaveteli lives at `/alaveteli` and this theme is
+mounted at `/alaveteli-themes/righttoknow` (your workspace folder). Theme
+changes take effect on reload; changes to Ruby files under `lib/` need a
+server restart.
+
+### Option 2: Docker + Make
+
+The same stack without VS Code — just Docker and `make`:
+
+```bash
+make setup    # first run: build, clone Alaveteli, migrate, seed (takes a while)
+make server   # start the site at http://localhost:3000
+```
+
+Other useful targets (`make help` lists them all):
+
+```bash
+make console  # Rails console
+make test     # run this theme's specs
+make seed     # load realistic AU test data (see "Seeding test data")
+make shell    # shell in the app container
+make reset    # destroy containers and data, set up from scratch
+```
+
+To develop against a different Alaveteli branch or fork, set
+`ALAVETELI_BRANCH` / `ALAVETELI_REPO` before the first `make setup`. If ports
+3000 or 1080 are already in use on your machine, set `RAILS_PORT` /
+`MAILHOG_PORT`.
+
+### Option 3: Manual setup
+
+If you can't use containers, follow the
+[Alaveteli manual installation docs](http://alaveteli.org/docs/installing/)
+with our [Alaveteli fork](https://github.com/openaustralia/alaveteli), using
+the layout Alaveteli's theme tooling expects:
+
+1. Check out the fork, and create a sibling directory called
+   `alaveteli-themes` with this repository inside it
+   (`alaveteli/` and `alaveteli-themes/righttoknow/` side by side).
+2. Copy this repository's `config/general-righttoknow.yml.example` to
+   `alaveteli/config/general-righttoknow.yml`.
+3. From the `alaveteli` directory run
+   `bundle exec script/switch-theme.rb righttoknow`.
 
 ## Seeding test data
 
@@ -82,24 +149,24 @@ It creates:
 
 The script refuses to run in `production`.
 
-Run it against the Alaveteli **app** (not this theme repo) with `rails runner`:
+Run it against the Alaveteli **app** (not this theme repo) with `rails runner`.
+In the development environment above it's one command:
+
+```bash
+make seed
+```
+
+or manually (from the `alaveteli` directory):
 
 ```bash
 bundle exec rails runner \
   ../alaveteli-themes/righttoknow/script/seed_test_data.rb
 ```
 
-or inside Docker:
-
-```bash
-docker compose run --rm app \
-  bundle exec rails runner \
-  alaveteli-themes/righttoknow/script/seed_test_data.rb
-```
-
 Authorities and the browse-by-category page work immediately. Search and the
 request listings are Xapian-backed and will **not** show seeded data until the
-index is updated — either re-run with `SEED_REBUILD_INDEX=1`, or run:
+index is updated — `make seed` does this for you; otherwise either re-run with
+`SEED_REBUILD_INDEX=1`, or run:
 
 ```bash
 bundle exec rake xapian:destroy_and_rebuild_index \

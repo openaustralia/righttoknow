@@ -1,0 +1,8 @@
+# Replicates alaveteli's docker/Dockerfile-postgres so the database matches
+# what Alaveteli's own Docker environment provides (en_GB.UTF-8 locale and a
+# UTF-8 template database).
+
+FROM postgres:13.5
+RUN localedef -i en_GB -c -f UTF-8 -A /usr/share/locale/locale.alias en_GB.UTF-8
+ENV LANG=en_GB.utf8
+ADD ./createdb.sh /docker-entrypoint-initdb.d/

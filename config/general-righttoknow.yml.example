@@ -1,0 +1,58 @@
+# Development configuration for running Alaveteli with the Right to Know
+# theme. Copied to alaveteli/config/general-righttoknow.yml by
+# .devcontainer/setup.sh (Alaveteli's switch-theme script then symlinks
+# config/general.yml to it).
+#
+# Only contains settings that differ from Alaveteli's defaults — see
+# alaveteli/config/general.yml-example for the full list. Production settings
+# live in the infrastructure repository, not here.
+
+SITE_NAME: 'Right To Know'
+DOMAIN: 'localhost:3000'
+FORCE_SSL: false
+
+ISO_COUNTRY_CODE: AU
+ISO_CURRENCY_CODE: AUD
+TIME_ZONE: Australia/Sydney
+
+AVAILABLE_LOCALES: 'en'
+DEFAULT_LOCALE: 'en'
+
+# FOI law behaviour in Australia (jurisdiction-specific overrides live in the
+# theme itself — see lib/model_patches.rb).
+AUTHORITY_MUST_RESPOND: true
+REPLY_LATE_AFTER_DAYS: 30
+REPLY_VERY_LATE_AFTER_DAYS: 60
+WORKING_OR_CALENDAR_DAYS: calendar
+
+THEME_URLS:
+  - 'https://github.com/openaustralia/righttoknow.git'
+
+INCOMING_EMAIL_DOMAIN: 'localhost'
+INCOMING_EMAIL_PREFIX: 'foi+'
+INCOMING_EMAIL_SECRET: 'dev-secret-not-for-production'
+
+# Development admin login (matches the sample data's emergency user).
+ADMIN_USERNAME: 'adminxxxx'
+ADMIN_PASSWORD: 'passwordx'
+
+CONTACT_EMAIL: 'contact@localhost'
+CONTACT_NAME: 'Right To Know'
+TRACK_SENDER_EMAIL: 'contact@localhost'
+TRACK_SENDER_NAME: 'Right To Know'
+
+SECRET_KEY_BASE: 'dev-secret-key-base-not-for-production'
+
+# Marks this as a development site (shows the test banner, uses the emergency
+# user, etc.).
+STAGING_SITE: 1
+
+DONATION_URL: 'https://donate.oaf.org.au/'
+
+# Keep everything that would contact the outside world or require API keys
+# switched off in development.
+ENABLE_ANTI_SPAM: false
+NEW_REQUEST_RECAPTCHA: false
+CONTACT_FORM_RECAPTCHA: false
+USER_CONTACT_FORM_RECAPTCHA: false
+ENABLE_ALAVETELI_PRO: false
