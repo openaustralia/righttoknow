@@ -6,7 +6,8 @@ THEME_NAME = theme_name
 
 Rails.application.config.assets.precompile << ['event_tracking.js',
                                                'personal_message_toggler.js',
-                                               'alaveteli_pro/coupon_preview.js']
+                                               'alaveteli_pro/coupon_preview.js',
+                                               'admin_responsive.css']
 
 module ActionController
   class Base

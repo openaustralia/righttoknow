@@ -1,0 +1,77 @@
+/* Responsive layer for the Alaveteli admin interface.
+
+   Loaded by the theme's admin layout (lib/views/layouts/admin.html.erb)
+   after core admin.css, which it layers on top of without modifying.
+   Core admin.scss imports Bootstrap 2 nested inside .admin but never
+   imports bootstrap-responsive, so the admin gets the fixed 940px grid
+   with no breakpoints at all. This file adds the missing responsive
+   sheet plus small fixes so admin pages work on phones.
+
+   Only the admin layout links this stylesheet. Public pages (which load
+   admin.css for logged-in admins) are unaffected.
+*/
+
+.admin {
+  @import "bootstrap-responsive";
+}
+
+/* bootstrap-responsive targets bare `body` in places; nested under .admin
+   above those compile to `.admin body`, which never matches. Re-apply the
+   one that matters: gutters that pair with Bootstrap's -20px margins on
+   .navbar-fixed-top below 768px. */
+@media (max-width: 767px) {
+  body.admin {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.admin {
+  /* body.admin is a column flexbox (sticky footer), so wide content such as
+     a fixed-width textarea inflates the flex line and stretches #main past
+     the viewport. Clamping the flex item keeps #main at the body's width and
+     lets the percentage max-widths below resolve. */
+  #main {
+    max-width: 100%;
+  }
+
+  /* Below 980px bootstrap-responsive makes .navbar-fixed-top static, so
+     core's clearance for the fixed navbar is no longer needed */
+  @media (max-width: 979px) {
+    #main {
+      padding-top: 20px;
+    }
+  }
+
+  /* Clamp fixed pixel widths set in core admin.scss */
+  #request_hidden_user_subject_field,
+  #outgoing_message_body,
+  #comment_body,
+  .holiday-description,
+  .holiday-day,
+  .holiday-buttons {
+    max-width: 100%;
+  }
+
+  @media (max-width: 767px) {
+    /* Let wide tables scroll sideways instead of overflowing the page */
+    .table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Stop form controls forcing the page wider than the screen */
+    input,
+    select,
+    textarea,
+    .search-query {
+      max-width: 100%;
+    }
+
+    /* The layout footer's .span7.offset5 - offsets don't stack cleanly */
+    .offset5 {
+      margin-left: 0;
+    }
+  }
+}
