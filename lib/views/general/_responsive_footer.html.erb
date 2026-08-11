@@ -13,7 +13,7 @@
       <nav class="oaf-footer__links">
         <ul>
           <li><%= link_to 'Make a request', select_authority_path %></li>
-          <li><%= link_to 'Browse requests', request_list_successful_path %></li>
+          <li><%= link_to 'Browse request library', request_list_successful_path %></li>
           <li><%= link_to 'View authorities', list_public_bodies_default_path %></li>
           <% if feature_enabled?(:alaveteli_pro) %>
             <li><%= link_to 'Journalist?', account_request_index_path %></li>
