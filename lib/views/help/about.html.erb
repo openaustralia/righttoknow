@@ -7,30 +7,30 @@
   <dl>
 
   <dt id="purpose">What is  <%= site_name %> for? <a href="#purpose">#</a> </dt>
-  <dd>To help you find out inside information about what Australian governments
-  are doing.
+  <dd>A collection of inside information to help you find out what Australian
+  governments are doing.
   </dd>
 
   <dt id="premise">How does the site work? <a href="#premise">#</a> </dt>
-  <dd>Choose the public authority you want information from, then write a brief note describing what you want to know. We will send your request to the public authority. Your request and any response are automatically published on the website for anyone to find and read.
+  <dd>Choose the public authority you want information from, then write a brief note describing what you want to know. We will send your request to the public authority. Your request and any response are automatically collected in the <%= site_name %> library and published on the website for anyone to find and read.
   </dd>
 
   <dt id="does_it_cost_money">
   Does it cost money to get an account on the site?
   <a href="#does_it_cost_money">#</a></dt>
   <dd><p>
-    No. You can create a free account on the site. Once you have an account, you can make up to five free Freedom of Information requests each day. The five-per-day limit is more than enough for almost all of our users.
+    No. Library membership is free. You can create an account on the site and make up to six free Freedom of Information requests each day. The six-per-day limit is more than enough for almost all of our members.
   </p>
   <p>
-    We offer a paid service called <a href="/pro"><%= site_name %> Pro</a> for journalists and others who may need to make more requests or have special requirements.
+    <a href="/pro"><%= site_name %> Pro</a> is a paid service the library offers for journalists and others who may need to make more requests or have special requirements.
   </p></dd>
 
   <dt id="whybother_me">Why would I bother to do this? <a href="#whybother_me">#</a> </dt>
   <dd><p>
-    The government is funded by public money, that is paid for by taxes. Since it's your money that they are spending, you might want to check that they are running efficiently, making good decisions, and doing their job.
+    The government is funded by public money, that is paid for by taxes. Since it's your money that they are spending, you might want to check that they are running efficiently, making good decisions, and doing their job. We work across various organisations to collect this information and make it as accessible as possible in the <%= site_name %> online library.
   </p>
   <p>
-    The more we find out about how government works, the better we can suggest ways to improve things that are done badly and celebrate things done well. Some people use the site for research, journalism, campaigning, or raising awareness. Others are simply curious.
+    The more we find out about how government works, the better we can suggest ways to improve things that are done badly and celebrate things done well. Some people use the collection for research, journalism, campaigning, or raising awareness. Others are simply curious.
   </p></dd>
 
   <dt id="whybother_them">Why would the public authority bother to reply? <a href="#whybother_them">#</a> </dt>
@@ -40,7 +40,7 @@
   </dd>
 
   <dt id="who">Who makes <%= site_name %>? <a href="#who">#</a> </dt>
-  <dd><%= site_name %> is a project of the OpenAustralia Foundation, a charity, and was developed with software by the UK organisation mySociety. It was made possible by a <a href="https://www.openaustraliafoundation.org.au/2012/09/25/accelerating-to-the-future-of-online-democracy-in-australia/">donation from Guy King</a>. If you like what we're doing, then you can <a href="https://donate.oaf.org.au">make a donation</a>.
+  <dd><%= site_name %> is part of the OpenAustralia Foundation collection. It was developed with software by the UK organisation mySociety and made possible by a <a href="https://oaf.org.au/2012/09/25/accelerating-to-the-future-of-online-democracy-in-australia/">donation from Guy King</a>. OpenAustralia Foundation is a charity, so if you like what we're doing, you can <a href="https://donate.oaf.org.au">make a donation</a>.
   </dd>
 
   <dt id="reporting">
@@ -49,28 +49,28 @@
   </dt>
   <dd>
   <p>
-    Requests for personal information and vexatious requests are not considered valid for FOI purposes. See our <a href="<%= help_house_rules_path %>">House Rules</a> for more on how we expect people to use this site.
+    Requests for personal information and vexatious requests are not considered valid for FOI (Freedom of Information) purposes. See our <a href="<%= help_house_rules_path %>">House Rules</a> for more on how we expect people to use this library.
   </p>
   <p>
-    If you believe a request is not suitable, you can report it for attention by the site administrators.
+    If you believe a request is not suitable, you can report it for attention by the collection administrators.
   </p> </dd>
 <dt id="reporting_unavailable">
   Why are there some requests I can't report?
   <a href="#reporting_unavailable">#</a></dt>
 <dd><p>
-    If a request has already been reported to the site administrators, you can't report it a second time. This prevents the administrators from being notified multiple times about the same issue before they've had a chance to review it.
+    If a request has already been reported to the collection administrators, you can't report it a second time. This prevents the administrators from being notified multiple times about the same issue before they've had a chance to review it.
   </p>
   <p>
-    If you think a request that's been previously reported should be taken down, but a decision has been made not to remove it from public view, you can use the form in the sidebar of the request page to contact the administrators.
+    If you think a request that's been previously reported should be taken down, but a decision has been made not to remove it from public view, you can use the form in the sidebar of the request page to contact the collection administrators.
   </p></dd>
 <dt id="how_many">
   How many people use <%= site_name %>?
   <a href="#how_many">#</a></dt>
   <dd><p>
-    We have over <%= number_with_delimiter(User.count.round(-4), locale: @locale) %> registered users. 
+    We have over <%= number_with_delimiter(User.count.round(-4), locale: @locale) %> registered members. 
   </p>
   <p>
-    But that's just the people who request information. Most visitors to our site don't make requests themselves. They benefit from being able to access information in the requests and responses of others. 
+    But that's just the people who request information. Most visitors to our site don't make requests themselves. They benefit from being able to access information in the library of requests and responses of others. 
   </p></dd>
 
   <dt id="updates">How can I keep up with news about <%= site_name %>? <a href="#updates">#</a> </dt>
