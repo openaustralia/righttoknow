@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require 'help_page_history'
+require 'models/alaveteli_pro/promotion_code'
+require 'models/alaveteli_pro/discount_code_resolution'
+require 'promotion_code_subscriptions'
 
 # Add a callback - to be executed before each request in development,
 # and at startup in production - to patch existing app classes.
@@ -8,7 +11,7 @@ require 'help_page_history'
 # classes are reloaded, but initialization is not run each time.
 # See http://stackoverflow.com/questions/7072758/plugin-not-reloading-in-development-mode
 #
-Rails.configuration.to_prepare do
+Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
   HelpController.class_eval do
     before_action :set_history
 
@@ -31,6 +34,8 @@ Rails.configuration.to_prepare do
   # PlansController#show (login required, pro membership not) and skips
   # html_response so it can render JSON.
   AlaveteliPro::PlansController.class_eval do
+    include AlaveteliPro::DiscountCodeResolution
+
     # raise: false so that an upstream rename of the html_response callback
     # degrades this action rather than failing to boot the whole application.
     skip_before_action :html_response, only: [:coupon_preview], raise: false
@@ -85,15 +90,19 @@ Rails.configuration.to_prepare do
     def coupon_preview_json(price, code)
       return empty_preview(price) if code.blank?
 
-      coupon = AlaveteliPro::Coupon.retrieve(code)
+      coupon = resolve_discount_code(code)
 
       # Existence is not validity: a coupon can exist in Stripe yet be rejected
       # at checkout (expired, max redemptions reached, etc). Mirror the two
-      # failure messages SubscriptionsController#create surfaces.
+      # failure messages SubscriptionsController#create surfaces, and the
+      # promotion code restrictions check_promotion_code_redeemable applies, so
+      # the preview never advertises a discount checkout then refuses.
       if coupon.nil?
         { status: 'invalid', message: _('Coupon code is invalid.') }
       elsif !coupon.valid
         { status: 'expired', message: _('Coupon code has expired.') }
+      elsif (message = promotion_code_error(coupon, price))
+        { status: 'invalid', message: message }
       elsif mismatched_currency?(coupon)
         { status: 'invalid', message: _('Coupon code is invalid.') }
       elsif mismatched_interval?(price, coupon)
@@ -206,9 +215,18 @@ Rails.configuration.to_prepare do
   # block unconditionally and only checks flash[:error] afterwards, so a late
   # error would still charge the customer at full price before redirecting.
   AlaveteliPro::SubscriptionsController.class_eval do
-    before_action :check_coupon_matches_price, only: [:create]
+    include AlaveteliPro::DiscountCodeResolution
+
+    before_action :check_coupon_matches_price,
+                  :check_promotion_code_redeemable, only: [:create]
 
     private
+
+    # Accept a Stripe promotion code as well as a coupon id. Core's version
+    # only tries AlaveteliPro::Coupon, which resolves a namespaced coupon id.
+    def load_coupon
+      @coupon = resolve_discount_code(params[:coupon_code])
+    end
 
     def check_coupon_matches_price
       return unless @coupon && @price
@@ -220,5 +238,24 @@ Rails.configuration.to_prepare do
       flash[:error] = _('This coupon code cannot be used with this plan.')
       json_redirect_to plan_path(@price)
     end
+
+    # Refuse a promotion code Stripe would reject, for the same reason
+    # check_coupon_matches_price halts here rather than setting flash[:error]
+    # late: create runs its subscription-creating block unconditionally, so a
+    # late error still charges the person at full price.
+    #
+    # A code exhausted between this check and the charge still falls through to
+    # core's generic error. That race is rare and not worth guarding.
+    def check_promotion_code_redeemable
+      return unless @coupon && @price
+
+      message = promotion_code_error(@coupon, @price)
+      return unless message
+
+      flash[:error] = message
+      json_redirect_to plan_path(@price)
+    end
   end
+
+  AlaveteliPro::SubscriptionCollection.prepend(PromotionCodeSubscriptions)
 end
