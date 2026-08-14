@@ -198,12 +198,16 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   understand.
 - Prefer testing reality over mocking internals. The existing specs exercise
   real controllers/routes/views against StripeMock (a full fake Stripe, not a
-  stub of app code) and, for `spec/features/`, Capybara against a real DB —
-  that's the pattern to follow for new specs. But be pragmatic, not dogmatic:
-  the existing suite does stub when the real alternative is genuinely worse,
-  e.g. the rate limiter double in `coupon_preview_rate_limit_spec.rb` (the
-  real limiter is PStore-backed shared state that `spec_helper` doesn't reset,
-  which would make specs order-dependent) and the "expired coupon" double in
+  stub of app code), and that is the pattern to follow for new specs. Note
+  that `spec/features/screenshots_feature.rb` is not that pattern: it is not
+  named `_spec.rb`, so a default rspec run skips it, and its header comment
+  lists an unmerged upstream Alaveteli PR, extra host gems and
+  `config/general.yml` changes needed before it runs. But be pragmatic, not
+  dogmatic: the existing suite does stub when the real alternative is
+  genuinely worse, e.g. the rate limiter double in
+  `coupon_preview_rate_limit_spec.rb` (the real limiter is PStore-backed
+  shared state that `spec_helper` doesn't reset, which would make specs
+  order-dependent) and the "expired coupon" double in
   `coupon_preview_spec.rb` (not a state StripeMock can construct). When you do
   reach for a stub, say why in a comment, the way those specs do, so a future
   reader can tell "chose not to test reality here, and here's the reason" from
