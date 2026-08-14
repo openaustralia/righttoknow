@@ -29,6 +29,10 @@ end
   $LOAD_PATH.insert(0, path)
 end
 
+# Error monitoring - a safe no-op in checkouts without the sentry gems
+# (they're deploy-time theme runtime gems, see Gemfile.theme)
+require File.expand_path('sentry_init.rb', __dir__)
+
 # Monkey patch app code
 ['controller_patches.rb',
  'model_patches.rb',

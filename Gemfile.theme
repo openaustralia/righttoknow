@@ -8,3 +8,11 @@
 # production-runtime gems belong here.
 
 source 'https://rubygems.org'
+
+# Error monitoring (initialised in lib/sentry_init.rb). Pinned to a minor
+# version because the server re-resolves the bundle on each deploy (no
+# committed lockfile covers these gems), so a loose pin could pull a new
+# major release in silently on an unrelated deploy.
+gem 'sentry-rails', '~> 6.7'
+gem 'sentry-ruby', '~> 6.7'
+gem 'sentry-sidekiq', '~> 6.7'
