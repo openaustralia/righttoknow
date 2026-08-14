@@ -109,11 +109,11 @@ reloading in development, per the comment in each file):
   (`InfoRequestCustomStates` / `RequestControllerCustomStates`) for adding
   custom request states — currently a no-op template (falls back to core
   behaviour) plus an unused `transferred` example state.
-- `help_page_history.rb` is required from within `controller_patches.rb`'s
-  comment area — actually via `require 'help_page_history'` inside the
-  `to_prepare` block that patches `HelpController` — and builds the "view
-  history of this page on GitHub" link shown on theme-overridden help pages,
-  pointing at this repo's `production` branch.
+- `help_page_history.rb` is required at the top of `controller_patches.rb`
+  (a plain `require 'help_page_history'` on line 3, above and outside the
+  `to_prepare` block). It builds the "view history of this page on GitHub"
+  link shown on theme-overridden help pages, pointing at this repo's
+  `production` branch.
 
 ### Views (`lib/views/`)
 
