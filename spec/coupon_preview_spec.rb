@@ -266,6 +266,57 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
         end
       end
 
+      # The preview applies the same restriction checks as checkout, including
+      # first_time_transaction, which is the one that has to read the person's
+      # payment history. current_user is a private alias of authenticated_user
+      # on ApplicationController, so it resolves here as it does anywhere else -
+      # it is not stubbed below, precisely so this exercises the real thing.
+      context 'with a promotion code for new subscribers only' do
+        before do
+          stripe_helper.create_coupon(
+            id: 'HALF', percent_off: 50, amount_off: nil, currency: nil
+          )
+          Stripe::PromotionCode.create(
+            coupon: 'HALF', code: 'SUMMER25',
+            restrictions: {
+              first_time_transaction: true,
+              minimum_amount: nil,
+              minimum_amount_currency: nil
+            }
+          )
+        end
+
+        context 'and the person has already paid an invoice' do
+          before do
+            customer = Stripe::Customer.create(email: user.email)
+            user.create_pro_account(stripe_customer_id: customer.id)
+            allow(Stripe::Invoice).to receive(:list)
+              .and_return([double(:invoice, status: 'paid')])
+
+            get :coupon_preview,
+                params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+          end
+
+          it 'says so rather than previewing a discount they cannot have' do
+            expect(json['status']).to eq('invalid')
+            expect(json['message'])
+              .to eq('This coupon code is only available to new subscribers.')
+          end
+        end
+
+        context 'and the person is new' do
+          before do
+            get :coupon_preview,
+                params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+          end
+
+          it 'previews the discount' do
+            expect(json['status']).to eq('valid')
+            expect(json['amount']).to eq(money(2475))
+          end
+        end
+      end
+
       context 'with an unknown price_id' do
         before do
           get :coupon_preview, params: { price_id: 'nope', coupon_code: 'HALF' }
