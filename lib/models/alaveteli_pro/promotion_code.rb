@@ -44,6 +44,13 @@ module AlaveteliPro
       # leaves us with nil - an invalid code - instead of raising later from
       # inside a before_action, where it would be a 500 rather than a message.
       new(promotion_code).tap(&:coupon)
+
+    # Deliberately narrow, matching AlaveteliPro::Coupon.retrieve. Only
+    # InvalidRequestError means "no such code"; a connection or rate limit
+    # error means we don't know. Swallowing those would return nil, and core's
+    # create only attaches a discount when one is present - so a Stripe blip
+    # would quietly charge somebody full price instead of applying the code
+    # they typed. Raising is the safer failure here.
     rescue Stripe::InvalidRequestError
       nil
     end
@@ -64,8 +71,15 @@ module AlaveteliPro
     # `humanized_terms` live on the coupon. Merge the two so one coupon can
     # back several codes that describe themselves differently, with the code
     # winning.
+    #
+    # Returned as a StripeObject, not a Hash, so it behaves exactly like
+    # AlaveteliPro::Coupon#metadata: callers reading `metadata.humanized_terms`
+    # (as core's Coupon#terms does) work against either kind of discount, and
+    # an absent key raises NoMethodError on both rather than only on one.
     def metadata
-      coupon.metadata.to_h.merge(__getobj__.metadata.to_h)
+      Stripe::StripeObject.construct_from(
+        coupon.metadata.to_h.merge(__getobj__.metadata.to_h)
+      )
     end
 
     # Read defensively: Stripe omits the attribute rather than returning null,

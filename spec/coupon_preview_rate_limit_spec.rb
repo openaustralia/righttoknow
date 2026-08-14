@@ -83,6 +83,25 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do
       end
     end
 
+    # A typed code is looked up as a coupon and then as a promotion code, so
+    # the endpoint is an existence oracle over both namespaces. Promotion codes
+    # are not namespaced, which makes them the easier of the two to guess. The
+    # limiter has to short circuit before either lookup, otherwise a throttled
+    # user still learns what exists and still amplifies against Stripe.
+    context 'when the user is over the limit' do
+      before do
+        allow(limiter).to receive(:limit?).and_return(true)
+        allow(Stripe::Coupon).to receive(:retrieve).and_call_original
+        allow(Stripe::PromotionCode).to receive(:list).and_call_original
+        get :coupon_preview, params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+      end
+
+      it 'does not look the code up in either namespace' do
+        expect(Stripe::Coupon).not_to have_received(:retrieve)
+        expect(Stripe::PromotionCode).not_to have_received(:list)
+      end
+    end
+
     # The field is cleared and retyped in ordinary use, and a blank code is
     # answered from the price alone without touching Stripe, so it must not
     # consume the allowance.

@@ -160,6 +160,27 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
 
       expect(AlaveteliPro::PromotionCode.retrieve('SUMMER25')).to be_nil
     end
+
+    # The rescue in retrieve is deliberately narrow. Swallowing a connection
+    # error would return nil, and core only attaches a discount when one is
+    # present, so a Stripe blip would quietly charge full price instead of
+    # applying the code. Better to fail loudly and take no money.
+    it 'does not treat a Stripe outage as an unknown code' do
+      allow(Stripe::PromotionCode).to receive(:list).and_raise(
+        Stripe::APIConnectionError.new('could not connect')
+      )
+
+      expect { AlaveteliPro::PromotionCode.retrieve('SUMMER25') }
+        .to raise_error(Stripe::APIConnectionError)
+    end
+
+    # Interchangeable with a coupon: metadata is a StripeObject on both, so a
+    # caller reading metadata.humanized_terms works either way.
+    it 'exposes metadata the same way a coupon does' do
+      expect(subject.metadata).to be_a(Stripe::StripeObject)
+      expect(AlaveteliPro::Coupon.retrieve('HALFOFF').metadata)
+        .to be_a(Stripe::StripeObject)
+    end
   end
 
   describe 'metadata' do
@@ -170,8 +191,12 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
       )
       create_promotion_code(coupon: 'MONTHLYONLY')
 
-      expect(AlaveteliPro::PromotionCode.retrieve('SUMMER25').metadata)
-        .to include(interval: 'month')
+      metadata = AlaveteliPro::PromotionCode.retrieve('SUMMER25').metadata
+
+      # Both access styles, because check_coupon_matches_price reads
+      # metadata.to_h[:interval] and core's Coupon#terms reads the accessor.
+      expect(metadata.to_h).to include(interval: 'month')
+      expect(metadata.interval).to eq('month')
     end
 
     it 'lets the promotion code override the coupon' do
@@ -183,7 +208,7 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
         coupon: 'TERMED', metadata: { humanized_terms: '50% off' }
       )
 
-      expect(AlaveteliPro::PromotionCode.retrieve('SUMMER25').metadata)
+      expect(AlaveteliPro::PromotionCode.retrieve('SUMMER25').metadata.to_h)
         .to include(humanized_terms: '50% off')
     end
 
@@ -368,6 +393,26 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
         before { stub_invoices('void', 'void') }
 
         it 'subscribes the user' do
+          subscribe('SUMMER25')
+
+          expect(assigns(:subscription)).not_to be_nil
+        end
+      end
+
+      # The check is advisory - Stripe enforces the restriction at create - so
+      # failing open costs a worse error message, not a bypass. Failing closed
+      # would refuse legitimate subscribers during a Stripe blip.
+      context 'and the invoice lookup fails' do
+        before do
+          pro_account = FactoryBot.create(:pro_account, user: user)
+          allow(pro_account).to receive(:invoices).and_raise(
+            Stripe::APIConnectionError.new('could not connect')
+          )
+          allow(user).to receive(:pro_account).and_return(pro_account)
+          allow(controller).to receive(:current_user).and_return(user)
+        end
+
+        it 'lets the person through rather than refusing them' do
           subscribe('SUMMER25')
 
           expect(assigns(:subscription)).not_to be_nil

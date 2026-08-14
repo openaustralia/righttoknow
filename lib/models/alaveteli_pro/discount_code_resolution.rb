@@ -16,6 +16,18 @@ module AlaveteliPro
     # #load_coupon, then promotion code. Coupon ids are namespaced (a typed
     # FOO looks up RTK-FOO) while promotion codes are matched verbatim, so a
     # coupon RTK-FOO wins over a promotion code FOO. Documented in the README.
+    #
+    # Returns an AlaveteliPro::Coupon or an AlaveteliPro::PromotionCode. The
+    # two are interchangeable for everything the signup flow does with a
+    # discount - id, valid, percent_off, amount_off, currency, metadata, terms,
+    # to_param - so callers don't branch on the type, except
+    # promotion_code_error below, which checks restrictions only a promotion
+    # code has.
+    #
+    # Supporting both costs a second Stripe round trip whenever the typed
+    # string turns out to be a promotion code: the coupon lookup has to fail
+    # first. That's inherent to searching two namespaces, and it's why the
+    # preview endpoint is rate limited.
     def resolve_discount_code(code)
       AlaveteliPro::Coupon.retrieve(code) ||
         AlaveteliPro::PromotionCode.retrieve(code)
@@ -75,8 +87,12 @@ module AlaveteliPro
     # payments or non-void invoices" is still a first-time transaction. Counting
     # them would refuse a discount Stripe would have honoured.
     #
-    # On a Stripe error, let them through: Stripe still enforces the
-    # restriction when the subscription is created.
+    # On a Stripe error, let them through. This check is advisory - it exists
+    # to turn Stripe's rejection into a clear message instead of a generic
+    # payment failure and an exception email - and Stripe remains the
+    # enforcement point at create. So failing open costs a worse error message,
+    # not a bypass, whereas failing closed would refuse legitimate subscribers
+    # during a Stripe blip.
     def returning_customer?
       pro_account = current_user.pro_account
       return false unless pro_account
