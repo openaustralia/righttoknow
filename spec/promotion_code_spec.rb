@@ -143,6 +143,23 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
     it 'exposes the typed code as the param' do
       expect(subject.to_param).to eq('SUMMER25')
     end
+
+    # AlaveteliPro::Coupon#terms is part of the interface this class stands in
+    # for, and core's subscriptions view renders it.
+    it 'describes itself the way a coupon does' do
+      expect(subject).to respond_to(:terms)
+      expect(subject.terms).to eq(subject.name)
+    end
+
+    # A coupon that can't be fetched must leave us with an invalid code, not an
+    # exception raised later from inside a before_action.
+    it 'resolves to nil when the coupon behind it cannot be fetched' do
+      allow(Stripe::Coupon).to receive(:retrieve).and_raise(
+        Stripe::InvalidRequestError.new('No such coupon', 'coupon')
+      )
+
+      expect(AlaveteliPro::PromotionCode.retrieve('SUMMER25')).to be_nil
+    end
   end
 
   describe 'metadata' do
@@ -168,6 +185,17 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
 
       expect(AlaveteliPro::PromotionCode.retrieve('SUMMER25').metadata)
         .to include(humanized_terms: '50% off')
+    end
+
+    it 'describes itself with the humanized terms' do
+      stripe_helper.create_coupon(
+        id: 'TERMED', percent_off: 50, amount_off: nil, currency: nil,
+        metadata: { humanized_terms: 'half price' }
+      )
+      create_promotion_code(coupon: 'TERMED')
+
+      expect(AlaveteliPro::PromotionCode.retrieve('SUMMER25').terms)
+        .to eq('half price')
     end
   end
 
@@ -307,7 +335,15 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
       end
     end
 
-    context 'when the code is for new subscribers and the user has invoices' do
+    context 'when the code is for new subscribers' do
+      def stub_invoices(*statuses)
+        pro_account = FactoryBot.create(:pro_account, user: user)
+        invoices = statuses.map { |status| double(:invoice, status: status) }
+        allow(pro_account).to receive(:invoices).and_return(invoices)
+        allow(user).to receive(:pro_account).and_return(pro_account)
+        allow(controller).to receive(:current_user).and_return(user)
+      end
+
       before do
         create_promotion_code(
           restrictions: {
@@ -316,15 +352,27 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
             minimum_amount_currency: nil
           }
         )
-
-        pro_account = FactoryBot.create(:pro_account, user: user)
-        allow(pro_account).to receive(:invoices).and_return([double(:invoice)])
-        allow(user).to receive(:pro_account).and_return(pro_account)
-        allow(controller).to receive(:current_user).and_return(user)
       end
 
-      include_examples 'refused before any charge',
-                       'This coupon code is only available to new subscribers.'
+      context 'and the user has paid an invoice' do
+        before { stub_invoices('paid') }
+
+        include_examples 'refused before any charge',
+                         'This coupon code is only available to new subscribers.'
+      end
+
+      # Stripe treats a customer with no payments and no *non-void* invoices as
+      # a first-time transaction, so counting void invoices here would refuse a
+      # discount Stripe would have honoured.
+      context 'and the user only has void invoices' do
+        before { stub_invoices('void', 'void') }
+
+        it 'subscribes the user' do
+          subscribe('SUMMER25')
+
+          expect(assigns(:subscription)).not_to be_nil
+        end
+      end
     end
 
     context 'when the code is for new subscribers and the user is new' do

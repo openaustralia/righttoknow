@@ -38,8 +38,12 @@ module AlaveteliPro
       promotion_code = Stripe::PromotionCode.list(
         code: code, active: true, limit: 1
       ).data.first
+      return unless promotion_code
 
-      new(promotion_code) if promotion_code
+      # Resolve the coupon here rather than lazily, so a coupon we can't fetch
+      # leaves us with nil - an invalid code - instead of raising later from
+      # inside a before_action, where it would be a 500 rather than a message.
+      new(promotion_code).tap(&:coupon)
     rescue Stripe::InvalidRequestError
       nil
     end
@@ -68,6 +72,14 @@ module AlaveteliPro
     # and StripeObject raises NoMethodError for an absent attribute.
     def name
       coupon.name if coupon.respond_to?(:name)
+    end
+
+    # Mirrors AlaveteliPro::Coupon#terms, which is part of the interface this
+    # class stands in for and is rendered by core's subscriptions view. Reads
+    # the merged metadata rather than the coupon's, so a code can describe
+    # itself differently from the coupon behind it.
+    def terms
+      metadata[:humanized_terms].presence || name
     end
 
     def exhausted?

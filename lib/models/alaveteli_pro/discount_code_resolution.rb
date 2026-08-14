@@ -34,7 +34,7 @@ module AlaveteliPro
 
       if !discount.valid || discount.exhausted?
         _('Coupon code has expired.')
-      elsif below_minimum_amount?(discount, price)
+      elsif minimum_amount_unmet?(discount, price)
         _('This coupon code cannot be used with this plan.')
       elsif discount.first_time_transaction? && returning_customer?
         _('This coupon code is only available to new subscribers.')
@@ -44,18 +44,25 @@ module AlaveteliPro
     # A promotion code can require a minimum purchase. Verified against Stripe
     # test mode: it compares the minimum with the price *before* tax and
     # *before* the discount, and rejects the subscription outright if the price
-    # falls short. A minimum in another currency can't be met at all.
-    def below_minimum_amount?(discount, price)
+    # falls short.
+    #
+    # A minimum priced in another currency counts as unmet. Stripe can carry
+    # per-currency minimums in restrictions.currency_options, which we don't
+    # read - refusing is the conservative reading, and the site only sells in
+    # one currency.
+    def minimum_amount_unmet?(discount, price)
       minimum = discount.minimum_amount
       return false if minimum.blank?
-
-      currency = discount.minimum_amount_currency
-      if currency.present? &&
-         currency.downcase != AlaveteliConfiguration.iso_currency_code.downcase
-        return true
-      end
+      return true if mismatched_minimum_currency?(discount)
 
       price.unit_amount < minimum
+    end
+
+    def mismatched_minimum_currency?(discount)
+      currency = discount.minimum_amount_currency
+      return false if currency.blank?
+
+      currency.downcase != AlaveteliConfiguration.iso_currency_code.downcase
     end
 
     # first_time_transaction is the one restriction we cannot read off the
@@ -64,13 +71,17 @@ module AlaveteliPro
     # SubscriptionsController#create builds it later - so they pass. Only
     # called for codes that actually carry the restriction.
     #
+    # Void invoices don't count, matching Stripe: a customer with "no prior
+    # payments or non-void invoices" is still a first-time transaction. Counting
+    # them would refuse a discount Stripe would have honoured.
+    #
     # On a Stripe error, let them through: Stripe still enforces the
     # restriction when the subscription is created.
     def returning_customer?
       pro_account = current_user.pro_account
       return false unless pro_account
 
-      pro_account.invoices.any?
+      pro_account.invoices.any? { |invoice| invoice.status != 'void' }
     rescue Stripe::StripeError
       false
     end
