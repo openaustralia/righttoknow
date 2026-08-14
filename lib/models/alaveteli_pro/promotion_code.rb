@@ -74,10 +74,12 @@ module AlaveteliPro
       max_redemptions.present? && times_redeemed >= max_redemptions
     end
 
-    # Stripe refuses a minimum_amount promotion code on a subscription
-    # outright, so there is nothing useful we can do with one here.
-    def minimum_amount?
-      restrictions.to_h[:minimum_amount].present?
+    def minimum_amount
+      restrictions.to_h[:minimum_amount]
+    end
+
+    def minimum_amount_currency
+      restrictions.to_h[:minimum_amount_currency]
     end
 
     def first_time_transaction?

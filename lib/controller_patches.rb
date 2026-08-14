@@ -101,7 +101,7 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
         { status: 'invalid', message: _('Coupon code is invalid.') }
       elsif !coupon.valid
         { status: 'expired', message: _('Coupon code has expired.') }
-      elsif (message = promotion_code_error(coupon))
+      elsif (message = promotion_code_error(coupon, price))
         { status: 'invalid', message: message }
       elsif mismatched_currency?(coupon)
         { status: 'invalid', message: _('Coupon code is invalid.') }
@@ -249,7 +249,7 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
     def check_promotion_code_redeemable
       return unless @coupon && @price
 
-      message = promotion_code_error(@coupon)
+      message = promotion_code_error(@coupon, @price)
       return unless message
 
       flash[:error] = message

@@ -181,8 +181,12 @@ Who enforces what:
 | --- | --- |
 | `max_redemptions`, `expires_at`, per-customer | Stripe, on redemption |
 | `first_time_transaction` | Stripe, plus a check here before any charge |
+| `minimum_amount` | Stripe, plus a check here before any charge |
 | `interval` metadata (see above) | This theme |
-| `minimum_amount` | Nobody - Stripe refuses these on subscriptions, so the code is rejected as invalid |
+
+A `minimum_amount` is compared against the plan price **before tax and before
+the discount**, so a $10 monthly plan meets a minimum of 1000 but not 1050. A
+minimum set only in another currency is treated as unmeetable.
 
 The `interval` and `humanized_terms` metadata keys are read from the underlying
 coupon. You can override either on the promotion code's own metadata, so one

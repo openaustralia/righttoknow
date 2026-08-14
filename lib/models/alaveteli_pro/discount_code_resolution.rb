@@ -29,16 +29,33 @@ module AlaveteliPro
     #
     # Returns nil when the code is redeemable, or when it isn't a promotion
     # code at all.
-    def promotion_code_error(discount)
+    def promotion_code_error(discount, price)
       return unless discount.is_a?(AlaveteliPro::PromotionCode)
 
       if !discount.valid || discount.exhausted?
         _('Coupon code has expired.')
-      elsif discount.minimum_amount?
-        _('Coupon code is invalid.')
+      elsif below_minimum_amount?(discount, price)
+        _('This coupon code cannot be used with this plan.')
       elsif discount.first_time_transaction? && returning_customer?
         _('This coupon code is only available to new subscribers.')
       end
+    end
+
+    # A promotion code can require a minimum purchase. Verified against Stripe
+    # test mode: it compares the minimum with the price *before* tax and
+    # *before* the discount, and rejects the subscription outright if the price
+    # falls short. A minimum in another currency can't be met at all.
+    def below_minimum_amount?(discount, price)
+      minimum = discount.minimum_amount
+      return false if minimum.blank?
+
+      currency = discount.minimum_amount_currency
+      if currency.present? &&
+         currency.downcase != AlaveteliConfiguration.iso_currency_code.downcase
+        return true
+      end
+
+      price.unit_amount < minimum
     end
 
     # first_time_transaction is the one restriction we cannot read off the

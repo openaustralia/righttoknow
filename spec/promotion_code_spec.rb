@@ -66,6 +66,8 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
     allow(AlaveteliConfiguration).to receive(:stripe_prices)
       .and_return('pro' => 'pro')
     allow(AlaveteliConfiguration).to receive(:stripe_tax_rate).and_return('0.0')
+    allow(AlaveteliConfiguration).to receive(:iso_currency_code)
+      .and_return('AUD')
 
     sign_in user
   end
@@ -254,8 +256,10 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
       include_examples 'refused before any charge', 'Coupon code has expired.'
     end
 
-    context 'when the code carries a minimum amount' do
-      # Stripe refuses these on subscriptions outright.
+    # Stripe compares a minimum against the price before tax and before the
+    # discount, and refuses the subscription if it falls short. The price here
+    # is 1000.
+    context 'when the price falls short of the minimum amount' do
       before do
         create_promotion_code(
           restrictions: {
@@ -266,7 +270,41 @@ RSpec.describe AlaveteliPro::SubscriptionsController, # rubocop:disable Metrics/
         )
       end
 
-      include_examples 'refused before any charge', 'Coupon code is invalid.'
+      include_examples 'refused before any charge',
+                       'This coupon code cannot be used with this plan.'
+    end
+
+    context 'when the minimum amount is in another currency' do
+      before do
+        create_promotion_code(
+          restrictions: {
+            first_time_transaction: false,
+            minimum_amount: 500,
+            minimum_amount_currency: 'usd'
+          }
+        )
+      end
+
+      include_examples 'refused before any charge',
+                       'This coupon code cannot be used with this plan.'
+    end
+
+    context 'when the price meets the minimum amount' do
+      before do
+        create_promotion_code(
+          restrictions: {
+            first_time_transaction: false,
+            minimum_amount: 500,
+            minimum_amount_currency: 'aud'
+          }
+        )
+      end
+
+      it 'subscribes the user' do
+        subscribe('SUMMER25')
+
+        expect(assigns(:subscription)).not_to be_nil
+      end
     end
 
     context 'when the code is for new subscribers and the user has invoices' do
