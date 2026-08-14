@@ -242,18 +242,28 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   (`gh`, `git`): a prefix like `gh pr` covers both read-only `gh pr view` and
   mutating `gh pr create`/`merge`/`close`/`comment`. Prefer or request the
   pattern scoped to the exact safe subcommand used, not the shared prefix.
-- Check the `openaustralia/.github` repo (a local clone may exist at
-  `../.github`) for the org-wide PR/issue templates and `CONTRIBUTING.md`.
-- PRs must disclose material AI involvement per OAF's CLA
-  (`openaustralia/.github` repo, `CLA/CLA.md`): a note in the PR description,
-  distinct from the commit `Assisted-by:` trailer.
-- PRs must be opened as drafts (`gh pr create --draft --assignee <human>`),
-  never ready-for-review directly, and assigned to the human driving the
-  change, not the AI (no `Signed-off-by`/`Co-authored-by` trailer for AI
-  either). Taking a PR out of draft is the human's call.
-- GitHub issues have no draft state. Don't create one directly — draft the
-  title/body for the human to file themselves, unless they've explicitly
-  asked you to create it this time.
+- Don't rely on this file for the org-wide contributing rules, they change and
+  this copy will drift. Fetch the current ones before opening a PR or an issue:
+
+  `gh api repos/openaustralia/.github/contents/.github/CONTRIBUTING.md -H "Accept: application/vnd.github.raw"`
+
+  The PR and issue templates are org-level too, in the same repo under
+  `.github/PULL_REQUEST_TEMPLATE.md` and `.github/ISSUE_TEMPLATE/`. Fill in the
+  PR template rather than writing a freeform description. Between them they
+  cover branch naming, draft PRs and assignees, DCO sign-off, the CLA, and AI
+  disclosure, so don't restate any of that here.
+- What is repo-specific, and overrides the org guide: branch from `staging` and
+  target `staging`. This repo has no `main` branch, and the org guide names
+  Right to Know as a project with its own workflow, so its "aim pull requests
+  at `main`" does not apply. See "Contributing" in `README.md`.
+- The human runs the commit, not the agent. The org guide requires a DCO
+  `Signed-off-by` trailer (`git commit -s`) certifying the right to submit the
+  change, and only a person can make that certification. That is the reason for
+  staging commits rather than making them, above. Don't add `Signed-off-by` or
+  `Co-authored-by` on an AI agent's behalf, and don't strip a human's.
+- GitHub issues have no draft state. Don't create one directly, draft the
+  title/body for the human to file themselves, unless they've explicitly asked
+  you to create it this time.
 - Never fabricate citations, figures, or URLs (e.g. authority names, request
   emails, legislation names) — say when something's unverified rather than
   guessing.
