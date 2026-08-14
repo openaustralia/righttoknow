@@ -6,6 +6,7 @@
   - [Seeding test data](#seeding-test-data)
   - [Pro subscriptions](#pro-subscriptions)
     - [Restricting a coupon to a billing interval](#restricting-a-coupon-to-a-billing-interval)
+    - [Promotion codes](#promotion-codes)
   - [Contributing](#contributing)
   - [Deployment](#deployment)
     - [Prerequisites](#prerequisites)
@@ -147,6 +148,45 @@ never advertised that checkout would then reject.
 For extra defence-in-depth you can also set the coupon's native `applies_to`
 products to the Pro product; this stops it discounting any other product, though
 it still can't separate monthly from annual.
+
+### Promotion codes
+
+The "Do you have a coupon code?" field on the plan page accepts a Stripe
+**promotion code** as well as a coupon id. A promotion code is a customer-facing
+string pointing at a coupon, and it carries restrictions a coupon cannot express:
+a redemption cap for that code alone, first-time subscribers only, and an expiry
+independent of the coupon's. Many codes can share one coupon, so a campaign can
+be tracked and retired without touching the discount itself.
+
+To add one, open the coupon in the Stripe dashboard and create a promotion code
+against it.
+
+Two things differ from coupons:
+
+- **Promotion codes are not namespaced.** Coupon ids are prefixed with
+  `STRIPE_NAMESPACE` (a typed `FOO` looks up the coupon `RTK-FOO`), but a
+  promotion code is matched exactly as typed. Create the code as the string you
+  want people to type.
+- **Coupons win a collision.** A typed code is looked up as a coupon first, then
+  as a promotion code, so a coupon `RTK-FOO` takes precedence over a promotion
+  code `FOO`. Avoid using the same string for both.
+
+Only **active** promotion codes resolve. Stripe deactivates a code when it
+expires or hits its redemption cap, and a deactivated code reads as invalid
+rather than expired.
+
+Who enforces what:
+
+| Restriction | Enforced by |
+| --- | --- |
+| `max_redemptions`, `expires_at`, per-customer | Stripe, on redemption |
+| `first_time_transaction` | Stripe, plus a check here before any charge |
+| `interval` metadata (see above) | This theme |
+| `minimum_amount` | Nobody - Stripe refuses these on subscriptions, so the code is rejected as invalid |
+
+The `interval` and `humanized_terms` metadata keys are read from the underlying
+coupon. You can override either on the promotion code's own metadata, so one
+coupon can back several codes that describe themselves differently.
 
 ## Contributing
 

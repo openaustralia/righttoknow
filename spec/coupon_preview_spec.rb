@@ -77,7 +77,7 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
       end
     end
 
-    context 'with a signed-in user' do
+    context 'with a signed-in user' do # rubocop:disable Metrics/BlockLength
       before { sign_in user }
 
       context 'with a blank coupon code' do
@@ -223,6 +223,46 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
           expect(json['status']).to eq('invalid')
           expect(json['message'])
             .to eq('This coupon code cannot be used with this plan.')
+        end
+      end
+
+      # A promotion code resolves through the same path as a coupon, so the
+      # preview and checkout can't disagree - see
+      # AlaveteliPro::DiscountCodeResolution and spec/promotion_code_spec.rb.
+      context 'with a promotion code' do
+        before do
+          stripe_helper.create_coupon(
+            id: 'HALF', percent_off: 50, amount_off: nil, currency: nil
+          )
+          Stripe::PromotionCode.create(coupon: 'HALF', code: 'SUMMER25')
+          get :coupon_preview,
+              params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+        end
+
+        it "previews the underlying coupon's discount" do
+          expect(json['status']).to eq('valid')
+          expect(json['amount']).to eq(money(2475)) # 4500 - 50% + 10% tax
+        end
+      end
+
+      context 'with a promotion code that is no longer active' do
+        before do
+          stripe_helper.create_coupon(
+            id: 'HALF', percent_off: 50, amount_off: nil, currency: nil
+          )
+          Stripe::PromotionCode.create(
+            coupon: 'HALF', code: 'SUMMER25', active: false
+          )
+          get :coupon_preview,
+              params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+        end
+
+        # Stripe deactivates a promotion code when it expires or is exhausted,
+        # and the lookup only asks for active codes, so a dead code doesn't
+        # resolve at all and reads as invalid rather than expired.
+        it 'reports the code as invalid' do
+          expect(json['status']).to eq('invalid')
+          expect(json['message']).to eq('Coupon code is invalid.')
         end
       end
 
