@@ -43,26 +43,62 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
       .to receive(:iso_currency_code).and_return(currency)
   end
 
-  # Verifies the theme's show.html.erb override renders the DOM hooks the
-  # coupon preview JS binds to, and that the plan_coupon_preview route helper
-  # resolves (i.e. the custom route is loaded).
   describe 'GET #show' do
-    render_views
+    # Verifies the theme's show.html.erb override renders the DOM hooks the
+    # coupon preview JS binds to, and that the plan_coupon_preview route helper
+    # resolves (i.e. the custom route is loaded).
+    context 'with a signed-in user' do
+      render_views
 
-    before do
-      sign_in FactoryBot.create(:user)
-      get :show, params: { id: 'pro' }
+      before do
+        sign_in FactoryBot.create(:user)
+        get :show, params: { id: 'pro' }
+      end
+
+      it 'renders the coupon preview hooks and endpoint URL' do
+        expect(response.body)
+          .to include('data-preview-url="/plans/pro/coupon_preview"')
+        expect(response.body).to include('id="js-plan-price"')
+        expect(response.body).to include('id="js-coupon-feedback"')
+      end
+
+      it 'includes the coupon preview script' do
+        expect(response.body).to include('alaveteli_pro/coupon_preview')
+      end
     end
 
-    it 'renders the coupon preview hooks and endpoint URL' do
-      expect(response.body)
-        .to include('data-preview-url="/plans/pro/coupon_preview"')
-      expect(response.body).to include('id="js-plan-price"')
-      expect(response.body).to include('id="js-coupon-feedback"')
+    # Core already covers these two cases in its own plans_controller_spec, but
+    # it runs without this theme loaded. Repeat them here because the theme adds
+    # a before_action to this controller, and ActiveSupport dedupes callbacks by
+    # filter name: registering :authenticate again silently drops core's login
+    # requirement on #show and reorders check_has_current_subscription ahead of
+    # it, which then raises NoMethodError on a nil @user.
+    context 'without a signed-in user' do
+      before { get :show, params: { id: 'pro' } }
+
+      it 'redirects to the login form' do
+        expect(response)
+          .to redirect_to(signin_path(token: PostRedirect.last.token))
+      end
     end
 
-    it 'includes the coupon preview script' do
-      expect(response.body).to include('alaveteli_pro/coupon_preview')
+    context 'with a signed-in user who already subscribes' do
+      before do
+        sign_in user
+        customer = Stripe::Customer.create(
+          email: user.email, source: stripe_helper.generate_card_token
+        )
+        Stripe::Subscription.create(
+          customer: customer, items: [{ price: 'pro' }]
+        )
+        user.create_pro_account(stripe_customer_id: customer.id)
+        user.add_role(:pro)
+        get :show, params: { id: 'pro' }
+      end
+
+      it 'redirects to the subscriptions page' do
+        expect(response).to redirect_to(subscriptions_path)
+      end
     end
   end
 

@@ -39,7 +39,18 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
     # raise: false so that an upstream rename of the html_response callback
     # degrades this action rather than failing to boot the whole application.
     skip_before_action :html_response, only: [:coupon_preview], raise: false
-    before_action :authenticate, only: [:coupon_preview]
+
+    # Deliberately registered under our own name rather than reusing core's
+    # :authenticate. ActiveSupport dedupes callbacks by filter name and ignores
+    # the :only conditions, so `before_action :authenticate,
+    # only: [:coupon_preview]` would delete core's `before_action :authenticate,
+    # :check_has_current_subscription, only: [:show]` registration and re-add
+    # :authenticate at the end of the chain, scoped to coupon_preview alone.
+    # That left #show with no login requirement and with
+    # check_has_current_subscription running first, which raises
+    # "undefined method 'pro_account' for nil" on core's @user for anyone not
+    # signed in. A distinct name leaves core's chain untouched.
+    before_action :authenticate_coupon_preview, only: [:coupon_preview]
 
     def coupon_preview
       price = AlaveteliPro::Price.retrieve(params[:price_id])
@@ -66,6 +77,12 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
     end
 
     private
+
+    # The same login requirement core puts on #show. See the before_action
+    # above for why this isn't registered as :authenticate directly.
+    def authenticate_coupon_preview
+      authenticate
+    end
 
     # 30 coupon codes per user per hour: generous for somebody typing a code
     # they hold (the JS debounces, so one attempt is normally one request),
