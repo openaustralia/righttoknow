@@ -39,7 +39,18 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
     # raise: false so that an upstream rename of the html_response callback
     # degrades this action rather than failing to boot the whole application.
     skip_before_action :html_response, only: [:coupon_preview], raise: false
-    before_action :authenticate, only: [:coupon_preview]
+
+    # Registered under a theme-specific name, NOT `before_action :authenticate`:
+    # re-registering a host callback by name replaces the host's registration
+    # (ActiveSupport::Callbacks de-duplicates on the filter symbol), which
+    # silently removed the login gate from #show and 500ed every logged-out
+    # visitor there (issue #1055). Same hazard applies to any future theme
+    # before_action that reuses a host callback name.
+    before_action :authenticate_coupon_preview, only: [:coupon_preview]
+
+    def authenticate_coupon_preview
+      authenticate
+    end
 
     def coupon_preview
       price = AlaveteliPro::Price.retrieve(params[:price_id])
