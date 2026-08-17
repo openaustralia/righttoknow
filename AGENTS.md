@@ -222,9 +222,12 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   conventions, they change and a copy here would drift. Fetch the current ones
   before opening a PR or an issue:
 
-  `gh api repos/openaustralia/.github/contents/.github/CONTRIBUTING.md -H "Accept: application/vnd.github.raw"`
+  `curl -fsSL https://raw.githubusercontent.com/openaustralia/.github/main/.github/CONTRIBUTING.md`
 
-  `gh api repos/openaustralia/.github/contents/AGENTS.md -H "Accept: application/vnd.github.raw"`
+  `curl -fsSL https://raw.githubusercontent.com/openaustralia/.github/main/AGENTS.md`
+
+Any equivalent fetch of those URLs works (web fetch, or `gh api` if the GitHub CLI
+is installed); don't assume a particular tool is present.
 
   The PR and issue templates are org-level too, in the same repo under
   `.github/PULL_REQUEST_TEMPLATE.md` and `.github/ISSUE_TEMPLATE/`. Fill in the
