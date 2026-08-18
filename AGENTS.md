@@ -273,3 +273,30 @@ only). Run via `rails runner` from the **host app**, not this repo — see
 - Keep all copy, help text, and authority notes non-partisan — Right To Know
   reports FOI activity and authority information neutrally, never implying
   endorsement or criticism of any agency, party, or position.
+
+## Agent skills
+
+Per-repo configuration for the mattpocock engineering skills (`/triage`,
+`/to-tickets`, `/to-spec`, `/wayfinder`, `/domain-modeling` and friends). The
+files under `docs/agents/` are what those skills read; edit them directly rather
+than re-running the setup skill.
+
+### Issue tracker
+
+Issues live as GitHub issues in this repo, driven with the `gh` CLI. Note that
+the Alaveteli fork this theme is loaded into has GitHub Issues disabled, so work
+on the host app is tracked here too. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles map to `needs-triage`, `needs-info`,
+`ready-for-agent`, `ready-for-human` and `wontfix`. See
+`docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context. This repo already keeps the two records the skills look for
+under different names, so they are pointed at those rather than at a new
+`CONTEXT.md` and `docs/adr/`: "Key domain knowledge" above plus `README.md` for
+vocabulary, and `docs/DECISIONS.md` for cross-cutting decisions. See
+`docs/agents/domain.md`.
