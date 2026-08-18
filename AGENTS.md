@@ -179,14 +179,6 @@ only). Run via `rails runner` from the **host app**, not this repo — see
 
 ## Working with AI tools
 
-- If something here doesn't match what you're consistently seeing in the repo,
-  flag the mismatch and ask which needs fixing (so it's fixed once and for
-  all), presenting fixing the code as the easy default choice and updating
-  this file as the alternative.
-- Use Australian spelling and voice in new code (variable/constant names,
-  comments, commit and error messages) and in prose.
-- No em dashes, anywhere: code, docs, commit messages, chat. Use a hyphen,
-  comma, or full stop instead.
 - Don't flatter, over-praise, or write to keep the conversation pleasant. Skip
   stock enthusiasm like "Great question!" and focus on what actually helps.
 - If the human's premise or approach looks wrong, say so before proceeding.
@@ -226,44 +218,28 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   repeating it in multiple places) when a decision spans multiple files.
 - When a commit message body covers more than one distinct point, use a
   markdown bullet list rather than one flowing paragraph.
-- Stage commits, don't make them: `git add` the files, then write the
-  proposed message (with the `Assisted-by:` trailer) to `.git/GITGUI_MSG`
-  (used by `git gui`) and display it for copy/paste into an IDE. Check the
-  file first; if it already has content, ask before overwriting rather than
-  clobbering an existing draft. This keeps review and sign-off a deliberate
-  separate human act, not a rubber stamp.
-- Keep the future effect of any standing approval clearly scoped. Read-only
-  calls (Read, grep, `git status`/`diff`/`log`) can be batched freely — no
-  justification needed per call. File changes (Edit/Write, or Bash like
-  `mv`/`rm`/`sed -i`) are different: state what's about to change and why
-  before making it, one described step or clearly-announced group at a time.
-  `git add` isn't covered by this — it's cheap to undo.
-- The same scoping applies to Bash allow-patterns for multi-subcommand CLIs
-  (`gh`, `git`): a prefix like `gh pr` covers both read-only `gh pr view` and
-  mutating `gh pr create`/`merge`/`close`/`comment`. Prefer or request the
-  pattern scoped to the exact safe subcommand used, not the shared prefix.
-- Don't rely on this file for the org-wide contributing rules, they change and
-  this copy will drift. Fetch the current ones before opening a PR or an issue:
+- Don't rely on this file for the org-wide contributing rules or agent
+  conventions, they change and a copy here would drift. Fetch the current ones
+  before opening a PR or an issue:
 
-  `gh api repos/openaustralia/.github/contents/.github/CONTRIBUTING.md -H "Accept: application/vnd.github.raw"`
+  `curl -fsSL https://raw.githubusercontent.com/openaustralia/.github/main/.github/CONTRIBUTING.md`
+
+  `curl -fsSL https://raw.githubusercontent.com/openaustralia/.github/main/AGENTS.md`
+
+  Any equivalent fetch of those URLs works (web fetch, or `gh api` if the
+  GitHub CLI is installed); don't assume a particular tool is present.
 
   The PR and issue templates are org-level too, in the same repo under
   `.github/PULL_REQUEST_TEMPLATE.md` and `.github/ISSUE_TEMPLATE/`. Fill in the
   PR template rather than writing a freeform description. Between them they
-  cover branch naming, draft PRs and assignees, DCO sign-off, the CLA, and AI
-  disclosure, so don't restate any of that here.
+  cover branch naming, draft PRs and assignees, DCO sign-off, AI disclosure,
+  Australian English and no-em-dash style, staging commits rather than making
+  them, standing-approval and allow-pattern scoping, issue drafting, and
+  word-wrapping in PR/issue bodies, so don't restate any of that here.
 - What is repo-specific, and overrides the org guide: branch from `staging` and
   target `staging`. This repo has no `main` branch, and the org guide names
   Right to Know as a project with its own workflow, so its "aim pull requests
   at `main`" does not apply. See "Contributing" in `README.md`.
-- The human runs the commit, not the agent. The org guide requires a DCO
-  `Signed-off-by` trailer (`git commit -s`) certifying the right to submit the
-  change, and only a person can make that certification. That is the reason for
-  staging commits rather than making them, above. Don't add `Signed-off-by` or
-  `Co-authored-by` on an AI agent's behalf, and don't strip a human's.
-- GitHub issues have no draft state. Don't create one directly, draft the
-  title/body for the human to file themselves, unless they've explicitly asked
-  you to create it this time.
 - Never fabricate citations, figures, or URLs (e.g. authority names, request
   emails, legislation names) — say when something's unverified rather than
   guessing.
