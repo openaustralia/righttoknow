@@ -8,3 +8,10 @@
 # production-runtime gems belong here.
 
 source 'https://rubygems.org'
+
+# Error monitoring and APM (https://github.com/openaustralia/righttoknow/issues/1004).
+# Initialised in lib/sentry_config.rb; does nothing unless SENTRY_DSN is set
+# in the host's config/general.yml.
+gem 'sentry-rails'
+gem 'sentry-ruby'
+gem 'sentry-sidekiq'
