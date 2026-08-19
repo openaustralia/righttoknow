@@ -37,6 +37,9 @@ end
   require File.expand_path "../#{patch}", __FILE__
 end
 
+# Error monitoring and APM (no-op unless the sentry gems and DSN are present)
+require File.expand_path('sentry_config.rb', __dir__)
+
 # Note you should rename the file at "config/custom-routes.rb" to
 # something unique (e.g. yourtheme-custom-routes.rb":
 $alaveteli_route_extensions << 'custom-routes.rb'
