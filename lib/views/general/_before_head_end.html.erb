@@ -7,3 +7,16 @@
 <script defer data-domain="righttoknow.org.au" src="https://plausible.io/js/script.outbound-links.js"></script>
 <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 <% end %>
+<%# Sentry browser error monitoring (issue #1004). The loader URL is set in
+    general.yml on the servers, so this renders nothing in development. %>
+<% sentry_js_loader_url = AlaveteliConfiguration.get('SENTRY_JS_LOADER_URL', '') %>
+<% unless sentry_js_loader_url.empty? %>
+<script>
+  window.sentryOnLoad = function () {
+    Sentry.init({
+      environment: <%= (defined?(Sentry) && Sentry.initialized? ? Sentry.configuration.environment : Rails.env).to_json.html_safe %>
+    });
+  };
+</script>
+<script src="<%= sentry_js_loader_url %>" crossorigin="anonymous"></script>
+<% end %>
