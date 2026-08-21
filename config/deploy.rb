@@ -58,15 +58,15 @@ namespace :themes do
   desc 'Upload Gemfile.theme and inject into alaveteli Gemfile before bundle install'
   task :pre_bundle_setup do
     on roles(:app) do
-      theme_dir = release_path.join('lib', 'themes', 'righttoknow')
-      execute :mkdir, '-p', theme_dir
-      # Upload Gemfile.theme (theme runtime gems only) rather than the theme
-      # repo's main Gemfile, which carries dev/deployment tooling we don't
-      # want leaking into alaveteli's server bundle. The uploaded file is
-      # renamed to "Gemfile" in the release so eval_gemfile finds it.
-      upload! 'Gemfile.theme', "#{theme_dir}/Gemfile"
-      execute :bash, '-c',
-              "echo \"\\neval_gemfile '#{theme_dir}/Gemfile'\" >> #{release_path.join('Gemfile')}"
+      # Upload Gemfile.theme (theme runtime gems only) to the release root,
+      # not into lib/themes/righttoknow, because themes:install re-clones the
+      # theme there later in the deploy, clobbering anything we put in it.
+      theme_gemfile = release_path.join('Gemfile.theme')
+      upload! 'Gemfile.theme', theme_gemfile
+      # A single echo command; `bash -c "echo ..."` here would hand bash only
+      # the word "echo" as its script and silently append nothing.
+      execute :echo, "\"eval_gemfile '#{theme_gemfile}'\"", '>>',
+              release_path.join('Gemfile')
     end
   end
 end

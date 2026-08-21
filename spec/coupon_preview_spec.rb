@@ -77,7 +77,7 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
       end
     end
 
-    context 'with a signed-in user' do
+    context 'with a signed-in user' do # rubocop:disable Metrics/BlockLength
       before { sign_in user }
 
       context 'with a blank coupon code' do
@@ -223,6 +223,97 @@ RSpec.describe AlaveteliPro::PlansController, type: :controller do # rubocop:dis
           expect(json['status']).to eq('invalid')
           expect(json['message'])
             .to eq('This coupon code cannot be used with this plan.')
+        end
+      end
+
+      # A promotion code resolves through the same path as a coupon, so the
+      # preview and checkout can't disagree - see
+      # AlaveteliPro::DiscountCodeResolution and spec/promotion_code_spec.rb.
+      context 'with a promotion code' do
+        before do
+          stripe_helper.create_coupon(
+            id: 'HALF', percent_off: 50, amount_off: nil, currency: nil
+          )
+          Stripe::PromotionCode.create(coupon: 'HALF', code: 'SUMMER25')
+          get :coupon_preview,
+              params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+        end
+
+        it "previews the underlying coupon's discount" do
+          expect(json['status']).to eq('valid')
+          expect(json['amount']).to eq(money(2475)) # 4500 - 50% + 10% tax
+        end
+      end
+
+      context 'with a promotion code that is no longer active' do
+        before do
+          stripe_helper.create_coupon(
+            id: 'HALF', percent_off: 50, amount_off: nil, currency: nil
+          )
+          Stripe::PromotionCode.create(
+            coupon: 'HALF', code: 'SUMMER25', active: false
+          )
+          get :coupon_preview,
+              params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+        end
+
+        # Stripe deactivates a promotion code when it expires or is exhausted,
+        # and the lookup only asks for active codes, so a dead code doesn't
+        # resolve at all and reads as invalid rather than expired.
+        it 'reports the code as invalid' do
+          expect(json['status']).to eq('invalid')
+          expect(json['message']).to eq('Coupon code is invalid.')
+        end
+      end
+
+      # The preview applies the same restriction checks as checkout, including
+      # first_time_transaction, which is the one that has to read the person's
+      # payment history. current_user is a private alias of authenticated_user
+      # on ApplicationController, so it resolves here as it does anywhere else -
+      # it is not stubbed below, precisely so this exercises the real thing.
+      context 'with a promotion code for new subscribers only' do
+        before do
+          stripe_helper.create_coupon(
+            id: 'HALF', percent_off: 50, amount_off: nil, currency: nil
+          )
+          Stripe::PromotionCode.create(
+            coupon: 'HALF', code: 'SUMMER25',
+            restrictions: {
+              first_time_transaction: true,
+              minimum_amount: nil,
+              minimum_amount_currency: nil
+            }
+          )
+        end
+
+        context 'and the person has already paid an invoice' do
+          before do
+            customer = Stripe::Customer.create(email: user.email)
+            user.create_pro_account(stripe_customer_id: customer.id)
+            allow(Stripe::Invoice).to receive(:list)
+              .and_return([double(:invoice, status: 'paid')])
+
+            get :coupon_preview,
+                params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+          end
+
+          it 'says so rather than previewing a discount they cannot have' do
+            expect(json['status']).to eq('invalid')
+            expect(json['message'])
+              .to eq('This coupon code is only available to new subscribers.')
+          end
+        end
+
+        context 'and the person is new' do
+          before do
+            get :coupon_preview,
+                params: { price_id: 'pro', coupon_code: 'SUMMER25' }
+          end
+
+          it 'previews the discount' do
+            expect(json['status']).to eq('valid')
+            expect(json['amount']).to eq(money(2475))
+          end
         end
       end
 
