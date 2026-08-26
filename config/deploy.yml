@@ -1,7 +1,6 @@
 production:
   branch: production
   repository: https://github.com/openaustralia/alaveteli.git
-  server: prod.righttoknow.org.au
   user: deploy
   deploy_to: /srv/www/production
   rails_env: production
@@ -10,7 +9,6 @@ production:
 staging:
   branch: staging
   repository: https://github.com/openaustralia/alaveteli.git
-  server: staging.righttoknow.org.au
   user: deploy
   deploy_to: /srv/www/staging
   rails_env: production
