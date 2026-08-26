@@ -11,6 +11,8 @@ Rails.configuration.to_prepare do
   class WhatismyipController < ApplicationController
     # rubocop:enable Lint/ConstantDefinitionInBlock
     skip_before_action :html_response
+    # Added protect_from_forgery since CodeQL complains and just in case we ever action a POST
+    protect_from_forgery with: :exception
     before_action :check_enabled
 
     CLOUDFLARE_RANGE_URLS = [
