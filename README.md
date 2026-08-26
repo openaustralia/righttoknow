@@ -274,6 +274,20 @@ One-time bootstrap per server:
 
 `deploy:check_shared` runs at the start of every deploy and fails fast if any required file is missing.
 
+### Whoami trust-boundary check
+
+`GET /whoami` reports the IP Rails sees for the request, to aid in checking cloudflare proxying
+with a one-line curl rather than a real sign-in or a log dig. It returns the IP, or the IP plus
+` FAIL` if that IP falls within Cloudflare's own published ranges - a sign the trust boundary isn't rewriting
+it to the real visitor IP.
+
+Off by default; set `PROVIDE_WHOAMI: true` in `general.yml` to turn it on.
+
+```bash
+curl https://staging.righttoknow.org.au/whoami
+curl https://www.righttoknow.org.au/whoami
+```
+
 ## Authorities
 
 ### Adding new authorities
