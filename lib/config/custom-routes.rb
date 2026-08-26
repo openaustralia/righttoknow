@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   # get '/help/help_out' => 'help#help_out'
   get '/help/house_rules' => 'help#house_rules'
 
+  # See lib/whatismyip_controller.rb. Controller 404s unless PROVIDE_WHATISMYIP is on.
+  get '/whatismyip' => 'whatismyip#index'
+
   # We used to have a dedicated people page which was made in this theme.
   # Now that same information has been merged into the statistics page
   # in the main project there is no need for our version. Just to be
