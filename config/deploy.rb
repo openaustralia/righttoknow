@@ -27,6 +27,8 @@ set :bundle_without, %w[development test deployment].join(':')
 # config/nginx.conf.example and httpd.conf-example).
 set :maintenance_basename, 'down'
 set :maintenance_dirname,  -> { current_path.join('public') }
+set :maintenance_template_path,
+    File.expand_path('deploy/templates/maintenance.html.erb', __dir__)
 
 # Tagging options
 set :tagging3_format, ':stage_:release'
