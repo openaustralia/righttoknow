@@ -798,6 +798,13 @@ dt {
 
 @import "responsive/rtk/oaf-footer";
 
+// The vendored standard footer carries no outer margin (and must stay
+// byte-identical to the standard), so restore the 3em gap the previous
+// footer kept between page content and the dark footer surface.
+.oaf-footer {
+  margin-top: 3em;
+}
+
 .request_listing .head, .body_listing .head, .user_listing .head {
   // Provide a tiny bit of extra room at the top of headers in lists so that
   // the top of letters don't get chopped off
