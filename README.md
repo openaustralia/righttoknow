@@ -44,7 +44,7 @@ To find out which version of Alaveteli a site is currently running, ask the site
 rather than this README, which would only go stale:
 
 - Production: <https://www.righttoknow.org.au/version.json>
-- Staging: `https://staging.righttoknow.org.au/version.json`
+- Staging: <https://www-staging.righttoknow.org.au/version.json>
 
 If there is a fix or enhancement that is not specific to Right to Know/Australia changes should be submitted to the upstream [Alaveteli repository](https://github.com/mysociety/alaveteli) via a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
 
