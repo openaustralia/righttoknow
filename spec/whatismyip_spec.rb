@@ -54,7 +54,7 @@ RSpec.describe WhatismyipController, type: :controller do
         before do
           stub_cloudflare(
             ipv4: success('173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22'),
-            ipv6: success('2400:cb00::/32', '2606:4700::/32')
+            ipv6: success('2400:cb00::/32', '2606:4700::/32', '2803:f800::/32', '2405:b500::/32')
           )
         end
 
@@ -87,7 +87,7 @@ RSpec.describe WhatismyipController, type: :controller do
 
           stub_cloudflare(
             ipv4: success('173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22'),
-            ipv6: success('2400:cb00::/32', '2606:4700::/32')
+            ipv6: success('2400:cb00::/32', '2606:4700::/32', '2803:f800::/32', '2405:b500::/32')
           )
           get :index
 
