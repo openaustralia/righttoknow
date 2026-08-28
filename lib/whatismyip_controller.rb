@@ -9,8 +9,11 @@ Rails.configuration.to_prepare do
   # anyone check whether a forged CF-Connecting-IP is being trusted.
   # rubocop:disable Lint/ConstantDefinitionInBlock
   class WhatismyipController < ApplicationController
+    # raise: false so that an upstream rename of the html_response callback
+    # degrades this action rather than failing to boot the whole application.
     # rubocop:enable Lint/ConstantDefinitionInBlock
-    skip_before_action :html_response
+    skip_before_action :html_response, raise: false
+
     # Added protect_from_forgery since CodeQL complains and just in case we ever action a POST
     protect_from_forgery with: :exception
     before_action :check_enabled
