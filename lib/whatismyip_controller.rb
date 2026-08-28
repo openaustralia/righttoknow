@@ -65,7 +65,8 @@ Rails.configuration.to_prepare do
       raise RangesUnavailable if ranges.size < MIN_EXPECTED_RANGES
 
       ranges
-    rescue Timeout::Error, SocketError, SystemCallError, OpenSSL::SSL::SSLError, EOFError, Net::ProtocolError
+    rescue Timeout::Error, SocketError, SystemCallError, OpenSSL::SSL::SSLError, EOFError, Net::ProtocolError,
+           Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError
       raise RangesUnavailable
     end
   end
