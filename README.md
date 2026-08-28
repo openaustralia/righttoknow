@@ -294,7 +294,8 @@ One-time bootstrap per server:
 `GET /whatismyip` reports the IP Rails sees for the request, to aid in checking cloudflare proxying
 with a one-line curl rather than a real sign-in or a log dig. It returns the IP, or the IP plus
 ` FAIL` if that IP falls within Cloudflare's own published ranges - a sign the trust boundary isn't rewriting
-it to the real visitor IP.
+it to the real visitor IP. If Cloudflare's published ranges can't be fetched or look truncated, it
+returns the IP plus ` UNABLE TO CHECK` rather than guessing.
 
 It should report the same value as https://whatismyip.akamai.com/
 
