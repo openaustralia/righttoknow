@@ -20,10 +20,14 @@ Rails.configuration.to_prepare do
       'https://www.cloudflare.com/ips-v6'
     ].freeze
 
+    # Real lists are ~15 (v4) and ~7 (v6) entries; anything under this is
+    # Cloudflare erroring or truncating rather than a genuine empty list.
+    MIN_EXPECTED_RANGES = 4
+
+    class RangesUnavailable < StandardError; end
+
     def index
-      ip = request.remote_ip
-      ip += ' FAIL' if cloudflare_ip?(ip)
-      render plain: ip
+      render plain: "#{request.remote_ip}#{status_suffix}"
     end
 
     private
@@ -32,21 +36,35 @@ Rails.configuration.to_prepare do
       head :not_found unless AlaveteliConfiguration.get('PROVIDE_WHATISMYIP', false)
     end
 
-    def cloudflare_ip?(ip)
-      cloudflare_ranges.any? { |range| range.include?(IPAddr.new(ip)) }
-    rescue IPAddr::Error
-      false
+    def status_suffix
+      ip = IPAddr.new(request.remote_ip)
+      cloudflare_ranges.any? { |range| range.include?(ip) } ? ' FAIL' : ''
+    rescue RangesUnavailable, IPAddr::Error
+      ' UNABLE TO CHECK'
     end
 
-    # Cached a day so this doesn't depend on cloudflare.com being reachable
-    # on every check.
+    # Cached a day so this doesn't depend on cloudflare.com being reachable on
+    # every check. Validated and parsed to IPAddr before caching, not after -
+    # a failed/truncated fetch must raise inside the block so Rails.cache
+    # never stores it, or a bad response would silently poison every check
+    # for the next 24 hours (reported by Sentry as a real incident).
     def cloudflare_ranges
-      cidrs = Rails.cache.fetch('whatismyip_cloudflare_ranges', expires_in: 1.day) do
-        CLOUDFLARE_RANGE_URLS.flat_map do |url|
-          Net::HTTP.get(URI(url)).lines.map(&:strip).reject(&:empty?)
-        end
+      Rails.cache.fetch('whatismyip_cloudflare_ranges', expires_in: 1.day) do
+        CLOUDFLARE_RANGE_URLS.flat_map { |url| fetch_ranges(url) }
+                             .map { |cidr| IPAddr.new(cidr) }
       end
-      cidrs.map { |cidr| IPAddr.new(cidr) }
+    end
+
+    # Each list checked independently - a truncated v6 list shouldn't pass
+    # just because v4 came back full-sized.
+    def fetch_ranges(url)
+      response = Net::HTTP.get_response(URI(url))
+      raise RangesUnavailable unless response.is_a?(Net::HTTPSuccess)
+
+      ranges = response.body.lines.map(&:strip).reject(&:empty?)
+      raise RangesUnavailable if ranges.size < MIN_EXPECTED_RANGES
+
+      ranges
     end
   end
 end
