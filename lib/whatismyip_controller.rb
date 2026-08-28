@@ -15,10 +15,7 @@ Rails.configuration.to_prepare do
     protect_from_forgery with: :exception
     before_action :check_enabled
 
-    CLOUDFLARE_RANGE_URLS = [
-      'https://www.cloudflare.com/ips-v4',
-      'https://www.cloudflare.com/ips-v6'
-    ].freeze
+    CLOUDFLARE_RANGE_URLS = %w[https://www.cloudflare.com/ips-v4 https://www.cloudflare.com/ips-v6].freeze
 
     # Real lists are ~15 (v4) and ~7 (v6) entries; anything under this is
     # Cloudflare erroring or truncating rather than a genuine empty list.
@@ -65,6 +62,8 @@ Rails.configuration.to_prepare do
       raise RangesUnavailable if ranges.size < MIN_EXPECTED_RANGES
 
       ranges
+    rescue Timeout::Error, SocketError, SystemCallError, OpenSSL::SSL::SSLError, EOFError, Net::ProtocolError
+      raise RangesUnavailable
     end
   end
 end
