@@ -4,9 +4,9 @@ require 'yaml'
 
 configuration = YAML.load_file('config/deploy.yml')['staging']
 
-server configuration['server'],
-       user: configuration['user'],
-       roles: %w[app web db]
+# Registers the EC2 instance(s) matching this stage's tags as deploy targets,
+# with roles taken from each instance's Roles tag (app,web,db).
+aws_ec2_register(user: configuration['user'])
 
 set :repo_url,    configuration['repository']
 set :branch,      configuration['branch']

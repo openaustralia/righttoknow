@@ -213,9 +213,24 @@ The application is deployed using [Capistrano 3](https://capistranorb.com/). Dep
 
 ### Prerequisites
 
-- SSH access to the deployment servers as the `deploy` user
+Capistrano looks up the EC2 deploy targets dynamically by their `Application` and `Stage` tags
+and tunnels SSH through [AWS SSM Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html)
+rather than connecting to a public hostname, so you need:
+
+- The [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+  and the [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
+  installed
+- An AWS profile named `oaf` with permission to describe EC2 instances and start SSM sessions
+- An SSH key for the `deploy` user (SSH still runs as normal inside the SSM tunnel). If your
+  key isn't picked up by default, add a `Host i-*` entry with `IdentityFile` to `~/.ssh/config`
 - Gems installed: `bundle install --with deployment`
 - The server must have `shared/rbenv-version`, `shared/general.yml`, and all other shared files in place (managed by the [infrastructure repo](https://github.com/openaustralia/infrastructure))
+
+To check which instances a stage will deploy to:
+
+```bash
+bundle exec cap staging aws:ec2:instances
+```
 
 ### Deploy commands
 
