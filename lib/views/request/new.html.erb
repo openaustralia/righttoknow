@@ -260,12 +260,16 @@
 
     <div id="request_form" class="request_form">
       <% if !@batch && @info_request.public_body.info_requests_hidden_count >= 2 %>
+        <%# Answer "No" for people who have already been through the form once,
+            so they don't lose their place. Replaces a jQuery equivalent that
+            checked for .errorExplanation and a filled-in subject. %>
+        <% personal_switch_answered = @existing_request.present? || @info_request.title.present? %>
         <fieldset id="request_personal_switch" class="request_personal_switch">
           <legend>Are you asking for <strong>personal information</strong> that should be confidential?</legend>
           <p>This includes <em>police incident reports</em>, <em>court records</em>, <em>medical records</em>, <em>paperwork for insurance or court</em>, etc.</p>
           <input class="visually-hidden" type="radio" name="personal_request" id="request_personal_switch_yes" value="yes" />
           <label for="request_personal_switch_yes">Yes</label>
-          <input class="visually-hidden" type="radio" name="personal_request" id="request_personal_switch_no" value="no" />
+          <input class="visually-hidden" type="radio" name="personal_request" id="request_personal_switch_no" value="no" <%= 'checked="checked"' if personal_switch_answered %> />
           <label for="request_personal_switch_no">No</label>
           <div class="request_personal_message">
             <p><strong>Email your request</strong> directly to <%= @info_request.public_body.name %>:</p>

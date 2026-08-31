@@ -40,6 +40,14 @@
   box-shadow: inset 0 2px 5px 1px rgba(0, 0, 0, 0.2);
 }
 
-.personal_request_switcher_focused ~ * {
-   display: none;
- }
+// The rest of the form stays hidden until the person answers "No". This is CSS
+// rather than JavaScript so the gate survives application.js failing to load,
+// which used to make it disappear entirely. See docs/DECISIONS.md 2026-08-24.
+//
+// Two things this depends on: the No radio must stay inside this fieldset, and
+// the form content must stay a following sibling of it. Move either and the
+// form hides permanently. (.request_personal_message above has the same
+// coupling.)
+#request_personal_switch:not(:has(#request_personal_switch_no:checked)) ~ * {
+  display: none;
+}
