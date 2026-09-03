@@ -8,10 +8,27 @@ set :use_sudo,    false
 
 set :rbenv_type, :user
 
-# net-ssh misinterprets the ^ modifier syntax in ~/.ssh/config Ciphers entries,
-# leaving the client cipher list empty and causing algorithm negotiation to fail.
-# Setting encryption explicitly bypasses that and still matches all server ciphers.
+# Deploy targets are found dynamically by capistrano-aws using the Application,
+# Stage and Roles tags Terraform sets on the EC2 instances (see
+# terraform/righttoknow/*.tf in the infrastructure repo). The gem's default
+# filters match those tags against :application and :stage, so no overrides are
+# needed here.
+set :aws_ec2_regions, ['ap-southeast-2']
+
+# Contact instances by ID as that is what SSM needs.
+set :aws_ec2_contact_point, :id
+
 set :ssh_options, {
+  # SSH reaches the instances through an AWS SSM Session Manager tunnel rather
+  # than a public hostname, so deploys work without the instances accepting
+  # direct SSH from the internet.
+  proxy: Net::SSH::Proxy::Command.new(
+    'aws ssm start-session --profile oaf --target %h ' \
+    '--document-name AWS-StartSSHSession --parameters portNumber=%p'
+  ),
+  # net-ssh misinterprets the ^ modifier syntax in ~/.ssh/config Ciphers entries,
+  # leaving the client cipher list empty and causing algorithm negotiation to fail.
+  # Setting encryption explicitly bypasses that and still matches all server ciphers.
   encryption: %w[chacha20-poly1305@openssh.com aes256-gcm@openssh.com
                  aes128-gcm@openssh.com aes256-ctr aes192-ctr aes128-ctr]
 }
@@ -27,6 +44,8 @@ set :bundle_without, %w[development test deployment].join(':')
 # config/nginx.conf.example and httpd.conf-example).
 set :maintenance_basename, 'down'
 set :maintenance_dirname,  -> { current_path.join('public') }
+set :maintenance_template_path,
+    File.expand_path('deploy/templates/maintenance.html.erb', __dir__)
 
 # Tagging options
 set :tagging3_format, ':stage_:release'

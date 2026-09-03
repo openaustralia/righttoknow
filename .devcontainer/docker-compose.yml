@@ -1,0 +1,94 @@
+# Development stack for the Right to Know theme.
+#
+# Covers the same services as openaustralia/alaveteli's docker-compose.yml, but
+# is self-contained: Alaveteli itself is cloned into the `alaveteli` volume by
+# .devcontainer/setup.sh, so the only checkout you need is this repository.
+# Where a name differs from Alaveteli's, the service carries a comment saying
+# why.
+#
+# Used by both the Dev Container (.devcontainer/devcontainer.json) and the
+# plain Docker workflow (Makefile in the repository root).
+
+name: righttoknow
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUBY_VERSION: '${RUBY_VERSION:-3.2}'
+    command: sleep infinity
+    tty: true
+    stdin_open: true
+    environment:
+      - BUNDLE_PATH=/bundle/vendor
+      - DATABASE_URL=postgres://postgres:password@db/
+      - REDIS_URL=redis://redis:6379
+      - SMTP_URL=smtp://mailhog:1025
+      - ALAVETELI_REPO=${ALAVETELI_REPO:-https://github.com/openaustralia/alaveteli.git}
+      - ALAVETELI_BRANCH=${ALAVETELI_BRANCH:-staging}
+    ports:
+      - '${RAILS_PORT:-3000}:3000'
+    volumes:
+      - ..:/alaveteli-themes/righttoknow:cached
+      - alaveteli:/alaveteli
+      - bundle:/bundle
+    depends_on:
+      - db
+      - redis
+      - mailhog
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUBY_VERSION: '${RUBY_VERSION:-3.2}'
+    command: >
+      sh -c 'wait-for-it db:5432 --strict --timeout=60 --
+             sh -c "cd /alaveteli &&
+                    until bundle check >/dev/null 2>&1; do sleep 5; done &&
+                    bundle exec sidekiq"'
+    environment:
+      - BUNDLE_PATH=/bundle/vendor
+      - DATABASE_URL=postgres://postgres:password@db/
+      - REDIS_URL=redis://redis:6379
+      - SMTP_URL=smtp://mailhog:1025
+    volumes:
+      - ..:/alaveteli-themes/righttoknow:cached
+      - alaveteli:/alaveteli
+      - bundle:/bundle
+    depends_on:
+      - db
+      - redis
+      - mailhog
+
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile-postgres
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  redis:
+    image: library/redis
+    command: redis-server
+    volumes:
+      - redis:/data
+
+  # Named for what it is, rather than "smtp": nothing here can send mail
+  # anywhere. MailHog accepts everything Alaveteli sends and holds it for
+  # you to read at http://localhost:1080 instead of delivering it.
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - '${MAILHOG_PORT:-1080}:8025'
+
+volumes:
+  alaveteli: {}
+  bundle: {}
+  postgres: {}
+  redis: {}

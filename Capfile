@@ -8,11 +8,13 @@ install_plugin Capistrano::SCM::Git
 require 'capistrano/scm/git-with-submodules'
 install_plugin Capistrano::SCM::Git::WithSubmodules
 
+require 'capistrano/aws'
 require 'capistrano/bundler'
 require 'capistrano/maintenance'
 require 'capistrano/rails/assets'
 require 'capistrano/rails/migrations'
 require 'capistrano/rbenv'
 require 'capistrano/tagging3'
+require 'net/ssh/proxy/command'
 
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }

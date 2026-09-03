@@ -4,9 +4,7 @@ theme_name = File.split(File.expand_path('..', __dir__))[1]
 theme_name.gsub!('-', '_')
 THEME_NAME = theme_name
 
-Rails.application.config.assets.precompile << ['event_tracking.js',
-                                               'personal_message_toggler.js',
-                                               'alaveteli_pro/coupon_preview.js']
+Rails.application.config.assets.precompile << ['alaveteli_pro/coupon_preview.js']
 
 module ActionController
   class Base
@@ -39,6 +37,9 @@ end
 
 # Error monitoring and APM (no-op unless the sentry gems and DSN are present)
 require File.expand_path('sentry_config.rb', __dir__)
+
+# A new controller (not a patch to an existing one) - see its own file for why
+require File.expand_path('whatismyip_controller.rb', __dir__)
 
 # Note you should rename the file at "config/custom-routes.rb" to
 # something unique (e.g. yourtheme-custom-routes.rb":
