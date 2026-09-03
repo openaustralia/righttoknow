@@ -369,9 +369,13 @@ It should report the same value as https://whatismyip.akamai.com/
 Off by default; set `PROVIDE_WHATISMYIP: true` in `general.yml` to turn it on.
 
 ```bash
-curl https://staging.righttoknow.org.au/whatismyip
+curl https://www-staging.righttoknow.org.au/whatismyip
 curl https://www.righttoknow.org.au/whatismyip
 ```
+
+`www-staging.righttoknow.org.au` is a CNAME for `staging.righttoknow.org.au`, the name
+the staging host is configured under in the infrastructure repo; either reaches the same
+server, and the `www-staging` form is used here to match the staging URL above.
 
 ## Authorities
 
