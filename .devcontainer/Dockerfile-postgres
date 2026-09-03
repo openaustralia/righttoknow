@@ -1,8 +1,16 @@
-# Replicates alaveteli's docker/Dockerfile-postgres so the database matches
-# what Alaveteli's own Docker environment provides (en_GB.UTF-8 locale and a
-# UTF-8 template database).
+# Based on alaveteli's docker/Dockerfile-postgres, with two deliberate
+# differences so development matches Right to Know rather than mySociety:
+#
+# - PostgreSQL 15, not 13.5. Production and staging share the RDS instance
+#   defined in the infrastructure repo (terraform/database.tf), which runs the
+#   15 series with auto_minor_version_upgrade on. Tracking the 15 family here
+#   rather than pinning a patch keeps it aligned as AWS moves the minor
+#   version, the same reasoning that file applies to its MySQL instance.
+# - en_AU.UTF-8, not en_GB.UTF-8. This is an Australian site. The two collate
+#   English text identically in glibc, so this is for consistency rather than
+#   to change any sort order.
 
-FROM postgres:13.5
-RUN localedef -i en_GB -c -f UTF-8 -A /usr/share/locale/locale.alias en_GB.UTF-8
-ENV LANG=en_GB.utf8
+FROM postgres:15
+RUN localedef -i en_AU -c -f UTF-8 -A /usr/share/locale/locale.alias en_AU.UTF-8
+ENV LANG=en_AU.utf8
 ADD ./createdb.sh /docker-entrypoint-initdb.d/
