@@ -1,8 +1,10 @@
 # Development stack for the Right to Know theme.
 #
-# Mirrors the services in openaustralia/alaveteli's docker-compose.yml, but is
-# self-contained: Alaveteli itself is cloned into the `alaveteli` volume by
+# Covers the same services as openaustralia/alaveteli's docker-compose.yml, but
+# is self-contained: Alaveteli itself is cloned into the `alaveteli` volume by
 # .devcontainer/setup.sh, so the only checkout you need is this repository.
+# Where a name differs from Alaveteli's, the service carries a comment saying
+# why.
 #
 # Used by both the Dev Container (.devcontainer/devcontainer.json) and the
 # plain Docker workflow (Makefile in the repository root).
@@ -23,7 +25,7 @@ services:
       - BUNDLE_PATH=/bundle/vendor
       - DATABASE_URL=postgres://postgres:password@db/
       - REDIS_URL=redis://redis:6379
-      - SMTP_URL=smtp://smtp:1025
+      - SMTP_URL=smtp://mailhog:1025
       - ALAVETELI_REPO=${ALAVETELI_REPO:-https://github.com/openaustralia/alaveteli.git}
       - ALAVETELI_BRANCH=${ALAVETELI_BRANCH:-staging}
     ports:
@@ -35,7 +37,7 @@ services:
     depends_on:
       - db
       - redis
-      - smtp
+      - mailhog
 
   sidekiq:
     build:
@@ -52,7 +54,7 @@ services:
       - BUNDLE_PATH=/bundle/vendor
       - DATABASE_URL=postgres://postgres:password@db/
       - REDIS_URL=redis://redis:6379
-      - SMTP_URL=smtp://smtp:1025
+      - SMTP_URL=smtp://mailhog:1025
     volumes:
       - ..:/alaveteli-themes/righttoknow:cached
       - alaveteli:/alaveteli
@@ -60,7 +62,7 @@ services:
     depends_on:
       - db
       - redis
-      - smtp
+      - mailhog
 
   db:
     build:
@@ -77,7 +79,10 @@ services:
     volumes:
       - redis:/data
 
-  smtp:
+  # Named for what it is, rather than "smtp": nothing here can send mail
+  # anywhere. MailHog accepts everything Alaveteli sends and holds it for
+  # you to read at http://localhost:1080 instead of delivering it.
+  mailhog:
     image: mailhog/mailhog
     ports:
       - '${MAILHOG_PORT:-1080}:8025'
