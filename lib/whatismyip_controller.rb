@@ -27,17 +27,26 @@ Rails.configuration.to_prepare do
     class RangesUnavailable < StandardError; end
 
     def index
-      render plain: "#{request.remote_ip}#{status_suffix}"
+      render plain: "#{peer_address}#{status_suffix}"
     end
 
     private
+
+    # Deliberately request.remote_addr rather than request.remote_ip.
+    # ActionDispatch derives remote_ip from X-Forwarded-For, so it reports the
+    # real visitor IP even when nginx has failed to rewrite REMOTE_ADDR - which
+    # is the misconfiguration this action exists to catch, and would make the
+    # check below wrongly pass.
+    def peer_address
+      request.remote_addr
+    end
 
     def check_enabled
       head :not_found unless AlaveteliConfiguration.get('PROVIDE_WHATISMYIP', false)
     end
 
     def status_suffix
-      ip = IPAddr.new(request.remote_ip)
+      ip = IPAddr.new(peer_address)
       cloudflare_ranges.any? { |range| range.include?(ip) } ? ' FAIL' : ''
     rescue RangesUnavailable, IPAddr::Error
       ' UNABLE TO CHECK'
