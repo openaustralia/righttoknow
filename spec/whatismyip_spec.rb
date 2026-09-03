@@ -96,6 +96,19 @@ RSpec.describe WhatismyipController, type: :controller do
         end
       end
 
+      context 'when Cloudflare does not respond in time' do
+        before do
+          stub_request(:get, ipv4_url).to_timeout
+          stub_ranges(ipv6_url, full_ipv6)
+          request.remote_addr = '1.2.3.4'
+        end
+
+        it 'reports UNABLE TO CHECK rather than hanging' do
+          get :index
+          expect(response.body).to eq('1.2.3.4 UNABLE TO CHECK')
+        end
+      end
+
       context 'when one list is suspiciously truncated' do
         before do
           # A full-sized v4 list must not offset a truncated v6 one - each is

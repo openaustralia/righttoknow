@@ -26,6 +26,12 @@ Rails.configuration.to_prepare do
 
     class RangesUnavailable < StandardError; end
 
+    # Short enough that a Cloudflare outage frees the Rails worker promptly.
+    # Net::HTTP otherwise defaults to about a minute for each of connect and
+    # read, and failures here are deliberately not cached, so repeated public
+    # requests during an outage would tie up more workers each time.
+    FETCH_TIMEOUT = 5
+
     def index
       render plain: "#{peer_address}#{status_suffix}"
     end
@@ -67,7 +73,7 @@ Rails.configuration.to_prepare do
     # Each list checked independently - a truncated v6 list shouldn't pass
     # just because v4 came back full-sized.
     def fetch_ranges(url)
-      response = Net::HTTP.get_response(URI(url))
+      response = get(URI(url))
       raise RangesUnavailable unless response.is_a?(Net::HTTPSuccess)
 
       ranges = response.body.lines.map(&:strip).reject(&:empty?)
@@ -77,6 +83,15 @@ Rails.configuration.to_prepare do
     rescue Timeout::Error, SocketError, SystemCallError, OpenSSL::SSL::SSLError, EOFError, Net::ProtocolError,
            Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError
       raise RangesUnavailable
+    end
+
+    def get(uri)
+      Net::HTTP.start(uri.host, uri.port,
+                      use_ssl: uri.scheme == 'https',
+                      open_timeout: FETCH_TIMEOUT,
+                      read_timeout: FETCH_TIMEOUT) do |http|
+        http.request(Net::HTTP::Get.new(uri))
+      end
     end
   end
 end
