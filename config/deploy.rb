@@ -8,6 +8,15 @@ set :use_sudo,    false
 
 set :rbenv_type, :user
 
+# capistrano-aws builds its Aws::EC2::Resource with a region and nothing else,
+# so instance lookup would otherwise use whatever the SDK resolves as the
+# default profile - a different account, or none, depending on the machine.
+# Name the profile here instead, so lookup and the SSM tunnel below are always
+# the same account. Set AWS_PROFILE yourself to override, and static
+# credentials in the environment still win over a profile in both the SDK and
+# the CLI.
+ENV['AWS_PROFILE'] ||= 'oaf'
+
 # Deploy targets are found dynamically by capistrano-aws using the Application,
 # Stage and Roles tags Terraform sets on the EC2 instances (see
 # terraform/righttoknow/*.tf in the infrastructure repo). The gem's default
@@ -22,8 +31,10 @@ set :ssh_options, {
   # SSH reaches the instances through an AWS SSM Session Manager tunnel rather
   # than a public hostname, so deploys work without the instances accepting
   # direct SSH from the internet.
+  # No --profile here: the CLI inherits AWS_PROFILE from the environment set
+  # above, so the tunnel cannot end up on a different account from the lookup.
   proxy: Net::SSH::Proxy::Command.new(
-    'aws ssm start-session --profile oaf --target %h ' \
+    'aws ssm start-session --target %h ' \
     '--document-name AWS-StartSSHSession --parameters portNumber=%p'
   ),
   # net-ssh misinterprets the ^ modifier syntax in ~/.ssh/config Ciphers entries,

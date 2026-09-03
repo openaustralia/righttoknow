@@ -287,7 +287,10 @@ rather than connecting to a public hostname, so you need:
 - The [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
   and the [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
   installed
-- An AWS profile named `oaf` with permission to describe EC2 instances and start SSM sessions
+- An AWS profile named `oaf` with permission to describe EC2 instances and start SSM sessions.
+  `config/deploy.rb` sets `AWS_PROFILE` to `oaf` unless you have already set it, so instance
+  lookup and the SSM tunnel always use the same account; set `AWS_PROFILE` yourself if your
+  profile is named something else
 - An SSH key for the `deploy` user (SSH still runs as normal inside the SSM tunnel). If your
   key isn't picked up by default, add a `Host i-*` entry with `IdentityFile` to `~/.ssh/config`
 - Gems installed: `bundle install --with deployment`
