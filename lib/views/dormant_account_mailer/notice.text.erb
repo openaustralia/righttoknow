@@ -1,0 +1,28 @@
+<%# All of the wording for the dormant-account notice (#1095) lives in this  %>
+<%# file and the subject line in lib/dormant_account_mailer.rb, so the copy  %>
+<%# can be revised in one place. Signed off by the CEO before the first live %>
+<%# send - see docs/DECISIONS.md (2026-09-03).                               %>
+<%= _('Hello,') %>
+
+<%= _('You have an account on {{site_name}} ({{site_url}}). Our records show ' \
+      'no activity on it for at least two years: no requests, comments or ' \
+      'follows, and no sign-ins.',
+      site_name: site_name,
+      site_url: root_url) %>
+
+<%= _('We are removing unused accounts. This one will be removed on or after ' \
+      '{{removal_date}} unless you sign in before then.',
+      removal_date: @removal_date.strftime('%-d %B %Y')) %>
+
+<%= _('If you want to keep the account, sign in here:') %>
+
+<%= signin_url %>
+
+<%= _('If you do not want to keep it, you do not need to do anything. ' \
+      'Nothing you have written is affected, because the account has no ' \
+      'requests or comments.') %>
+
+<%= _('If you have any questions, reply to this email or write to ' \
+      '{{contact_email}}.', contact_email: AlaveteliConfiguration.contact_email) %>
+
+-- <%= _('the {{site_name}} team', site_name: site_name) %>
