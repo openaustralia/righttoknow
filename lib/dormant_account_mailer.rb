@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 Rails.configuration.to_prepare do
+  # Removed first for the same reason as WhatismyipController: to_prepare runs
+  # again on every code reload against a fresh ApplicationMailer, and this
+  # constant isn't Zeitwerk-managed, so redefining it would raise "superclass
+  # mismatch".
+  Object.send(:remove_const, :DormantAccountMailer) if
+    Object.const_defined?(:DormantAccountMailer, false)
+
   ##
   # Tells the people behind dormant accounts that the account will be removed
   # unless they sign in (openaustralia/righttoknow#1095).
