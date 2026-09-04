@@ -50,8 +50,7 @@ Rails.configuration.to_prepare do
       mail_user(
         @user,
         subject: lambda {
-          _('Your {{site_name}} account will be removed unless you sign in',
-            site_name: site_name)
+          _('Sign in to keep your {{site_name}} account', site_name: site_name)
         }
       )
     end

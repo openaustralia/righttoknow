@@ -51,10 +51,22 @@ RSpec.describe DormantAccountMailer, '#notice' do
       end
     end
 
-    it 'says the account will be removed unless they sign in' do
+    it 'asks them to sign in to keep the account' do
       expect(mail.subject)
-        .to eq("Your #{AlaveteliConfiguration.site_name} account will be " \
-               'removed unless you sign in')
+        .to eq("Sign in to keep your #{AlaveteliConfiguration.site_name} " \
+               'account')
+    end
+
+    it 'greets the account holder by name' do
+      dormant.update!(name: 'Jane Citizen')
+      expect(mail.body.to_s).to include('Hello Jane Citizen,')
+    end
+
+    # A text template is escaped like any other, so without `raw` an apostrophe
+    # in a name would reach the recipient as O&#39;Brien.
+    it 'does not escape punctuation in the name' do
+      dormant.update!(name: "Ann O'Brien-Smith & Co")
+      expect(mail.body.to_s).to include("Hello Ann O'Brien-Smith & Co,")
     end
 
     it 'quotes the removal date in words' do
@@ -70,8 +82,11 @@ RSpec.describe DormantAccountMailer, '#notice' do
     end
 
     # Unsubscribing would not stop the deletion, so offering it would mislead.
-    it 'does not offer an unsubscribe link' do
-      expect(mail.body.to_s.downcase).not_to include('unsubscribe')
+    # The copy says so rather than staying silent, hence matching the sentence
+    # instead of the word.
+    it 'says there is no unsubscribe link, and offers none' do
+      expect(mail.body.to_s).to include("There's no unsubscribe link")
+      expect(mail.body.to_s).not_to match(%r{https?://\S*unsubscribe}i)
     end
   end
 end

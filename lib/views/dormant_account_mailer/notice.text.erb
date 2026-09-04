@@ -2,27 +2,42 @@
 <%# file and the subject line in lib/dormant_account_mailer.rb, so the copy  %>
 <%# can be revised in one place. Signed off by the CEO before the first live %>
 <%# send - see docs/DECISIONS.md (2026-09-03).                               %>
-<%= _('Hello,') %>
+<%# `raw`, because ActionView escapes interpolated output in a text template %>
+<%# too, which would turn a name like O'Brien into O&#39;Brien.              %>
+<%= _('Hello {{user_name}},', user_name: raw(@user.name)) %>
 
-<%= _('You have an account on {{site_name}} ({{site_url}}). Our records show ' \
-      'no activity on it for at least two years: no requests, comments or ' \
-      'follows, and no sign-ins.',
+<%= _('You have an account on {{site_name}} ({{site_url}}) that was created ' \
+      'more than two years ago. It has no requests, comments or follows on ' \
+      'it.',
       site_name: site_name,
-      site_url: root_url) %>
+      site_url: root_url.chomp('/')) %>
 
-<%= _('We are removing unused accounts. This one will be removed on or after ' \
-      '{{removal_date}} unless you sign in before then.',
+<%= _("We're removing unused accounts, so we're not holding personal " \
+      "information we don't need. This one will be removed on or after " \
+      "{{removal_date}} unless you sign in before then. Once it's removed " \
+      "we can't get it back.",
       removal_date: @removal_date.strftime('%-d %B %Y')) %>
 
-<%= _('If you want to keep the account, sign in here:') %>
+<%= _('To keep the account, sign in here:') %>
 
 <%= signin_url %>
 
-<%= _('If you do not want to keep it, you do not need to do anything. ' \
-      'Nothing you have written is affected, because the account has no ' \
-      'requests or comments.') %>
+<%= _("If you'd rather not follow a link in an email, go to {{site_domain}} " \
+      'and sign in from there.',
+      site_domain: AlaveteliConfiguration.domain) %>
+
+<%= _("If you don't want to keep it, you don't need to do anything. Nothing " \
+      "on the public site changes, because there's nothing published under " \
+      'the account.') %>
+
+<%= _("You're getting this because you have an account on {{site_name}}. " \
+      "It's a notice about that account, not a newsletter or an appeal for " \
+      "donations. There's no unsubscribe link, because unsubscribing " \
+      "wouldn't stop the account being removed.",
+      site_name: site_name) %>
 
 <%= _('If you have any questions, reply to this email or write to ' \
       '{{contact_email}}.', contact_email: AlaveteliConfiguration.contact_email) %>
 
--- <%= _('the {{site_name}} team', site_name: site_name) %>
+<%= _('Kind regards,') %>
+<%= _('the {{site_name}} team', site_name: site_name) %>
