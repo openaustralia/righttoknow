@@ -9,9 +9,16 @@
 
 source 'https://rubygems.org'
 
-# Error monitoring and APM (https://github.com/openaustralia/righttoknow/issues/1004).
+# Error monitoring, tracing and profiling
+# (https://github.com/openaustralia/righttoknow/issues/1004), following the
+# canonical configuration in the infrastructure repo's docs/monitoring.md.
 # Initialised in lib/sentry_config.rb; does nothing unless SENTRY_DSN is set
-# in the host's config/general.yml.
-gem 'sentry-rails'
-gem 'sentry-ruby'
-gem 'sentry-sidekiq'
+# in the host's config/general.yml. Pinned with ~> because this Gemfile is
+# merged at deploy time and constrained by no lockfile - without a pin every
+# deploy silently takes whatever was released that day. Keep the minor in
+# step with the other collections (see docs/monitoring.md).
+gem 'sentry-rails', '~> 7.0'
+gem 'sentry-ruby', '~> 7.0'
+gem 'sentry-sidekiq', '~> 7.0'
+# Profiler used by Sentry profiling (requires Ruby 3.2+)
+gem 'vernier', '~> 1.10'
