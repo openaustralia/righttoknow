@@ -114,3 +114,43 @@ RSpec.describe WhatismyipController, type: :controller do
     end
   end
 end
+
+# Guards against issue #1100: in development ApplicationController is
+# reloadable, so after every code reload it is a brand-new class object while
+# the theme's hand-defined WhatismyipController constant survives, still
+# subclassing the old one. Re-running the theme's to_prepare block then raised
+# "superclass mismatch", which broke docker/setup (db:migrate reloads before
+# db:seed) and every dev-mode reload.
+#
+# A real reload can't reproduce this here - the test environment doesn't
+# reload classes, so ApplicationController would keep its identity - so this
+# simulates one instead: swap ApplicationController for a fresh class object
+# (exactly what a dev reload does) and re-run the theme's registered
+# to_prepare block, restoring both afterwards.
+RSpec.describe 'WhatismyipController code reloading' do
+  def theme_to_prepare_block
+    Rails.application.reloader._prepare_callbacks.map(&:filter).find do |filter|
+      filter.respond_to?(:source_location) &&
+        filter.source_location&.first&.end_with?('whatismyip_controller.rb')
+    end
+  end
+
+  it 'redefines the controller when ApplicationController is a new class object' do
+    block = theme_to_prepare_block
+    expect(block).not_to be_nil
+
+    original = ApplicationController
+    begin
+      Object.send(:remove_const, :ApplicationController)
+      Object.const_set(:ApplicationController, Class.new(original))
+
+      expect { block.call }.not_to raise_error
+      expect(WhatismyipController.superclass).to eq(ApplicationController)
+    ensure
+      Object.send(:remove_const, :ApplicationController)
+      Object.const_set(:ApplicationController, original)
+      # Leave WhatismyipController subclassing the real class again
+      block.call
+    end
+  end
+end

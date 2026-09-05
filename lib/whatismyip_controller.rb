@@ -4,6 +4,14 @@ require 'ipaddr'
 require 'net/http'
 
 Rails.configuration.to_prepare do
+  # In development ApplicationController is reloadable, so it is a brand-new
+  # class object each time this block re-runs, while this hand-defined
+  # constant (not managed by Zeitwerk) survives the reload still pointing at
+  # the old one. Redefining would then raise "superclass mismatch", breaking
+  # docker/setup's `db:migrate db:seed` and every dev reload (issue #1100),
+  # so drop the stale constant first.
+  Object.send(:remove_const, :WhatismyipController) if Object.const_defined?(:WhatismyipController, false)
+
   # Diagnostic for the nginx/Cloudflare real-IP trust boundary (see
   # ,plan-staging-rtk.md) - off by default since an open whatismyip would let
   # anyone check whether a forged CF-Connecting-IP is being trusted.
