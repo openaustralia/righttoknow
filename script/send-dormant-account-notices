@@ -1,0 +1,20 @@
+#!/bin/bash
+# Tell dormant accounts they will be removed unless they sign in
+# (openaustralia/righttoknow#1095).
+#
+# Dry unless DRYRUN=0. LIMIT caps the tranche, default 200. Prints one account
+# id per notice, then a count and the removal date it quoted.
+#
+# Do not run live until bounce recording works (#1094): without it nothing
+# suppresses repeat sends to dead addresses, and there is no way to judge the
+# send. Watch the bounce count between tranches.
+#
+# Run from a shell on the server; from your own machine use
+# `bundle exec cap production accounts:send_dormant_notices` instead. See
+# "Account housekeeping" in README.md.
+set -euo pipefail
+
+# This theme is checked out at alaveteli/lib/themes/righttoknow, so the host
+# app root is four levels up from script/.
+cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
+bundle exec rails runner 'DormantAccountMailer.send_notices'
