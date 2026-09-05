@@ -17,7 +17,8 @@ if defined?(Sentry)
   scrub_value = lambda do |value|
     case value
     when String then value.gsub(email_pattern, '[FILTERED]')
-    when Hash then value.transform_values { |v| scrub_value.call(v) }
+    when Hash
+      value.to_h { |key, item| [scrub_value.call(key), scrub_value.call(item)] }
     when Array then value.map { |v| scrub_value.call(v) }
     else value
     end

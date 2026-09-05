@@ -102,16 +102,7 @@ namespace :sentry do
             execute :"sentry-cli", 'releases', 'set-commits', release, '--commit', "#{repo}@#{release}"
           end
         rescue StandardError => e
-          warn "Sentry: set-commits via the GitHub integration failed, trying local git history: #{e.message}"
-          begin
-            if cli == 'sentry'
-              execute :sentry, 'release', 'set-commits', versioned, '--local'
-            else
-              execute :"sentry-cli", 'releases', 'set-commits', release, '--local'
-            end
-          rescue StandardError => e
-            warn "Sentry: associating commits failed, continuing deploy: #{e.message}"
-          end
+          warn "Sentry: associating commits failed, continuing deploy: #{e.message}"
         end
 
         begin
