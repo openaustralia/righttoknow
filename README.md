@@ -337,6 +337,36 @@ bundle exec cap staging xapian:destroy_and_rebuild_index
 bundle exec cap production xapian:destroy_and_rebuild_index
 ```
 
+### Account housekeeping
+
+One-off jobs that act on people's accounts. Each is **dry unless you pass `DRYRUN=0`**, and each
+prints account ids and dates rather than email addresses, so the output is safe to paste into an
+issue as a record of what ran.
+
+Destroy never-confirmed accounts that have no content and are over two years old
+([#1096](https://github.com/openaustralia/righttoknow/issues/1096)):
+
+```bash
+# List what would go, and check the count against production before acting
+bundle exec cap production accounts:destroy_never_confirmed
+
+# Start small, check Sentry, then run the rest
+bundle exec cap production accounts:destroy_never_confirmed DRYRUN=0 LIMIT=10
+bundle exec cap production accounts:destroy_never_confirmed DRYRUN=0
+```
+
+These accounts never confirmed their email address, so they cannot be warned first and are handled
+separately from the dormant-account notice. What "never-confirmed" and "dormant" mean, and why the
+order matters, is in `AGENTS.md` under "Key domain knowledge" and in `docs/DECISIONS.md`
+(2026-09-03).
+
+The same job can be run from a shell on the server, with the same environment variables:
+
+```bash
+cd /srv/www/production/current
+lib/themes/righttoknow/script/destroy-never-confirmed-accounts
+```
+
 ### First-time server setup
 
 After the [infrastructure repo](https://github.com/openaustralia/infrastructure) has provisioned the host, the shared path needs the config files in place before the first deploy. The deploy itself auto-creates any missing shared directories (cache, logs, storage, xapian indexes, vendored bundle, etc.) on each run via `deploy:check_shared`.

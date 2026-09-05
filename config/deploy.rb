@@ -113,6 +113,40 @@ namespace :xapian do
   end
 end
 
+# One-off account housekeeping jobs (#1095, #1096). Both are dry unless
+# DRYRUN=0, and both print user ids rather than email addresses. See "Account
+# housekeeping" in README.md.
+namespace :accounts do
+  # Runs `bundle exec rails runner` directly rather than the theme's script/
+  # wrappers: capistrano-rbenv maps the `bundle` command to `rbenv exec
+  # bundle`, and a bash wrapper calling bare `bundle` would not find Ruby.
+  #
+  # `capture` rather than `execute` because Airbrussh does not show command
+  # output by default, and the per-account ids these jobs print are the audit
+  # trail. `capture` also raises on a non-zero exit, so a failed run is loud.
+  #
+  # :bundle has to stay the first argument - SSHKit only applies `within` and
+  # `with` when the first argument has no whitespace in it.
+  def run_account_job(expression)
+    env = { rails_env: fetch(:rails_env), dryrun: ENV.fetch('DRYRUN', '1') }
+    env[:limit] = ENV['LIMIT'] if ENV['LIMIT']
+
+    on roles(:app) do
+      within current_path do
+        with env do
+          puts capture(:bundle, "exec rails runner '#{expression}' 2>&1")
+        end
+      end
+    end
+  end
+
+  desc 'Destroy never-confirmed accounts with no content, over two years old ' \
+       '(#1096). DRYRUN=0 to destroy, LIMIT=n to cap the batch'
+  task :destroy_never_confirmed do
+    run_account_job('DormantAccounts.destroy_never_confirmed')
+  end
+end
+
 namespace :deploy do
   # The shared files on this server are laid out by basename
   # (shared/database.yml rather than shared/config/database.yml), which does
