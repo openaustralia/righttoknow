@@ -17,8 +17,8 @@ source 'https://rubygems.org'
 # merged at deploy time and constrained by no lockfile - without a pin every
 # deploy silently takes whatever was released that day. Keep the minor in
 # step with the other collections (see docs/monitoring.md).
-gem 'sentry-rails', '~> 6.7'
-gem 'sentry-ruby', '~> 6.7'
-gem 'sentry-sidekiq', '~> 6.7'
+gem 'sentry-rails', '~> 7.0'
+gem 'sentry-ruby', '~> 7.0'
+gem 'sentry-sidekiq', '~> 7.0'
 # Profiler used by Sentry profiling (requires Ruby 3.2+)
 gem 'vernier', '~> 1.10'

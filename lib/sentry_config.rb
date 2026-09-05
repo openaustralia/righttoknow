@@ -58,8 +58,9 @@ if defined?(Sentry)
     config.send_default_pii = true
     config.before_send = scrub_breadcrumbs
     config.before_send_transaction = scrub_breadcrumbs
-    # Send Rails logs to Sentry as structured logs
-    config.enable_logs = true
+    # Rails logs arrive via sentry-rails' structured logging, on by default
+    # since 7.0; the logger patch additionally forwards non-Rails stdlib
+    # logging (e.g. Sidekiq's)
     config.enabled_patches << :logger
 
     # Fraction of requests traced for APM. Tune in general.yml without a
