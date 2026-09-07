@@ -5,6 +5,34 @@ wouldn't surface them. A decision local to one file/view/patch belongs as a comm
 
 Append new entries at the top and date them. Don't edit past entries except to mark them superseded (and say by what).
 
+## 2026-09-07: Australian mobile numbers are masked as text, never via a global censor rule
+
+Issue #706 asked for automatic censoring of mobile numbers. Alaveteli has two mechanisms and they are not
+interchangeable (see "Text masks vs censor rules" in `AGENTS.md` for the vocabulary): we chose a **text mask**,
+registered by `lib/text_mask_patches.rb` through `AlaveteliTextMasker.add_mask`. Three decisions to preserve:
+
+- **No global censor rule, ever, for this.** A global `CensorRule` is the only mechanism that reaches PDFs and
+  other binary attachments, which makes it tempting, but creating one expires and re-masks every request on the
+  site. When we tried this years ago it flooded the server with logs and left PDFs inaccessible, and
+  WhatDoTheyKnow's theme goes as far as raising `NotImplementedError` when an admin tries to create one. If PDF
+  coverage is ever wanted, the path is upstream: make core's `apply_binary_masks` (which already x's out email
+  addresses in binaries, size-preservingly) customisable the way text masks now are.
+- **Text content only, on purpose.** The mask covers message bodies and text/HTML attachments. PDFs and binaries
+  keep core's email-only redaction; masks never reach the binary path even on upstream develop. The spec guards
+  this boundary so crossing it is a conscious decision.
+- **Tight pattern, tolerate misses.** The match/no-match table in `spec/au_mobile_number_mask_spec.rb` is the
+  source of truth; the regex is whatever passes it. A missed number is recoverable with a per-request censor rule;
+  an over-match silently corrupts the published record and, unlike a censor rule, leaves no admin trail. Known
+  accepted edge: the bare international form (`61 4xx xxx xxx` without a `+`) can collide with an ABN that begins
+  with 61 4.
+
+Mechanics worth knowing: `add_mask` is an upstream API (mysociety/alaveteli@34a3d7be2, April 2026) that is not in
+a tagged release yet, so our Alaveteli fork carries it as three cherry-picks; `text_mask_patches.rb` guards with
+`respond_to?(:add_mask)` so the theme still boots against an older host, and the guard can go once a release
+containing the API is merged into the fork. Message bodies pick the mask up at render time, but attachments are
+masked once by `FoiAttachmentMaskJob` and stored, so pre-existing text attachments keep their old masking unless
+deliberately re-masked - we chose not to bulk re-mask at deploy time.
+
 ## 2026-08-24: the personal information gate fails open, and Sentry RIGHT-TO-KNOW-JS-5 is our canary
 
 The new request form asks whether you're requesting personal information that should be confidential, and hides the

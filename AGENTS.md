@@ -170,6 +170,17 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   state-name formatting conventions, request-email preference order, public
   notes, and short names is all in `README.md` under "Authorities" — read it
   before making bulk authority-data changes.
+- **Text masks vs censor rules**: Alaveteli has two redaction mechanisms and
+  the issue tracker tends to call both "censoring". A *text mask* is
+  automatic, applied at render/mask time, replaces matches with a readable
+  label like `[mobile number]`, and reaches text content only (message
+  bodies, text/HTML attachments) - this theme registers one for Australian
+  mobile numbers in `lib/text_mask_patches.rb`. A *censor rule* is an
+  admin-created database record scoped to a request/user/authority (or
+  global), and is the only mechanism that reaches PDFs and other binaries,
+  where it overwrites matched characters with `x`. Global censor rules
+  re-mask the entire corpus on creation and are off-limits here - see the
+  2026-09-07 entry in `docs/DECISIONS.md`.
 - **Pro coupons**: Stripe coupons restrict by product, not by individual price,
   so a monthly-only coupon can't be stopped from discounting the annual plan
   using Stripe's own `applies_to`. This theme layers its own restriction via
