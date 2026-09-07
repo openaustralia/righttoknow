@@ -5,6 +5,186 @@ require 'models/alaveteli_pro/promotion_code'
 require 'models/alaveteli_pro/discount_code_resolution'
 require 'promotion_code_subscriptions'
 
+# The external review application flow, entered from the ordinary followup
+# URL with ?external_review=1 (mirroring core's ?internal_review=1). It reuses
+# the followup machinery (preview, delivery, event logging) but:
+#
+# - the form is structured (ExternalReviewApplication) and the letter is
+#   composed from it, so there is no editable message body;
+# - the message goes to the jurisdiction's external reviewer
+#   (PublicBody#external_reviewer), not the authority - see
+#   ExternalReviewOutgoingMessage in model_patches.rb;
+# - contact/assistance details are emailed but never published: they ride on
+#   the outgoing message as a non-persisted attribute for the mailer view,
+#   are recorded in the followup_sent event params for admins, and the phone
+#   number gets a request-scoped censor rule as a safety net in case the
+#   reviewer quotes it back in correspondence.
+#
+# Prepended so overridden actions can fall through to core with `super` for
+# ordinary followups.
+module ExternalReviewFollowups # rubocop:disable Metrics/ModuleLength
+  def new
+    return super unless @external_review
+
+    render 'followups/external_review_new'
+  end
+
+  def preview
+    return super unless @external_review
+
+    @outgoing_message.info_request = @info_request
+    if @external_review_application.valid? && @outgoing_message.valid?
+      render 'followups/external_review_preview'
+    else
+      render 'followups/external_review_new'
+    end
+  end
+
+  def create
+    return super unless @external_review
+
+    @outgoing_message.info_request = @info_request
+    if !(@external_review_application.valid? && @outgoing_message.valid?)
+      render 'followups/external_review_new'
+    elsif @info_request.find_existing_outgoing_message(@outgoing_message.body)
+      flash.clear
+      flash[:error] = _('You previously submitted that exact external ' \
+                        'review application for this request.')
+      render 'followups/external_review_new'
+    else
+      send_external_review_application
+      redirect_to request_url(@info_request)
+    end
+  end
+
+  private
+
+  # Runs before set_internal_review in the callback chain, so @external_review
+  # isn't set yet - check the param directly. The check guards the validity of
+  # the *authority's* address, which is irrelevant for an application sent to
+  # the external reviewer (and would wrongly block review of e.g. a defunct
+  # authority's decision).
+  def check_incoming_message_can_be_followed_up
+    return if params[:external_review]
+
+    super
+  end
+
+  def set_internal_review
+    super
+    @external_review = false
+    return unless params[:external_review]
+
+    # Only jurisdictions with a wired-up external reviewer get this flow.
+    raise ActiveRecord::RecordNotFound unless @info_request.public_body.external_reviewer
+
+    @external_review = true
+  end
+
+  def check_reedit
+    return super unless @external_review
+
+    render 'followups/external_review_new' if params[:reedit]
+  end
+
+  def set_outgoing_message
+    return super unless @external_review
+
+    @external_review_application = ExternalReviewApplication.new(
+      external_review_application_params.merge(info_request: @info_request)
+    )
+    @outgoing_message = OutgoingMessage.new(
+      status: 'ready',
+      message_type: 'followup',
+      info_request_id: @info_request.id,
+      what_doing: 'external_review',
+      body: @external_review_application.letter_body
+    )
+    @outgoing_message.external_review_details =
+      @external_review_application.private_details
+  end
+
+  def external_review_application_params
+    return {} unless params[:external_review_application]
+
+    params.require(:external_review_application)
+          .permit(:decision_type, :decision_date, :disagreement,
+                  :phone, :oaic_reference, :assistance).to_h
+  end
+
+  def send_external_review_application
+    reviewer = @info_request.public_body.external_reviewer
+
+    # OutgoingMailer.followup() depends on DB id of the
+    # outgoing message, save just before sending.
+    @outgoing_message.save!
+
+    begin
+      if @outgoing_message.sendable?
+        mail_message = OutgoingMailer.followup(
+          @outgoing_message.info_request, @outgoing_message, nil
+        ).deliver_now
+      end
+    rescue *OutgoingMessage.expected_send_errors => e
+      @outgoing_message.record_email_failure(e.message)
+      flash[:error] = _('Your external review application has been saved ' \
+                        'but not yet sent to {{reviewer_name}} due to an ' \
+                        'error.',
+                        reviewer_name: reviewer[:name])
+    else
+      @outgoing_message.record_email_delivery(
+        mail_message.to_addrs.join(', '),
+        mail_message.message_id
+      )
+      record_external_review_details
+      create_external_review_censor_rule
+      flash[:notice] = _('Your external review application has been sent ' \
+                         'to {{reviewer_name}}.',
+                         reviewer_name: reviewer[:name])
+      @outgoing_message.info_request.reopen_to_new_responses
+    ensure
+      # Ensure DB is updated to isolate potential templating issues
+      # from impacting delivery status information.
+      @outgoing_message.save!
+    end
+  end
+
+  # Keep the private details where admins can find them (e.g. to resend a
+  # failed application), without them ever being rendered as correspondence.
+  def record_external_review_details
+    details = @external_review_application.private_details
+    return if details.empty?
+
+    event = @outgoing_message.info_request_events
+                             .where(event_type: 'followup_sent').last
+    return unless event
+
+    event.params = event.params.merge(external_review_application: details)
+    event.save!
+  end
+
+  # Belt and braces: the phone number is never in the public message body,
+  # but the reviewer may quote it back in their correspondence, which arrives
+  # into the public thread. A request-scoped censor rule redacts it on
+  # display if that happens.
+  def create_external_review_censor_rule
+    phone = @external_review_application.private_details[:phone]
+    return if phone.blank?
+    return if @info_request.censor_rules.exists?(text: phone)
+
+    rule = @info_request.censor_rules.create!(
+      text: phone,
+      replacement: _('[phone number]'),
+      last_edit_editor: 'system',
+      last_edit_comment: 'Added automatically when the external review ' \
+                         "application in outgoing message ##{@outgoing_message.id} " \
+                         'was sent, so the applicant\'s contact telephone ' \
+                         'number is not published if quoted in correspondence'
+    )
+    rule.expire_requests
+  end
+end
+
 # Add a callback - to be executed before each request in development,
 # and at startup in production - to patch existing app classes.
 # Doing so in init/environment.rb wouldn't work in development, since
@@ -12,6 +192,10 @@ require 'promotion_code_subscriptions'
 # See http://stackoverflow.com/questions/7072758/plugin-not-reloading-in-development-mode
 #
 Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
+  # Required here rather than at the top of the file: the class includes
+  # LinkToHelper, which isn't autoloadable while the theme itself is being
+  # required during initialization.
+  require 'external_review_application'
   HelpController.class_eval do
     before_action :set_history
 
@@ -269,4 +453,6 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
   end
 
   AlaveteliPro::SubscriptionCollection.prepend(PromotionCodeSubscriptions)
+
+  FollowupsController.prepend(ExternalReviewFollowups)
 end
