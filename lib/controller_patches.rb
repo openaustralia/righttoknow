@@ -127,6 +127,7 @@ module ExternalReviewFollowups # rubocop:disable Metrics/ModuleLength
       end
     rescue *OutgoingMessage.expected_send_errors => e
       @outgoing_message.record_email_failure(e.message)
+      record_external_review_details
       flash[:error] = _('Your external review application has been saved ' \
                         'but not yet sent to {{reviewer_name}} due to an ' \
                         'error.',
@@ -151,12 +152,14 @@ module ExternalReviewFollowups # rubocop:disable Metrics/ModuleLength
 
   # Keep the private details where admins can find them (e.g. to resend a
   # failed application), without them ever being rendered as correspondence.
+  # On success they ride on the followup_sent event; on failure, the
+  # send_error event, so nothing is lost if the send needs retrying.
   def record_external_review_details
     details = @external_review_application.private_details
     return if details.empty?
 
     event = @outgoing_message.info_request_events
-                             .where(event_type: 'followup_sent').last
+                             .where(event_type: %w[followup_sent send_error]).last
     return unless event
 
     event.params = event.params.merge(external_review_application: details)

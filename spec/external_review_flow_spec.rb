@@ -175,6 +175,21 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
       expect(details[:assistance]).to eq('Please use email where possible')
     end
 
+    it 'still records the private details for admins when sending fails' do
+      # Reaching into the mailer: there is no way to make real delivery
+      # raise one of OutgoingMessage.expected_send_errors from a controller
+      # spec, and the point here is what we persist when it does.
+      allow(OutgoingMailer).to receive(:followup).and_raise(IOError)
+
+      post_create
+
+      event = info_request.reload.info_request_events
+                          .where(event_type: 'send_error').last
+      expect(event.params[:external_review_application][:phone])
+        .to eq('0491 570 006')
+      expect(flash[:error]).to include('not yet sent')
+    end
+
     it 'adds a censor rule so the phone number is redacted if quoted back' do
       post_create
 
