@@ -1,0 +1,158 @@
+<% reviewer = @info_request.public_body.external_reviewer %>
+<% @title = _("Apply for external review of '{{request_title}}'",
+              request_title: h(@info_request.title)) %>
+
+<div id="followup" class="followup external_review">
+  <h1><%= _('Apply to the {{reviewer_name}} for review of {{authority_name}}&rsquo;s handling of your request',
+            reviewer_name: h(reviewer[:name]),
+            authority_name: h(@info_request.public_body.name)) %></h1>
+
+  <p>
+    <%= _('If you are unhappy with the decision on your request ' \
+          '{{request_link}}, or never received one, you can apply for an ' \
+          'Information Commissioner review. This form sends your ' \
+          'application to the {{reviewer_name}} by email. There is no ' \
+          'charge.',
+          request_link: request_link(@info_request),
+          reviewer_name: h(reviewer[:name])) %>
+  </p>
+
+  <ul>
+    <li>
+      <%= _('An application should be made within <strong>60 days</strong> ' \
+            'of being notified of the decision. If you are outside that ' \
+            'limit you can ask for an extension of time &ndash; explain ' \
+            'your reasons in your application.') %>
+    </li>
+    <li>
+      <%= _('If the authority never made a decision within the time ' \
+            'allowed, you can apply at any time.') %>
+    </li>
+    <li>
+      <%= _('If your contact details change during the review, you must ' \
+            'tell the reviewer as soon as possible.') %>
+    </li>
+  </ul>
+
+  <p>
+    <%= _('You can also apply directly using the <a href="{{form_url}}">' \
+          '{{reviewer_name}}\'s online form</a> &ndash; for example if ' \
+          'someone (a representative) is applying on your behalf, please ' \
+          'use their form instead and mention this page\'s address.',
+          form_url: reviewer[:form_url],
+          reviewer_name: h(reviewer[:name])) %>
+  </p>
+
+  <div class="warning">
+    <%= _('<strong>Privacy warning:</strong> Your application letter, and ' \
+          'all correspondence about the review, will be displayed publicly ' \
+          'on this website. Your telephone number and the other contact ' \
+          'details asked for below will <strong>not</strong> be published.') %>
+  </div>
+
+  <%= foi_error_messages_for :external_review_application %>
+
+  <%= form_for @external_review_application,
+               html: { id: 'external_review_form' },
+               url: preview_request_followups_url(
+                 request_url_title: @info_request.url_title
+               ) do |f| %>
+
+    <h3><%= _('About the decision') %></h3>
+
+    <p><%= _('What are you asking the Information Commissioner to review?') %></p>
+
+    <div class="external_review_decision_type">
+      <div>
+        <%= f.radio_button :decision_type, 'original',
+                           id: 'decision_type_original' %>
+        <label for="decision_type_original">
+          <%= _('The authority\'s <strong>original decision</strong>') %>
+        </label>
+      </div>
+
+      <div>
+        <%= f.radio_button :decision_type, 'internal_review',
+                           id: 'decision_type_internal_review' %>
+        <label for="decision_type_internal_review">
+          <%= _('The authority\'s <strong>internal review decision</strong>') %>
+        </label>
+      </div>
+
+      <div>
+        <%= f.radio_button :decision_type, 'no_decision',
+                           id: 'decision_type_no_decision' %>
+        <label for="decision_type_no_decision">
+          <%= _('<strong>No decision was received</strong> within the time ' \
+                'allowed (a &ldquo;deemed refusal&rdquo;)') %>
+        </label>
+      </div>
+    </div>
+
+    <p>
+      <label for="external_review_application_decision_date">
+        <%= _('What date were you notified of the decision?') %>
+        <%= _('(leave blank if no decision was received)') %>
+      </label>
+      <br>
+      <%= f.date_field :decision_date %>
+    </p>
+
+    <p>
+      <label for="external_review_application_disagreement">
+        <%= _('Which parts of the decision do you disagree with, and why?') %>
+      </label>
+      <br>
+      <small>
+        <%= _('For example: which documents you consider have been wrongly ' \
+              'refused, or which exemptions have been incorrectly applied. ' \
+              'This will form part of your public application letter.') %>
+      </small>
+      <br>
+      <%= f.text_area :disagreement, rows: 10, cols: 55 %>
+    </p>
+
+    <h3><%= _('Your contact details') %></h3>
+
+    <p>
+      <%= _('These details are sent to the {{reviewer_name}} with your ' \
+            'application but are <strong>not published</strong> on this ' \
+            'website. The reviewer will be asked to reply by email to this ' \
+            'request\'s address, so their correspondence appears on this ' \
+            'page.',
+            reviewer_name: h(reviewer[:name])) %>
+    </p>
+
+    <p>
+      <label for="external_review_application_phone">
+        <%= _('Contact telephone number') %>
+      </label>
+      <br>
+      <%= f.telephone_field :phone %>
+    </p>
+
+    <p>
+      <label for="external_review_application_oaic_reference">
+        <%= _('Reviewer\'s reference number, if you have contacted them ' \
+              'before about this or another matter (optional)') %>
+      </label>
+      <br>
+      <%= f.text_field :oaic_reference %>
+    </p>
+
+    <p>
+      <label for="external_review_application_assistance">
+        <%= _('Anything the reviewer should know about contacting or ' \
+              'assisting you, such as an interpreter or other assistance ' \
+              'you need (optional)') %>
+      </label>
+      <br>
+      <%= f.text_area :assistance, rows: 3, cols: 55 %>
+    </p>
+
+    <p>
+      <%= hidden_field_tag :external_review, 1 %>
+      <%= submit_tag _('Preview your application') %>
+    </p>
+  <% end %>
+</div>

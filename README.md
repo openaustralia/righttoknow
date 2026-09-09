@@ -546,5 +546,9 @@ When adding authorities for jurisdictions we don't yet cover we need to:
   - [https://www.righttoknow.org.au/body/list/all](https://github.com/openaustralia/righttoknow/blob/338b2d26891b81f326fb5e4dda9a26861f01d2d5/lib/views/public_body/_list_sidebar_extra.html.erb#L1-L3)
 - Upload the new authorities (with the correct tags, see above)
 - Add categories (see above)
+- If the jurisdiction's external reviewer should be applied to through the
+  site (like the OAIC for federal authorities), extend
+  `PublicBody#external_reviewer` in `lib/model_patches.rb` - see the
+  2026-09-07 entry in `docs/DECISIONS.md` and issue #875
 
 This project is tested with [BrowserStack](https://email.browserstack.com/c/eJwkyDtywyAQANDTmA4GMN-Cs2RW7K7NyBIRSFGOnyLtw-IXj1FQMTHoYKwNSbyLjcnTM9pcvdOBjKWYELJlHWMmH0UrIbGuDPDMkeHLVPZGa2dtMM44NRvS2g7Jg46L9lMyyu-O1ySYp5EbtN3L1yDaZfIZcwjOL3Ku-Hs8nKYN2kfxoPlGmquqfROfct-3Wka_J415Qv3nURbaH053YNXHS8Elfor9CwAA__9z00N9)

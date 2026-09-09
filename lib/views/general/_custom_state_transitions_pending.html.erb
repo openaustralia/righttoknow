@@ -1,0 +1,12 @@
+<%# Extra classify options while a request is in the theme's external_review
+    state (see lib/customstates.rb). Rendered by the host's
+    request/_describe_state.html.erb in the "still in progress" section. %>
+<% if @info_request.described_state == 'external_review' %>
+  <div class="input-label-aligned">
+    <%= classification_radio_button 'external_review', id_suffix: id_suffix %>
+    <%= classification_label 'external_review',
+                             _("I'm still <strong>waiting</strong> for the " \
+                               "external review to finish"),
+                             id_suffix: id_suffix %>
+  </div>
+<% end %>

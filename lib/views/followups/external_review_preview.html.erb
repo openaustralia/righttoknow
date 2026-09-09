@@ -1,0 +1,94 @@
+<% reviewer = @info_request.public_body.external_reviewer %>
+<% @title = _('Preview your external review application') %>
+
+<div id="followup" class="followup external_review">
+  <h1><%= _('Now preview your application for external review') %></h1>
+
+  <% if @external_review_application.outside_time_limit? %>
+    <div class="warning">
+      <%= _('<strong>Please note:</strong> more than 60 days have passed ' \
+            'since you were notified of the decision, so you may need an ' \
+            'extension of time for your application to be accepted. If you ' \
+            'have not already done so, go back and explain in your ' \
+            'application why it would be reasonable to extend the time.') %>
+    </div>
+  <% end %>
+
+  <p>
+    <%= _('Check you have said everything you want to. Your application ' \
+          'is composed from your answers &ndash; to change it, re-edit ' \
+          'your answers below.') %>
+  </p>
+
+  <div class="correspondence box" id="outgoing-0">
+    <p class="preview_subject">
+      <strong><%= _('To:') %></strong> <%= h reviewer[:name] %>
+      <br>
+      <strong><%= _('Subject:') %></strong> <%= h @outgoing_message.subject %>
+    </p>
+
+    <div class="correspondence_text">
+      <p><%= @outgoing_message.get_body_for_html_display %></p>
+    </div>
+
+    <p class="event_actions"></p>
+  </div>
+
+  <h3><%= _('Sent to the reviewer but not published') %></h3>
+
+  <table class="external_review_private_details">
+    <tr>
+      <th scope="row"><%= _('Name') %></th>
+      <td><%= h @info_request.user_name %></td>
+    </tr>
+    <tr>
+      <th scope="row"><%= _('Email (preferred contact method)') %></th>
+      <td><%= h @info_request.incoming_email %></td>
+    </tr>
+    <tr>
+      <th scope="row"><%= _('Contact telephone number') %></th>
+      <td><%= h @external_review_application.phone %></td>
+    </tr>
+    <% if @external_review_application.oaic_reference.present? %>
+      <tr>
+        <th scope="row"><%= _('Reviewer\'s reference number') %></th>
+        <td><%= h @external_review_application.oaic_reference %></td>
+      </tr>
+    <% end %>
+    <% if @external_review_application.assistance.present? %>
+      <tr>
+        <th scope="row"><%= _('Assistance required') %></th>
+        <td><%= h @external_review_application.assistance %></td>
+      </tr>
+    <% end %>
+  </table>
+
+  <p>
+    <%= _('<strong>Privacy warning:</strong> Your application letter, and ' \
+          'any correspondence about the review, will be displayed publicly ' \
+          'on this website. The contact details above will not.') %>
+  </p>
+
+  <%= form_tag request_followups_url(
+        request_url_title: @info_request.url_title
+      ), id: 'preview_form' do %>
+    <%= hidden_field_tag :external_review, 1 %>
+    <%= hidden_field_tag :submitted_followup, 1 %>
+    <%= hidden_field_tag 'external_review_application[decision_type]',
+                         @external_review_application.decision_type %>
+    <%= hidden_field_tag 'external_review_application[decision_date]',
+                         @external_review_application.decision_date %>
+    <%= hidden_field_tag 'external_review_application[disagreement]',
+                         @external_review_application.disagreement %>
+    <%= hidden_field_tag 'external_review_application[phone]',
+                         @external_review_application.phone %>
+    <%= hidden_field_tag 'external_review_application[oaic_reference]',
+                         @external_review_application.oaic_reference %>
+    <%= hidden_field_tag 'external_review_application[assistance]',
+                         @external_review_application.assistance %>
+    <p>
+      <%= submit_tag _('Re-edit this application'), name: 'reedit' %>
+      <%= submit_tag _('Send application') %>
+    </p>
+  <% end %>
+</div>
