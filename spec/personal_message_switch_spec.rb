@@ -74,6 +74,29 @@ RSpec.describe RequestController, type: :controller do
       end
     end
 
+    context 'when a submission comes back with a validation error' do
+      # The regression this guards: the blank title means neither
+      # @existing_request nor @info_request.title says the form has been
+      # through once, but foi_error_messages_for has rendered
+      # .errorExplanation, which is what the old JavaScript keyed off.
+      before do
+        get :new, params: {
+          submitted_new_request: 1,
+          info_request: { title: '', public_body_id: public_body.id },
+          outgoing_message: { body: 'Please send me the minutes.' }
+        }
+      end
+
+      it 'shows the validation error' do
+        expect(response.body).to have_css('.errorExplanation', visible: :all)
+      end
+
+      it 'answers "No" so the person keeps their place' do
+        expect(response.body)
+          .to have_css('#request_personal_switch_no[checked]', visible: :all)
+      end
+    end
+
     context 'when coming back to a request that has a subject already' do
       before do
         get :new, params: {
