@@ -7,16 +7,71 @@
 <script defer data-domain="righttoknow.org.au" src="https://plausible.io/js/script.outbound-links.js"></script>
 <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 <% end %>
-<%# Sentry browser error monitoring (issue #1004). The loader URL is set in
-    general.yml on the servers, so this renders nothing in development. %>
-<% sentry_js_loader_url = AlaveteliConfiguration.get('SENTRY_JS_LOADER_URL', '') %>
-<% unless sentry_js_loader_url.empty? %>
+<%# The canonical OAF Sentry browser partial (issue #1004; see the
+    infrastructure repo's docs/monitoring.md - change it there first, then
+    update every copy). Renders only when the server SDK is present and has a
+    DSN - the same off switch as the backend, so browser events land in the
+    same right-to-know project - and never for crawlers, whose errors we
+    can't act on and which vastly outnumber real people. Deliberately narrow:
+    facebookexternalhit is the crawler, while the Facebook in-app browser is
+    a real person whose errors are worth seeing. %>
+<% crawler = /bot\b|crawler|spider|facebookexternalhit|slurp|archiver|inspectiontool/i.match?(request.user_agent.to_s) %>
+<% if (dsn = defined?(Sentry) && Sentry.initialized? && Sentry.configuration&.dsn) && !crawler %>
+<%# Meta tags the browser SDK reads on pageload to continue the backend trace,
+    stitching the browser transaction to the Rails transaction that rendered
+    it. SDK-generated markup with no user input, so raw output is safe. %>
+<%== Sentry.get_trace_propagation_meta %>
+<%# sentryOnLoad must be defined before the loader script so the lazy-loaded
+    SDK picks up our configuration when it initialises %>
 <script>
   window.sentryOnLoad = function () {
     Sentry.init({
-      environment: <%= (defined?(Sentry) && Sentry.initialized? ? Sentry.configuration.environment : Rails.env).to_json.html_safe %>
+      <% if Sentry.configuration.release %>
+        release: "<%= j(Sentry.configuration.release) %>",
+      <% end %>
+      environment: "<%= j(Sentry.configuration.environment) %>",
+      // Sample 10% of pageloads/navigations for browser tracing
+      tracesSampleRate: 0.1,
+      // Only record session replays when an error occurs, with default
+      // privacy masking (maskAllText/blockAllMedia) left enabled
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 1.0,
+      // Send user IP with events, matching the backend's send_default_pii
+      sendDefaultPii: true,
+      // Errors thrown by browser extensions, in-app webview bridges and email
+      // link scanners rather than by our own code. We cannot fix any of these
+      // and they drown out real problems. Anything our own JavaScript causes
+      // belongs in a fix, not in this list.
+      ignoreErrors: [
+        // Microsoft Outlook and Office scanning links in our alert emails
+        "Object Not Found Matching Id",
+        // Android webview tearing down its JavaScript bridge mid-page
+        "Error invoking postMessage: Java object is gone",
+        // Cryptocurrency wallet extensions
+        "Failed to connect to MetaMask",
+        // Accessibility and screen reader extensions reading their own state
+        "isHighContrast",
+        // iOS in-app browsers and extensions expecting their native bridge
+        "window.webkit.messageHandlers",
+        // In-app browsers' autofill bridge (e.g. Facebook/Instagram on iOS)
+        "_AutofillCallbackHandler"
+      ],
+      denyUrls: [
+        /^chrome-extension:\/\//i,
+        /^moz-extension:\/\//i,
+        /^safari-(web-)?extension:\/\//i
+      ]
     });
+    <% if current_user %>
+      <%# Tie browser events to the same user as server events - id only, no
+          email or name, matching the backend's set_sentry_user %>
+      Sentry.setUser({ id: "<%= j(current_user.id.to_s) %>" });
+    <% end %>
   };
 </script>
-<script src="<%= sentry_js_loader_url %>" crossorigin="anonymous"></script>
+<%# The loader script key is the public key from the DSN. The host is
+    region-specific and our org is in Sentry's EU region: the US host
+    (js.sentry-cdn.com) answers 200 with a no-op stub, which would leave
+    every browser signal silently inert. %>
+<script src="https://js-de.sentry-cdn.com/<%= dsn.public_key %>.min.js" crossorigin="anonymous"></script>
 <% end %>
