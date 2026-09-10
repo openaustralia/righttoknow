@@ -41,6 +41,9 @@ require File.expand_path('sentry_config.rb', __dir__)
 # A new controller (not a patch to an existing one) - see its own file for why
 require File.expand_path('whatismyip_controller.rb', __dir__)
 
+# Account housekeeping (#1095, #1096) - see "Account housekeeping" in README.md
+require File.expand_path('dormant_accounts.rb', __dir__)
+
 # Note you should rename the file at "config/custom-routes.rb" to
 # something unique (e.g. yourtheme-custom-routes.rb":
 $alaveteli_route_extensions << 'custom-routes.rb'

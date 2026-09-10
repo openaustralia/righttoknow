@@ -1,0 +1,16 @@
+#!/bin/bash
+# Destroy never-confirmed, content-free accounts older than two years
+# (openaustralia/righttoknow#1096).
+#
+# Dry unless DRYRUN=0. LIMIT=n caps the batch. Prints one id and created_at per
+# account, then a count.
+#
+# Run from a shell on the server; from your own machine use
+# `bundle exec cap production accounts:destroy_never_confirmed` instead. See
+# "Account housekeeping" in README.md.
+set -euo pipefail
+
+# This theme is checked out at alaveteli/lib/themes/righttoknow, so the host
+# app root is four levels up from script/.
+cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
+bundle exec rails runner 'DormantAccounts.destroy_never_confirmed'

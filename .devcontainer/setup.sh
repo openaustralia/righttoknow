@@ -5,8 +5,9 @@
 # Idempotent: safe to re-run at any time. On first run it clones the
 # openaustralia/alaveteli fork into /alaveteli (a Docker volume), wires this
 # theme in with Alaveteli's switch-theme script, then migrates and seeds the
-# databases and builds the search index. Subsequent runs only update gems and
-# re-link the theme.
+# databases and builds the search index. Subsequent runs update gems, re-link
+# the theme and run any pending migrations, but leave the sample data alone
+# unless --reset-data is passed.
 #
 # Runs as the Dev Container onCreateCommand, and via `make setup` for the
 # plain Docker workflow. Mirrors the steps in alaveteli's docker/bootstrap and
@@ -61,8 +62,8 @@ ln -sfn "$THEME_DIR" lib/themes/righttoknow
 bin/rails assets:clean >/dev/null
 success_msg 'done'
 
-# If the database has never been seeded, load schema and data (matching
-# alaveteli's docker/setup). Pass --reset-data to force a reload.
+# Sample data is loaded once, on a database that has never been seeded. Pass
+# --reset-data to force a reload.
 set +e
 bin/rails runner 'User.find(1)' >/dev/null 2>&1
 RESET_DATA_FLAG=$?
@@ -74,16 +75,20 @@ for arg in "$@"; do
   esac
 done
 
-if [ $RESET_DATA_FLAG -eq 0 ]; then
-  success_msg 'Database already set up; skipping migrations and sample data'
-  success_msg 'Setup finished'
-  exit 0
-fi
-
+# Migrations run every time, not just on first setup: /alaveteli is a
+# persistent volume, so a re-run after the checkout moves to a revision with
+# new migrations is exactly when the schemas would otherwise go stale. Both
+# db:migrate and db:seed are idempotent.
 notice_msg 'Migrating development and test databases...'
 bin/rails db:migrate db:seed >/dev/null
 bin/rails db:migrate RAILS_ENV=test >/dev/null
 success_msg 'done'
+
+if [ $RESET_DATA_FLAG -eq 0 ]; then
+  success_msg 'Sample data already loaded; skipping'
+  success_msg 'Setup finished'
+  exit 0
+fi
 
 notice_msg 'Loading sample data...'
 bundle exec script/load-sample-data >/dev/null

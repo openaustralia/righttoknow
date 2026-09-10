@@ -12,6 +12,11 @@ source 'https://rubygems.org'
 # Error monitoring and APM (https://github.com/openaustralia/righttoknow/issues/1004).
 # Initialised in lib/sentry_config.rb; does nothing unless SENTRY_DSN is set
 # in the host's config/general.yml.
-gem 'sentry-rails'
-gem 'sentry-ruby'
-gem 'sentry-sidekiq'
+#
+# Pinned to the 6.x line: 7.0.0 removed `enable_logs` (used in
+# lib/sentry_config.rb) and changed the PII/metrics defaults. Nothing here
+# is covered by the host's Gemfile.lock, so without a constraint every
+# deploy re-resolves and can pull an untested major.
+gem 'sentry-rails', '~> 6.7'
+gem 'sentry-ruby', '~> 6.7'
+gem 'sentry-sidekiq', '~> 6.7'

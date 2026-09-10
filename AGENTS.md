@@ -176,6 +176,20 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   a coupon `interval` metadata key, enforced identically in the checkout path
   and the live price-preview endpoint (both in `controller_patches.rb`). See
   "Pro subscriptions" in `README.md`.
+- **Account lifecycle**: an **unused account** is the host's `User.unused`
+  scope (no content, no admin/pro role, no retained `user_sign_ins` row); it
+  says nothing about whether the address was confirmed or the account banned. A
+  **dormant account** is an unused account created more than two years ago that
+  has not signed in within two years — exactly the cohort the host's
+  `users:destroy_unused` cron would destroy, mirrored here by
+  `DormantAccounts.scope` so the deletion pass and the notice can't disagree
+  about who is at risk. A **never-confirmed account** has
+  `email_confirmed = false` and can never be emailed, because
+  `User#should_be_emailed?` requires confirmation. A **bounce** is the host's
+  `email_bounced_at`, which only `script/handle-mail-replies` ever sets. Use
+  those four terms rather than drifting to "inactive", "stale" or "abandoned".
+  See `docs/DECISIONS.md` (2026-09-03) and "Account housekeeping" in
+  `README.md`.
 
 ## Working with AI tools
 

@@ -8,6 +8,15 @@ set :use_sudo,    false
 
 set :rbenv_type, :user
 
+# capistrano-aws builds its Aws::EC2::Resource with a region and nothing else,
+# so instance lookup would otherwise use whatever the SDK resolves as the
+# default profile - a different account, or none, depending on the machine.
+# Name the profile here instead, so lookup and the SSM tunnel below are always
+# the same account. Set AWS_PROFILE yourself to override, and static
+# credentials in the environment still win over a profile in both the SDK and
+# the CLI.
+ENV['AWS_PROFILE'] ||= 'oaf'
+
 # Deploy targets are found dynamically by capistrano-aws using the Application,
 # Stage and Roles tags Terraform sets on the EC2 instances (see
 # terraform/righttoknow/*.tf in the infrastructure repo). The gem's default
@@ -22,8 +31,10 @@ set :ssh_options, {
   # SSH reaches the instances through an AWS SSM Session Manager tunnel rather
   # than a public hostname, so deploys work without the instances accepting
   # direct SSH from the internet.
+  # No --profile here: the CLI inherits AWS_PROFILE from the environment set
+  # above, so the tunnel cannot end up on a different account from the lookup.
   proxy: Net::SSH::Proxy::Command.new(
-    'aws ssm start-session --profile oaf --target %h ' \
+    'aws ssm start-session --target %h ' \
     '--document-name AWS-StartSSHSession --parameters portNumber=%p'
   ),
   # net-ssh misinterprets the ^ modifier syntax in ~/.ssh/config Ciphers entries,
@@ -99,6 +110,40 @@ namespace :xapian do
                 "exec rake xapian:destroy_and_rebuild_index models='PublicBody User InfoRequestEvent' RAILS_ENV=#{fetch(:rails_env)}"
       end
     end
+  end
+end
+
+# One-off account housekeeping jobs (#1095, #1096). Both are dry unless
+# DRYRUN=0, and both print user ids rather than email addresses. See "Account
+# housekeeping" in README.md.
+namespace :accounts do
+  # Runs `bundle exec rails runner` directly rather than the theme's script/
+  # wrappers: capistrano-rbenv maps the `bundle` command to `rbenv exec
+  # bundle`, and a bash wrapper calling bare `bundle` would not find Ruby.
+  #
+  # `capture` rather than `execute` because Airbrussh does not show command
+  # output by default, and the per-account ids these jobs print are the audit
+  # trail. `capture` also raises on a non-zero exit, so a failed run is loud.
+  #
+  # :bundle has to stay the first argument - SSHKit only applies `within` and
+  # `with` when the first argument has no whitespace in it.
+  def run_account_job(expression)
+    env = { rails_env: fetch(:rails_env), dryrun: ENV.fetch('DRYRUN', '1') }
+    env[:limit] = ENV['LIMIT'] if ENV['LIMIT']
+
+    on roles(:app) do
+      within current_path do
+        with env do
+          puts capture(:bundle, "exec rails runner '#{expression}' 2>&1")
+        end
+      end
+    end
+  end
+
+  desc 'Destroy never-confirmed accounts with no content, over two years old ' \
+       '(#1096). DRYRUN=0 to destroy, LIMIT=n to cap the batch'
+  task :destroy_never_confirmed do
+    run_account_job('DormantAccounts.destroy_never_confirmed')
   end
 end
 
