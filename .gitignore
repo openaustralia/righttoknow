@@ -71,7 +71,11 @@ build-iPhoneSimulator/
 ## Documentation cache and generated files:
 /.yardoc/
 /_yardoc/
-/doc/
+# (narrowed from /doc/ so tracked ADRs in /doc/adr/ aren't ignored; the
+# !/doc/ negation also shields it from broader gitignore rules elsewhere)
+!/doc/
+/doc/*
+!/doc/adr/
 /rdoc/
 
 ## Environment normalization:
