@@ -43,6 +43,7 @@ require File.expand_path('whatismyip_controller.rb', __dir__)
 
 # Account housekeeping (#1095, #1096) - see "Account housekeeping" in README.md
 require File.expand_path('dormant_accounts.rb', __dir__)
+require File.expand_path('dormant_account_mailer.rb', __dir__)
 
 # Note you should rename the file at "config/custom-routes.rb" to
 # something unique (e.g. yourtheme-custom-routes.rb":

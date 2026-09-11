@@ -3,10 +3,12 @@
 How the engineering skills should consume this repo's domain documentation when
 exploring the codebase.
 
-This repo is **single-context**, and it already keeps the two records the skills
-look for, under its own names. Use these rather than creating a `CONTEXT.md` or a
-`docs/adr/` directory alongside them - a second, parallel record is worse than
-one that is actually maintained.
+This repo is **single-context**. The glossary role is played by existing files
+under their own names - use those rather than creating a `CONTEXT.md` alongside
+them, since a second, parallel record is worse than one that is actually
+maintained. Decision records are standard ADRs, but they live in `doc/adr/`
+(singular `doc/`, matching Alaveteli's convention) because `docs/` is reserved
+for application-related material.
 
 ## Before exploring, read these
 
@@ -14,25 +16,19 @@ one that is actually maintained.
   authorities and Pro coupons, with the reasoning behind each.
 - **`README.md`** - the reference tables the glossary points at: Jurisdictions,
   Categories, Authorities, Pro subscriptions, and "Adding more jurisdictions".
-- **`docs/DECISIONS.md`** - the decision-record role, in place of `docs/adr/`.
-  Cross-cutting engineering decisions that aren't tied to one file or area. Read
-  the entries touching the area you're about to work in. It currently holds only
-  its own conventions and no entries yet, so expect nothing there until decisions
-  start being recorded.
+- **`doc/adr/`** - the decision records. Cross-cutting engineering decisions
+  that aren't tied to one file or area. Read the ADRs touching the area you're
+  about to work in.
 
 Also read `AGENTS.md`, "Architecture" before changing how the theme loads,
 patches, or overrides the host app.
 
 ## Recording new decisions
 
-Where a skill would write an ADR under `docs/adr/`, add an entry to
-`docs/DECISIONS.md` instead, following the conventions stated at the top of that
-file: append new entries at the top, date them, and don't edit past entries
-except to mark them superseded and say by what. A decision local to one
-file/view/patch belongs as a comment there instead, explaining why.
-
-Numbered ADR filenames don't exist here, so refer to a decision by its date and
-heading rather than an `ADR-0007` style identifier.
+Where a skill would write an ADR under `docs/adr/`, write it under `doc/adr/`
+instead - same format, sequential `0001-slug.md` numbering, referenced as
+`ADR-0001` style identifiers. A decision local to one file/view/patch belongs
+as a comment there instead, explaining why.
 
 ## Use the glossary's vocabulary
 
@@ -50,7 +46,7 @@ inventing language the project doesn't use (reconsider) or there's a real gap
 
 ## Flag decision conflicts
 
-If your output contradicts an entry in `docs/DECISIONS.md`, surface it explicitly
+If your output contradicts an ADR in `doc/adr/`, surface it explicitly
 rather than silently overriding:
 
-> _Contradicts the <date> decision on <heading>, but worth reopening because..._
+> _Contradicts ADR-NNNN (<title>), but worth reopening because..._

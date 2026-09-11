@@ -146,7 +146,9 @@ See "Deployment" in `README.md` for the full command list
 `xapian:destroy_and_rebuild_index`) and the one-time server bootstrap
 (shared config files Capistrano expects to already exist under `shared/`).
 Server provisioning (not deployment) lives in the separate `infrastructure`
-repo.
+repo. Each staging→production release PR also adds a section to
+`CHANGELOG.md` covering everything merged to `staging` since the previous
+release (one changelog touchpoint per release, not per PR).
 
 ### Seeding test data (`script/seed_test_data.rb`)
 
@@ -188,8 +190,9 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   `User#should_be_emailed?` requires confirmation. A **bounce** is the host's
   `email_bounced_at`, which only `script/handle-mail-replies` ever sets. Use
   those four terms rather than drifting to "inactive", "stale" or "abandoned".
-  See `docs/DECISIONS.md` (2026-09-03) and "Account housekeeping" in
-  `README.md`.
+  See `doc/adr/0003-dormant-account-deletion-is-three-ordered-passes.md`,
+  `doc/adr/0004-bounces-arrive-at-the-blackhole-address.md`, and "Account
+  housekeeping" in `README.md`.
 
 ## Working with AI tools
 
@@ -227,8 +230,8 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   behave), ask which behaviour is wanted before writing code — give a terse
   list of options with pros/cons rather than building for every
   interpretation.
-- Check `docs/DECISIONS.md` for past cross-cutting decisions before assuming
-  in an unfamiliar area of the repo; add a new entry there (rather than
+- Check the ADRs in `doc/adr/` for past cross-cutting decisions before assuming
+  in an unfamiliar area of the repo; add a new ADR there (rather than
   repeating it in multiple places) when a decision spans multiple files.
 - When a commit message body covers more than one distinct point, use a
   markdown bullet list rather than one flowing paragraph.
@@ -268,25 +271,24 @@ only). Run via `rails runner` from the **host app**, not this repo — see
 
 Per-repo configuration for the mattpocock engineering skills (`/triage`,
 `/to-tickets`, `/to-spec`, `/wayfinder`, `/domain-modeling` and friends). The
-files under `docs/agents/` are what those skills read; edit them directly rather
+files under `.agents/` are what those skills read; edit them directly rather
 than re-running the setup skill.
 
 ### Issue tracker
 
 Issues live as GitHub issues in this repo, driven with the `gh` CLI. Note that
 the Alaveteli fork this theme is loaded into has GitHub Issues disabled, so work
-on the host app is tracked here too. See `docs/agents/issue-tracker.md`.
+on the host app is tracked here too. See `.agents/issue-tracker.md`.
 
 ### Triage labels
 
 The five canonical triage roles map to `needs-triage`, `needs-info`,
 `ready-for-agent`, `ready-for-human` and `wontfix`. See
-`docs/agents/triage-labels.md`.
+`.agents/triage-labels.md`.
 
 ### Domain docs
 
-Single-context. This repo already keeps the two records the skills look for
-under different names, so they are pointed at those rather than at a new
-`CONTEXT.md` and `docs/adr/`: "Key domain knowledge" above plus `README.md` for
-vocabulary, and `docs/DECISIONS.md` for cross-cutting decisions. See
-`docs/agents/domain.md`.
+Single-context. The glossary role is played by "Key domain knowledge" above
+plus `README.md` for vocabulary; decision records are ADRs in `doc/adr/`
+(singular `doc/`, since `docs/` is reserved for application material). See
+`.agents/domain.md`.
