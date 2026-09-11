@@ -34,47 +34,62 @@
 
 scanned = 0
 updated = 0
+skipped = 0
 errors = 0
 
 InfoRequest.find_each do |info_request|
   scanned += 1
-  changes = {}
 
-  # Assign (not save) the missing prerequisites first, so the date
-  # calculations below read them from the attribute instead of re-walking the
-  # request's event history; update_columns persists them at the end.
-  if info_request.read_attribute(:last_event_forming_initial_request_id).nil?
-    last_sent = info_request.calculate_last_event_forming_initial_request
-    if last_sent
-      info_request[:last_event_forming_initial_request_id] = last_sent.id
-      changes[:last_event_forming_initial_request_id] = last_sent.id
+  # Row-lock (and reload) each request so a due-date-resetting event arriving
+  # mid-run can't interleave with the read-calculate-write below: its
+  # set_due_dates blocks until this row's transaction commits, and then wins.
+  info_request.with_lock do
+    changes = {}
+
+    # Assign (not save) the missing prerequisites first, so the date
+    # calculations below read them from the attribute instead of re-walking the
+    # request's event history; update_columns persists them at the end.
+    if info_request.read_attribute(:last_event_forming_initial_request_id).nil?
+      last_sent = info_request.calculate_last_event_forming_initial_request
+      if last_sent
+        info_request[:last_event_forming_initial_request_id] = last_sent.id
+        changes[:last_event_forming_initial_request_id] = last_sent.id
+      end
     end
-  end
 
-  if info_request.read_attribute(:date_initial_request_last_sent_at).nil?
-    date_last_sent = info_request.calculate_date_initial_request_last_sent_at
-    info_request[:date_initial_request_last_sent_at] = date_last_sent
-    changes[:date_initial_request_last_sent_at] = date_last_sent
-  end
+    if info_request.read_attribute(:date_initial_request_last_sent_at).nil?
+      if info_request.read_attribute(:last_event_forming_initial_request_id).nil?
+        # Never sent, so there is nothing to count a deadline from, and the
+        # host's fallback calculation would raise. Leave the request untouched.
+        skipped += 1
+        next
+      end
 
-  # Jurisdiction-aware (theme override of calculate_date_response_required_by);
-  # recomputed unconditionally because existing stored values were computed
-  # with the site-wide config instead.
-  stored_required_by = info_request.read_attribute(:date_response_required_by)
-  required_by = info_request.calculate_date_response_required_by
-  changes[:date_response_required_by] = required_by if stored_required_by != required_by
+      date_last_sent = info_request.calculate_date_initial_request_last_sent_at
+      info_request[:date_initial_request_last_sent_at] = date_last_sent
+      changes[:date_initial_request_last_sent_at] = date_last_sent
+    end
 
-  very_overdue_missing = info_request.read_attribute(:date_very_overdue_after).nil?
-  changes[:date_very_overdue_after] = info_request.calculate_date_very_overdue_after if very_overdue_missing
+    # Jurisdiction-aware (theme override of calculate_date_response_required_by);
+    # recomputed unconditionally because existing stored values were computed
+    # with the site-wide config instead.
+    stored_required_by = info_request.read_attribute(:date_response_required_by)
+    required_by = info_request.calculate_date_response_required_by
+    changes[:date_response_required_by] = required_by if stored_required_by != required_by
 
-  unless changes.empty?
-    info_request.update_columns(changes)
-    updated += 1
+    very_overdue_missing = info_request.read_attribute(:date_very_overdue_after).nil?
+    changes[:date_very_overdue_after] = info_request.calculate_date_very_overdue_after if very_overdue_missing
+
+    unless changes.empty?
+      info_request.update_columns(changes)
+      updated += 1
+    end
   end
 rescue StandardError => e
   errors += 1
   warn "populate_due_dates: info_request #{info_request.id}: #{e.class}: #{e.message}"
 end
 
-puts "populate_due_dates: scanned #{scanned}, updated #{updated}, errors #{errors}"
+puts "populate_due_dates: scanned #{scanned}, updated #{updated}, " \
+     "skipped #{skipped} never sent, errors #{errors}"
 exit 1 if errors.positive?
