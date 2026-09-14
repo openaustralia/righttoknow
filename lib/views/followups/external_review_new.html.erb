@@ -11,7 +11,8 @@
     <%= _('If you are unhappy with the decision on your request ' \
           '{{request_link}}, or never received one, you can apply for an ' \
           'Information Commissioner review. This form sends your ' \
-          'application to the {{reviewer_name}} by email. There is no ' \
+          'application to the {{reviewer_name}} by email, with a copy of ' \
+          'all the correspondence on this request attached. There is no ' \
           'charge.',
           request_link: request_link(@info_request),
           reviewer_name: h(reviewer[:name])) %>
@@ -21,16 +22,24 @@
     <li>
       <%= _('An application should be made within <strong>60 days</strong> ' \
             'of being notified of the decision. If you are outside that ' \
-            'limit you can ask for an extension of time &ndash; explain ' \
-            'your reasons in your application.') %>
+            'limit we will ask you why the time should be extended.') %>
     </li>
     <li>
       <%= _('If the authority never made a decision within the time ' \
             'allowed, you can apply at any time.') %>
     </li>
     <li>
+      <%= _('The application goes out under the name on this request. If ' \
+            'that is not your real name, the reviewer may ask you to ' \
+            'confirm your identity.') %>
+    </li>
+    <li>
       <%= _('If your contact details change during the review, you must ' \
             'tell the reviewer as soon as possible.') %>
+    </li>
+    <li>
+      <%= _('The reviewer publishes its decisions. Individuals are not ' \
+            'named in them unless they ask to be.') %>
     </li>
   </ul>
 
@@ -46,8 +55,10 @@
   <div class="warning">
     <%= _('<strong>Privacy warning:</strong> Your application letter, and ' \
           'all correspondence about the review, will be displayed publicly ' \
-          'on this website. Your telephone number and the other contact ' \
-          'details asked for below will <strong>not</strong> be published.') %>
+          'on this website. The copy of this request sent to the reviewer ' \
+          'includes any messages you have hidden from the public. Your ' \
+          'telephone number and the other details asked for below will ' \
+          '<strong>not</strong> be published.') %>
   </div>
 
   <%= foi_error_messages_for :external_review_application %>
@@ -98,15 +109,36 @@
       <%= f.date_field :decision_date %>
     </p>
 
+    <% if @external_review_application.outside_time_limit? %>
+      <p>
+        <label for="external_review_application_extension_reasons">
+          <%= _('More than 60 days have passed since that date. Why should ' \
+                'the time to apply be extended?') %>
+        </label>
+        <br>
+        <small>
+          <%= _('The reviewer considers how long the delay was and why, ' \
+                'what you have done about the decision since, and the ' \
+                'merits of your application. This will form part of your ' \
+                'public application letter.') %>
+        </small>
+        <br>
+        <%= f.text_area :extension_reasons, rows: 5, cols: 55 %>
+      </p>
+    <% end %>
+
     <p>
       <label for="external_review_application_disagreement">
         <%= _('Which parts of the decision do you disagree with, and why?') %>
       </label>
       <br>
       <small>
-        <%= _('For example: which documents you consider have been wrongly ' \
-              'refused, or which exemptions have been incorrectly applied. ' \
-              'This will form part of your public application letter.') %>
+        <%= _('Say which documents you consider have been wrongly refused ' \
+              'or which exemptions have been incorrectly applied. If the ' \
+              'request was refused because it would substantially and ' \
+              'unreasonably divert the authority\'s resources, say why you ' \
+              'think it would not. This will form part of your public ' \
+              'application letter.') %>
       </small>
       <br>
       <%= f.text_area :disagreement, rows: 10, cols: 55 %>
@@ -132,22 +164,13 @@
     </p>
 
     <p>
-      <label for="external_review_application_oaic_reference">
-        <%= _('Reviewer\'s reference number, if you have contacted them ' \
-              'before about this or another matter (optional)') %>
+      <label for="external_review_application_other_information">
+        <%= _('Anything else the reviewer should know (optional): a ' \
+              'reference number from earlier contact with them, an ' \
+              'interpreter you need and the language, or other assistance') %>
       </label>
       <br>
-      <%= f.text_field :oaic_reference %>
-    </p>
-
-    <p>
-      <label for="external_review_application_assistance">
-        <%= _('Anything the reviewer should know about contacting or ' \
-              'assisting you, such as an interpreter or other assistance ' \
-              'you need (optional)') %>
-      </label>
-      <br>
-      <%= f.text_area :assistance, rows: 3, cols: 55 %>
+      <%= f.text_area :other_information, rows: 3, cols: 55 %>
     </p>
 
     <p>

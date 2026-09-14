@@ -8,8 +8,7 @@
 <%= _('Name:') %> <%= @info_request.user_name %>
 <%= _('Email (preferred contact method):') %> <%= @info_request.incoming_email %>
 <%= _('Contact telephone number:') %> <%= details[:phone] %>
-<% if details[:oaic_reference].present? %><%= _('Previous reference number:') %> <%= details[:oaic_reference] %>
-<% end %><% if details[:assistance].present? %><%= _('Assistance required:') %> <%= details[:assistance] %>
+<% if details[:other_information].present? %><%= _('Other information (previous OAIC reference, interpreter or other assistance):') %> <%= details[:other_information] %>
 <% end %>-------------------------------------------------------------------
 <% end %>
 

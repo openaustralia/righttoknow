@@ -31,11 +31,10 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
   let(:valid_fields) do
     {
       decision_type: 'original',
-      decision_date: 70.days.ago.to_date.iso8601,
+      decision_date: 10.days.ago.to_date.iso8601,
       disagreement: 'The section 47E exemption was wrongly applied to my request.',
       phone: '0491 570 006',
-      oaic_reference: 'MR26/00001',
-      assistance: 'Please use email where possible'
+      other_information: 'MR26/00001. Please use email where possible.'
     }
   end
 
@@ -104,18 +103,34 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
         .to include('Please enter a contact telephone number')
     end
 
-    it 'warns, without blocking, when outside the 60 day time limit' do
+    it 'asks a late applicant why the time should be extended, once' do
+      late = valid_fields.merge(decision_date: 70.days.ago.to_date.iso8601)
+      post_preview(late)
+
+      expect(response).to render_template('followups/external_review_new')
+      expect(response.body).to include('Why should the time to apply be extended?')
+      expect(response.body).to include('external_review_application[extension_reasons]')
+
+      post_preview(late.merge(extension_reasons: 'I was overseas.'))
+
+      expect(response).to render_template('followups/external_review_preview')
+      expect(response.body).to include('s 54T')
+      expect(response.body).to include('I was overseas.')
+    end
+
+    it 'never asks an on-time applicant about extensions' do
       post_preview
 
       expect(response).to render_template('followups/external_review_preview')
-      expect(response.body).to include('extension of time')
+      expect(response.body).not_to include('s 54T')
     end
 
-    it 'does not warn about the time limit for a deemed refusal' do
+    it 'never asks about extensions for a deemed refusal' do
       post_preview(valid_fields.merge(decision_type: 'no_decision',
                                       decision_date: ''))
 
-      expect(response.body).not_to include('extension of time')
+      expect(response).to render_template('followups/external_review_preview')
+      expect(response.body).not_to include('s 54T')
     end
   end
 
@@ -139,8 +154,7 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
       text = mail.text_part.body.to_s
       expect(text).to include('not published on Right to Know')
       expect(text).to include('0491 570 006')
-      expect(text).to include('MR26/00001')
-      expect(text).to include('Please use email where possible')
+      expect(text).to include('MR26/00001. Please use email where possible.')
       expect(text).to include(info_request.incoming_email)
       expect(mail.attachments.map(&:filename))
         .to eq(["#{info_request.url_title}.zip"])
@@ -189,8 +203,8 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
                           .where(event_type: 'followup_sent').last
       details = event.params[:external_review_application]
       expect(details[:phone]).to eq('0491 570 006')
-      expect(details[:oaic_reference]).to eq('MR26/00001')
-      expect(details[:assistance]).to eq('Please use email where possible')
+      expect(details[:other_information])
+        .to eq('MR26/00001. Please use email where possible.')
     end
 
     it 'still records the private details for admins when sending fails' do

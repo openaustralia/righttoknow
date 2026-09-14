@@ -4,16 +4,6 @@
 <div id="followup" class="followup external_review">
   <h1><%= _('Now preview your application for external review') %></h1>
 
-  <% if @external_review_application.outside_time_limit? %>
-    <div class="warning">
-      <%= _('<strong>Please note:</strong> more than 60 days have passed ' \
-            'since you were notified of the decision, so you may need an ' \
-            'extension of time for your application to be accepted. If you ' \
-            'have not already done so, go back and explain in your ' \
-            'application why it would be reasonable to extend the time.') %>
-    </div>
-  <% end %>
-
   <p>
     <%= _('Check you have said everything you want to. Your application ' \
           'is composed from your answers &ndash; to change it, re-edit ' \
@@ -49,18 +39,17 @@
       <th scope="row"><%= _('Contact telephone number') %></th>
       <td><%= h @external_review_application.phone %></td>
     </tr>
-    <% if @external_review_application.oaic_reference.present? %>
+    <% if @external_review_application.other_information.present? %>
       <tr>
-        <th scope="row"><%= _('Reviewer\'s reference number') %></th>
-        <td><%= h @external_review_application.oaic_reference %></td>
+        <th scope="row"><%= _('Other information') %></th>
+        <td><%= h @external_review_application.other_information %></td>
       </tr>
     <% end %>
-    <% if @external_review_application.assistance.present? %>
-      <tr>
-        <th scope="row"><%= _('Assistance required') %></th>
-        <td><%= h @external_review_application.assistance %></td>
-      </tr>
-    <% end %>
+    <tr>
+      <th scope="row"><%= _('Attached') %></th>
+      <td><%= _('A zip file of all correspondence on this request (the ' \
+                'same as "Download a zip file of all correspondence")') %></td>
+    </tr>
   </table>
 
   <p>
@@ -80,12 +69,12 @@
                          @external_review_application.decision_date %>
     <%= hidden_field_tag 'external_review_application[disagreement]',
                          @external_review_application.disagreement %>
+    <%= hidden_field_tag 'external_review_application[extension_reasons]',
+                         @external_review_application.extension_reasons %>
     <%= hidden_field_tag 'external_review_application[phone]',
                          @external_review_application.phone %>
-    <%= hidden_field_tag 'external_review_application[oaic_reference]',
-                         @external_review_application.oaic_reference %>
-    <%= hidden_field_tag 'external_review_application[assistance]',
-                         @external_review_application.assistance %>
+    <%= hidden_field_tag 'external_review_application[other_information]',
+                         @external_review_application.other_information %>
     <p>
       <%= submit_tag _('Re-edit this application'), name: 'reedit' %>
       <%= submit_tag _('Send application') %>

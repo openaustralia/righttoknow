@@ -104,7 +104,7 @@ module ExternalReviewFollowups
 
     params.require(:external_review_application)
           .permit(:decision_type, :decision_date, :disagreement,
-                  :phone, :oaic_reference, :assistance).to_h
+                  :extension_reasons, :phone, :other_information).to_h
   end
 
   # Returns false if nothing was saved (the correspondence copy the reviewer

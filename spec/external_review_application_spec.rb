@@ -30,8 +30,7 @@ RSpec.describe ExternalReviewApplication do
       decision_date: '2026-08-01',
       disagreement: 'The section 47E exemption was wrongly applied.',
       phone: '0491 570 006',
-      oaic_reference: '',
-      assistance: ''
+      other_information: ''
     }.merge(attributes))
   end
 
@@ -65,6 +64,20 @@ RSpec.describe ExternalReviewApplication do
       expect(application(decision_type: 'no_decision', decision_date: ''))
         .to be_valid
     end
+
+    # Direction 2.15(b): a late applicant must give reasons for an extension
+    # of time; an on-time applicant is never asked.
+    it 'requires extension reasons only when outside the time limit' do
+      late = application(decision_date: 61.days.ago.to_date.iso8601)
+      expect(late).not_to be_valid
+      expect(late.errors[:extension_reasons].first).to include('extend the time')
+
+      late.extension_reasons = 'I was in hospital for most of that period.'
+      expect(late).to be_valid
+
+      expect(application(decision_date: 59.days.ago.to_date.iso8601,
+                         extension_reasons: '')).to be_valid
+    end
   end
 
   describe '#outside_time_limit?' do
@@ -93,10 +106,27 @@ RSpec.describe ExternalReviewApplication do
         'Dear Office of the Australian Information Commissioner,'
       )
       expect(body).to include("Department of Examples's original decision")
+      expect(body).to include('s 26 notice')
       expect(body).to include('1 August 2026')
       expect(body).to include('The section 47E exemption was wrongly applied.')
+      expect(body).to include('is attached to this email')
       expect(body).to include(info_request.url_title)
       expect(body).to end_with("Yours faithfully,\n\n#{info_request.user_name}")
+    end
+
+    it 'asks for an extension of time, with the reasons, when late' do
+      body = application(decision_date: 61.days.ago.to_date.iso8601,
+                         extension_reasons: 'I was in hospital.').letter_body
+      expect(body).to include('s 54T')
+      expect(body).to include('I was in hospital.')
+      expect(application.letter_body).not_to include('s 54T')
+    end
+
+    it 'lists attachments left out of the correspondence copy' do
+      app = application
+      app.omitted_attachments = ['1_2_large-scan.pdf']
+      expect(app.letter_body).to include('too large to include')
+      expect(app.letter_body).to include('1_2_large-scan.pdf')
     end
 
     it 'describes an internal review decision when that is under review' do
@@ -107,13 +137,13 @@ RSpec.describe ExternalReviewApplication do
     it 'describes a deemed refusal when no decision was received' do
       body = application(decision_type: 'no_decision',
                          decision_date: '').letter_body
-      expect(body).to include('deemed refusal')
+      expect(body).to include('deemed access refusal')
+      expect(body).to include('including the request, is attached')
       expect(body).not_to include('I was notified on')
     end
 
     it 'never contains the private contact details' do
-      body = application(oaic_reference: 'MR26/00001',
-                         assistance: 'Auslan interpreter').letter_body
+      body = application(other_information: 'MR26/00001; Auslan interpreter').letter_body
       expect(body).not_to include('0491 570 006')
       expect(body).not_to include('MR26/00001')
       expect(body).not_to include('Auslan interpreter')
@@ -121,12 +151,10 @@ RSpec.describe ExternalReviewApplication do
   end
 
   describe '#private_details' do
-    it 'includes the phone number and any optional answers, stripped' do
-      details = application(oaic_reference: ' MR26/00001 ',
-                            assistance: 'Auslan interpreter').private_details
+    it 'includes the phone number and any other information, stripped' do
+      details = application(other_information: ' MR26/00001 ').private_details
       expect(details).to eq(phone: '0491 570 006',
-                            oaic_reference: 'MR26/00001',
-                            assistance: 'Auslan interpreter')
+                            other_information: 'MR26/00001')
     end
 
     it 'omits blank optional answers' do
