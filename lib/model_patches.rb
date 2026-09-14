@@ -59,6 +59,22 @@ module ExternalReviewOutgoingMessage
   end
 end
 
+# Attaches the correspondence zip (ExternalReviewZip) to an external review
+# application email. The zip travels on external_review_details[:zip], set by
+# ExternalReviewSender, so ordinary followups are untouched. Attachments must
+# be added before mail() runs, hence before super.
+module ExternalReviewOutgoingMailer
+  def followup(info_request, outgoing_message, incoming_message_followup)
+    zip = outgoing_message.try(:external_review_details).try(:[], :zip)
+    if outgoing_message.try(:external_review?) && zip
+      attachments[zip[:filename]] = { content_type: 'application/zip',
+                                      content: zip[:data] }
+    end
+
+    super
+  end
+end
+
 Legislation.class_eval do
   def self.all
     [
@@ -195,4 +211,5 @@ Rails.configuration.to_prepare do
   end
 
   OutgoingMessage.prepend ExternalReviewOutgoingMessage
+  OutgoingMailer.prepend ExternalReviewOutgoingMailer
 end

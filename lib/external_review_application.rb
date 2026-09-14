@@ -29,6 +29,15 @@ class ExternalReviewApplication
   attr_accessor :info_request, :decision_type, :decision_date, :disagreement,
                 :phone, :oaic_reference, :assistance
 
+  # Names of attachments ExternalReviewZip left out of the correspondence copy
+  # to fit the email size limit; set by ExternalReviewSender before the letter
+  # is composed for sending, so the reviewer knows what to find at the URL.
+  attr_writer :omitted_attachments
+
+  def omitted_attachments
+    @omitted_attachments || []
+  end
+
   validates :decision_type,
             inclusion: {
               in: DECISION_TYPES,
@@ -97,7 +106,7 @@ class ExternalReviewApplication
 
       #{disagreement.to_s.strip}
 
-      A full history of my FOI request, including all correspondence and the decision I am seeking review of, is available on the Internet at this address: #{request_url(info_request)}
+      #{correspondence_paragraph}
 
       Yours faithfully,
 
@@ -106,6 +115,21 @@ class ExternalReviewApplication
   end
 
   private
+
+  # 2.14: a copy of the decision (or of the request, for a deemed refusal)
+  # must accompany the application. The zip holds the whole correspondence,
+  # so it covers both; the URL stays for anything left out or arriving later.
+  def correspondence_paragraph
+    text = 'A copy of all correspondence on my FOI request, including the ' \
+           "#{deemed_refusal? ? 'request' : 'decision I am seeking review of'}, " \
+           'is attached to this email. The latest version, including any ' \
+           'later correspondence, is available on the Internet at this ' \
+           "address: #{request_url(info_request)}"
+    return text if omitted_attachments.empty?
+
+    "#{text}\n\nThe following attachments were too large to include in this " \
+      "email and can be downloaded from that address: #{omitted_attachments.join(', ')}."
+  end
 
   def reviewer_name
     reviewer = info_request.public_body.external_reviewer

@@ -135,12 +135,15 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
       expect(mail.subject)
         .to include('Information Commissioner review application')
       expect(mail.subject).to include('Department of Examples')
-      expect(mail.body.to_s)
-        .to include('not published on Right to Know')
-      expect(mail.body.to_s).to include('0491 570 006')
-      expect(mail.body.to_s).to include('MR26/00001')
-      expect(mail.body.to_s).to include('Please use email where possible')
-      expect(mail.body.to_s).to include(info_request.incoming_email)
+      # The correspondence zip makes the mail multipart, so read the text part.
+      text = mail.text_part.body.to_s
+      expect(text).to include('not published on Right to Know')
+      expect(text).to include('0491 570 006')
+      expect(text).to include('MR26/00001')
+      expect(text).to include('Please use email where possible')
+      expect(text).to include(info_request.incoming_email)
+      expect(mail.attachments.map(&:filename))
+        .to eq(["#{info_request.url_title}.zip"])
     end
 
     it 'honours the global request email override like authority mail does' do
@@ -246,6 +249,19 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
       expect { post_create(valid_fields.merge(phone: '')) }
         .not_to(change { ActionMailer::Base.deliveries.size })
       expect(response).to render_template('followups/external_review_new')
+    end
+
+    it 'sends nothing and points at the reviewer\'s form if the ' \
+       'correspondence copy cannot be built' do
+      # See external_review_zip_spec.rb for why this is stubbed.
+      allow_any_instance_of(ExternalReviewZip).to receive(:build).and_raise(IOError)
+
+      expect { post_create }
+        .not_to(change { ActionMailer::Base.deliveries.size })
+      expect(response).to render_template('followups/external_review_new')
+      expect(response.body).to include('could not prepare a copy of your correspondence')
+      expect(response.body).to include('webform.oaic.gov.au')
+      expect(info_request.reload.described_state).not_to eq('external_review')
     end
   end
 end

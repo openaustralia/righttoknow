@@ -36,10 +36,18 @@ class ExternalReviewSender
     @outgoing_message = outgoing_message
   end
 
+  # Raised when the correspondence copy the direction requires (2.14) can't
+  # be built. Nothing is saved: a knowingly incomplete application should not
+  # go out silently, and the applicant can use the reviewer's own form.
+  class ZipFailed < StandardError; end
+
   # Returns true when the application was sent, false when delivery raised one
   # of OutgoingMessage.expected_send_errors (recorded as a send_error event,
-  # with the private details kept so an admin can resend).
+  # with the private details kept so an admin can resend). Raises ZipFailed
+  # if the correspondence zip could not be built.
   def deliver
+    attach_correspondence_zip
+
     # OutgoingMailer.followup() depends on DB id of the
     # outgoing message, save just before sending.
     outgoing_message.save!
@@ -74,6 +82,21 @@ class ExternalReviewSender
 
   def info_request
     outgoing_message.info_request
+  end
+
+  # The applicant's own view of the request (Ability.new(user)), so a
+  # decision they have hidden from the public still reaches the reviewer.
+  # Files left out to fit MAX_BYTES are listed in the letter, which is why
+  # the letter body is composed here rather than earlier.
+  def attach_correspondence_zip
+    zip = ExternalReviewZip.new(info_request, ability: Ability.new(info_request.user))
+    result = zip.build
+    application.omitted_attachments = result.omitted
+    outgoing_message.body = application.letter_body
+    outgoing_message.external_review_details =
+      application.private_details.merge(zip: { filename: zip.filename, data: result.data })
+  rescue StandardError => e
+    raise ZipFailed, "#{e.class}: #{e.message}"
   end
 
   # Keep the private details where admins can find them (e.g. to resend a

@@ -52,9 +52,10 @@ module ExternalReviewFollowups
       flash[:error] = _('You previously submitted that exact external ' \
                         'review application for this request.')
       render 'followups/external_review_new'
-    else
-      send_external_review_application
+    elsif send_external_review_application
       redirect_to request_url(@info_request)
+    else
+      render 'followups/external_review_new'
     end
   end
 
@@ -106,6 +107,8 @@ module ExternalReviewFollowups
                   :phone, :oaic_reference, :assistance).to_h
   end
 
+  # Returns false if nothing was saved (the correspondence copy the reviewer
+  # requires could not be built), so the caller can re-show the form.
   def send_external_review_application
     reviewer = @info_request.public_body.external_reviewer
     sender = ExternalReviewSender.new(@external_review_application,
@@ -121,6 +124,13 @@ module ExternalReviewFollowups
                         'error.',
                         reviewer_name: reviewer[:name])
     end
+    true
+  rescue ExternalReviewSender::ZipFailed => e
+    Rails.logger.error('External review zip failed for request ' \
+                       "#{@info_request.id}: #{e.message}")
+    flash.now[:error] = { partial: 'followups/external_review_zip_failed',
+                          locals: { reviewer: reviewer } }
+    false
   end
 end
 
@@ -135,6 +145,7 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
   # LinkToHelper, which isn't autoloadable while the theme itself is being
   # required during initialization.
   require 'external_review_application'
+  require 'external_review_zip'
   require 'external_review_sender'
   HelpController.class_eval do
     before_action :set_history
