@@ -10,7 +10,7 @@
 # (phone, previous OAIC reference, assistance needs) are "private details":
 # they are appended to the email sent to the reviewer but never form part of
 # the outgoing message body, so they are not published on the request page.
-# See docs/DECISIONS.md ("External review applications are sent by email...").
+# See doc/adr/0005-external-review-applications-are-sent-by-email.md.
 class ExternalReviewApplication
   include ActiveModel::Model
   include Rails.application.routes.url_helpers

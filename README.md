@@ -278,6 +278,10 @@ To contribute an enhancement or a fix to this theme:
 
 The application is deployed using [Capistrano 3](https://capistranorb.com/). Deployment is run from this repository against the [alaveteli](https://github.com/openaustralia/alaveteli) codebase.
 
+Releases to production happen as a staging→production release pull request.
+As part of each release PR, add a section to [`CHANGELOG.md`](CHANGELOG.md)
+covering everything merged to `staging` since the previous release.
+
 ### Prerequisites
 
 Capistrano looks up the EC2 deploy targets dynamically by their `Application` and `Stage` tags
@@ -335,6 +339,59 @@ Rebuild the Xapian search index:
 ```bash
 bundle exec cap staging xapian:destroy_and_rebuild_index
 bundle exec cap production xapian:destroy_and_rebuild_index
+```
+
+### Account housekeeping
+
+One-off jobs that act on people's accounts. Each is **dry unless you pass `DRYRUN=0`**, and each
+prints account ids and dates rather than email addresses, so the output is safe to paste into an
+issue as a record of what ran.
+
+Destroy never-confirmed accounts that have no content and are over two years old
+([#1096](https://github.com/openaustralia/righttoknow/issues/1096)):
+
+```bash
+# List what would go, and check the count against production before acting
+bundle exec cap production accounts:destroy_never_confirmed
+
+# Start small, check Sentry, then run the rest
+bundle exec cap production accounts:destroy_never_confirmed DRYRUN=0 LIMIT=10
+bundle exec cap production accounts:destroy_never_confirmed DRYRUN=0
+```
+
+These accounts never confirmed their email address, so they cannot be warned first and are handled
+separately from the dormant-account notice. What "never-confirmed" and "dormant" mean, and why the
+order matters, is in `AGENTS.md` under "Key domain knowledge" and in
+[ADR-0003](doc/adr/0003-dormant-account-deletion-is-three-ordered-passes.md).
+
+Tell the remaining dormant accounts they will be removed unless they sign in
+([#1095](https://github.com/openaustralia/righttoknow/issues/1095)):
+
+```bash
+# List who would be notified, and the removal date the email would quote
+bundle exec cap production accounts:send_dormant_notices
+
+# Send one tranche, then watch the bounce count before sending the next
+bundle exec cap production accounts:send_dormant_notices DRYRUN=0 LIMIT=20
+bundle exec cap production accounts:send_dormant_notices DRYRUN=0
+```
+
+**Do not send these live until bounce recording works
+([#1094](https://github.com/openaustralia/righttoknow/issues/1094)).** Without it nothing suppresses
+repeat sends to addresses that have permanently failed, and there is no way to judge the send. Right
+to Know's sending reputation is what gets FOI requests delivered to authorities.
+
+Each notice quotes a removal date of the run date plus 60 days, and each account notified is tagged
+`dormant_account_notice:<date>` so a later run never mails the same person twice. **The host's
+`users:destroy_unused` cron must not be enabled before the latest date any tranche was told.** The
+run prints that date so it can be recorded on the issue.
+
+Either job can be run from a shell on the server, with the same environment variables:
+
+```bash
+cd /srv/www/production/current
+lib/themes/righttoknow/script/destroy-never-confirmed-accounts
+lib/themes/righttoknow/script/send-dormant-account-notices
 ```
 
 ### First-time server setup
@@ -548,7 +605,8 @@ When adding authorities for jurisdictions we don't yet cover we need to:
 - Add categories (see above)
 - If the jurisdiction's external reviewer should be applied to through the
   site (like the OAIC for federal authorities), extend
-  `PublicBody#external_reviewer` in `lib/model_patches.rb` - see the
-  2026-09-07 entry in `docs/DECISIONS.md` and issue #875
+  `PublicBody#external_reviewer` in `lib/model_patches.rb` - see
+  [ADR-0005](doc/adr/0005-external-review-applications-are-sent-by-email.md)
+  and issue #875
 
 This project is tested with [BrowserStack](https://email.browserstack.com/c/eJwkyDtywyAQANDTmA4GMN-Cs2RW7K7NyBIRSFGOnyLtw-IXj1FQMTHoYKwNSbyLjcnTM9pcvdOBjKWYELJlHWMmH0UrIbGuDPDMkeHLVPZGa2dtMM44NRvS2g7Jg46L9lMyyu-O1ySYp5EbtN3L1yDaZfIZcwjOL3Ku-Hs8nKYN2kfxoPlGmquqfROfct-3Wka_J415Qv3nURbaH053YNXHS8Elfor9CwAA__9z00N9)
