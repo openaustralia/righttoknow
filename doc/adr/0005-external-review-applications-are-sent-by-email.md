@@ -47,5 +47,17 @@ Decisions worth recording, because each had a real alternative:
   because the direction (2.15) sends deemed refusals directly to the IC (this
   partially addresses #883). Adding another jurisdiction under #875 should
   mostly mean extending `PublicBody#external_reviewer`.
+- **The reviewer's address is in code, and the host's `EXTERNAL_REVIEWERS`
+  setting stays unused.** That key has been a single string since 2016 and
+  nothing in the host reads it, so it can't carry one reviewer per
+  jurisdiction; `PublicBody#external_reviewer` is the table instead (which is
+  what #752 was really asking for). The consequence is that reviewer mail
+  bypasses `PublicBody#request_email`, so `ExternalReviewOutgoingMessage#to`
+  applies `OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS` itself. Without that, a
+  staging site whose only safeguard is the override would send real
+  applications to the OAIC. The alternative, reading `EXTERNAL_REVIEWERS` as
+  the federal address and treating blank as "off", was rejected because it
+  adds a production config step that must not be forgotten and still breaks
+  down at the second jurisdiction.
 
-_Decided 2026-09-07._
+_Decided 2026-09-07; override bullet added 2026-09-14._

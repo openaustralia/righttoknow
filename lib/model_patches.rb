@@ -26,11 +26,18 @@ module ExternalReviewOutgoingMessage
     message_type == 'followup' && what_doing == 'external_review'
   end
 
+  # Applications go to the reviewer rather than the authority, so this
+  # bypasses PublicBody#request_email and must apply the same
+  # OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS guard itself: on a development
+  # or staging site every outgoing message is redirected, and an application
+  # to a real Information Commissioner is the last thing that should escape.
   def to
     reviewer = external_review? && info_request.public_body.external_reviewer
     return super unless reviewer
 
-    MailHandler.address_from_name_and_email(reviewer[:name], reviewer[:email])
+    email = AlaveteliConfiguration.override_all_public_body_request_emails
+    email = reviewer[:email] if email.blank?
+    MailHandler.address_from_name_and_email(reviewer[:name], email)
   end
 
   def subject
@@ -150,6 +157,11 @@ Rails.configuration.to_prepare do
     # application is sent by email (the OAIC's procedure direction says
     # applications *should*, not must, use its online form), with the online
     # form linked as an alternative.
+    #
+    # The reviewer table lives here in code, not in general.yml: the host's
+    # EXTERNAL_REVIEWERS setting is a single string, which can't express one
+    # reviewer per jurisdiction, and nothing in the host reads it anyway. It
+    # is deliberately left unused (see ADR-0005 and issue #752).
     def external_reviewer
       case jurisdiction
       when :federal

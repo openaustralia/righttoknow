@@ -143,6 +143,21 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
       expect(mail.body.to_s).to include(info_request.incoming_email)
     end
 
+    it 'honours the global request email override like authority mail does' do
+      # Configuration is read from general.yml, which the spec can't edit, so
+      # stub the one reader the way the host's public_body_spec does.
+      allow(AlaveteliConfiguration)
+        .to receive(:override_all_public_body_request_emails)
+        .and_return('tester@example.com')
+
+      post_create
+
+      mail = ActionMailer::Base.deliveries.last
+      expect(mail.to).to eq(['tester@example.com'])
+      expect(mail[:to].to_s)
+        .to include('Office of the Australian Information Commissioner')
+    end
+
     it 'keeps the private details out of the public message' do
       post_create
 
