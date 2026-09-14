@@ -142,13 +142,20 @@ It creates:
   name, tags, URL slug — no request PII). Every seeded authority is given a
   **dummy `@example.com` request email** so the environment can never contact a
   real authority.
-- **Dummy requests** per authority spread across a range of statuses, with a
-  subset of authorities carrying 3+ `requester_only` (prominence) requests.
+- **Dummy requests** per authority spread across a range of statuses and the
+  past 18 months, with fictional authority responses (PDF decision letters and
+  released documents where the state calls for them), and a subset of
+  authorities carrying 3+ `requester_only` (prominence) requests.
+- An **external review showcase**: fixed requests at each stage of the
+  external review process, for demonstrating the feature. See "Trying
+  external review locally" below.
 - A **browse-by-category taxonomy** synthesised from the jurisdiction tags on
   the imported authorities. This is _not_ a copy of production's own category
   structure — production does not publish its category definitions.
 
-The script refuses to run in `production`.
+All correspondence is fictional, names no officers, and says what it is. The
+script refuses to run in `production`, and turns mail delivery off for the run,
+so nothing it does reaches the mail catcher.
 
 Run it against the Alaveteli **app** (not this theme repo) with `rails runner`.
 In the development environment above it's one command:
@@ -182,10 +189,65 @@ Optional environment variables:
 | `SEED_CSV_PATH`       | Read authorities from a local CSV instead of fetching (handy offline; expects the `all-authorities.csv` format). |
 | `SEED_BODIES_PER_TAG` | Number of authorities per jurisdiction tag (default `5`).                                                        |
 | `SEED_REBUILD_INDEX`  | Set to `1` to update the Xapian index at the end so seeded data shows up in search and request listings.         |
+| `SEED_REPLACE`        | Set to `1` to destroy previously seeded requests and recreate them. Authorities, users and categories are kept.  |
+| `SEED_SHOWCASE_BODY`  | URL name of the seeded federal authority to put the showcase on (e.g. `abc`). Default: the first one selected.   |
 
 The script is idempotent: re-running it reuses existing authorities and
 categories and won't stack additional seeded requests onto authorities that
-already have them.
+already have them. It is also deterministic (the random number generator is
+seeded), so `SEED_REPLACE=1` or a `make reset` followed by `make seed`
+reproduces the same site, showcase included.
+
+### Trying external review locally
+
+The showcase gives you a request at each stage of the federal external review
+process, all owned by `seed_user_1@example.com` (password `seedpassword123`).
+The seed prints their URLs; they are, in order:
+
+1. **Refused** (`/request/briefing_notes_on_the_review_of`): a notice of
+   decision PDF, classified refused 50 days ago, so inside the 60 day window
+   to apply. The one to apply from.
+2. **Deemed refusal** (`/request/register_of_consultancies_engage`): sent 75
+   days ago, never answered. The long-overdue banner offers external review in
+   place of internal review, since a deemed refusal goes straight to the
+   Information Commissioner.
+3. **Under review** (`/request/internal_audit_reports_on_it_sys`): applied
+   through the site, acknowledged by the reviewer with a reference number,
+   re-classified by the owner as still awaiting external review.
+4. **Review finished** (`/request/minutes_of_the_executive_board_j`): the
+   reviewer's decision PDF set the refusal aside, the authority released the
+   documents, and the request is classified successful.
+5. **Control** (`/request/copies_of_the_current_fleet_vehi`): a refused NSW
+   request, with no external review offer anywhere.
+
+To walk the process end to end, sign in as `seed_user_1` and, on request 1:
+
+- Choose **Apply for external review** from the Actions menu (or follow the
+  banner link on request 2). Fill in the form, preview, and send.
+- Open the mail catcher (`http://localhost:1080` with the Docker setup). The
+  application is addressed to the Office of the Australian Information
+  Commissioner, but at `OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS` if that is set
+  in `general.yml`, exactly as authority mail is. The private appendix (phone
+  number, assistance needs) is at the bottom of the email and nowhere on the
+  request page.
+- Play the reviewer: pipe an email from `FOIDR@oaic.gov.au` to the request's
+  own address (shown at the bottom of the application email) through
+  `RequestMailer.receive` in a Rails console, quoting the phone number. It
+  appears on the request page as correspondence, with the number redacted.
+- Classify the request again. The classification form now has an extra
+  option, "I'm still waiting for the external review to finish", and the usual
+  finished states for when the decision arrives.
+- Sign out and view the same request: the banner reads "awaiting external
+  review by the Office of the Australian Information Commissioner", the
+  application letter is public, and the phone number is nowhere on the page.
+  The Actions menu still lists the application (as it does internal review),
+  and asks a visitor to sign in as the owner.
+
+One quirk of the development environment to know before demonstrating: with
+`OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS` set, the host compares a response's
+sender domain against the override rather than the authority's own address,
+so seeded authority responses show no sender name in their header. Reviewer
+responses, and everything on staging or production, are unaffected.
 
 ## Pro subscriptions
 

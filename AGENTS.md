@@ -87,8 +87,18 @@ reloading in development, per the comment in each file):
   calendar day counting, and which FOI legislation (`foi`/`eir`/`gipa`/`rti`)
   applies. See the Authorities/Jurisdictions tables in `README.md` for the full
   tag scheme — any change to jurisdiction logic should stay consistent with
-  those tables.
-- **`controller_patches.rb`** — patches `AlaveteliPro::PlansController` (adds
+  those tables. Also adds `PublicBody#external_reviewer` (the per-jurisdiction
+  external reviewer table, federal only so far) and prepends
+  `ExternalReviewOutgoingMessage` onto `OutgoingMessage`, which routes an
+  `external_review` followup to the reviewer (honouring
+  `OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS`, since it bypasses
+  `PublicBody#request_email`) and moves the request into `external_review`
+  once sent.
+- **`controller_patches.rb`** — prepends `ExternalReviewFollowups` onto
+  `FollowupsController`, the `?external_review=1` application flow (structured
+  form via `lib/external_review_application.rb`, delivery via
+  `lib/external_review_sender.rb`, which `script/seed_test_data.rb` also
+  uses). Also patches `AlaveteliPro::PlansController` (adds
   the `coupon_preview` JSON endpoint, rate-limited per user, that live-previews
   a Stripe coupon's discount before checkout) and
   `AlaveteliPro::SubscriptionsController` (enforces a coupon's `interval`
@@ -99,7 +109,10 @@ reloading in development, per the comment in each file):
   actually honour, and vice versa (`spec/coupon_preview_parity_spec.rb` guards
   this).
 - **`helper_patches.rb`** — mixes `AlaveteliPro::AlternativePriceTextHelper`
-  (`lib/helpers/`) into `ActionView::Base`.
+  (`lib/helpers/`) into `ActionView::Base`, and prepends
+  `ExternalReviewInfoRequestHelper` onto `InfoRequestHelper` (the
+  `external_review` status banner, and the long-overdue banner that offers
+  external review instead of internal review for federal requests).
 - **`patch_mailer_paths.rb`** — prepends theme mailer views onto
   `ActionMailer::Base`.
 
@@ -107,8 +120,11 @@ reloading in development, per the comment in each file):
 `lib/alavetelitheme.rb` directly:
 - `customstates.rb` is Alaveteli's documented extension point
   (`InfoRequestCustomStates` / `RequestControllerCustomStates`) for adding
-  custom request states — currently a no-op template (falls back to core
-  behaviour) plus an unused `transferred` example state.
+  custom request states. It registers `external_review` (see "External
+  review" under "Key domain knowledge") and keeps the `transferred` example
+  state the file shipped with, because it has been a valid state on production
+  for years, though nothing offers it. The host picks the file up itself, via
+  `$LOAD_PATH`, so only the first theme with a `customstates.rb` wins.
 - `help_page_history.rb` is required at the top of `controller_patches.rb`
   (a plain `require 'help_page_history'` on line 3, above and outside the
   `to_prepare` block). It builds the "view history of this page on GitHub"
@@ -178,6 +194,21 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   a coupon `interval` metadata key, enforced identically in the checkout path
   and the live price-preview endpoint (both in `controller_patches.rb`). See
   "Pro subscriptions" in `README.md`.
+- **External review**: review of an FOI decision by a body other than the
+  authority. Each jurisdiction has its own **external reviewer**
+  (`PublicBody#external_reviewer`, federal only so far: the Office of the
+  Australian Information Commissioner). The federal external review is an
+  **IC review**. A **deemed refusal** is an authority failing to decide within
+  the statutory period; federally it goes straight to IC review, which is why
+  the long-overdue banner offers external review instead of internal review
+  for federal requests. An **external review application** is the structured
+  form (`ExternalReviewApplication`) the site composes into a letter and emails
+  to the reviewer from the request's own address; the **private appendix** is
+  the contact and assistance detail sent with it but never published. The
+  request state `external_review` ("awaiting external review") is entered only
+  by the site sending an application, never self-reported. Prefer these terms
+  to "appeal", "escalation" or "OAIC complaint" (a complaint under s 70 is a
+  different process). See `doc/adr/0005-external-review-applications-are-sent-by-email.md`.
 - **Account lifecycle**: an **unused account** is the host's `User.unused`
   scope (no content, no admin/pro role, no retained `user_sign_ins` row); it
   says nothing about whether the address was confirmed or the account banned. A
