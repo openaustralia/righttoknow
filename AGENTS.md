@@ -206,9 +206,16 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   to the reviewer from the request's own address; the **private appendix** is
   the contact and assistance detail sent with it but never published. The
   request state `external_review` ("awaiting external review") is entered only
-  by the site sending an application, never self-reported. Prefer these terms
-  to "appeal", "escalation" or "OAIC complaint" (a complaint under s 70 is a
-  different process). See `doc/adr/0005-external-review-applications-are-sent-by-email.md`.
+  by the site sending an application, never self-reported. The **s 26 notice**
+  is the authority's written notice of decision (the direction's own term for
+  it), and the **correspondence zip** is the copy of the request sent with an
+  application, the same content as "Download a zip file of all
+  correspondence". The requirements come from OAIC's *Direction as to certain
+  procedures to be followed by applicants in Information Commissioner reviews*
+  (26 June 2024); `ExternalReviewApplication` maps its clauses to fields.
+  Prefer these terms to "appeal", "escalation" or "OAIC complaint" (a
+  complaint under s 70 is a different process). See
+  `doc/adr/0005-external-review-applications-are-sent-by-email.md`.
 - **Account lifecycle**: an **unused account** is the host's `User.unused`
   scope (no content, no admin/pro role, no retained `user_sign_ins` row); it
   says nothing about whether the address was confirmed or the account banned. A

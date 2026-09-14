@@ -60,4 +60,28 @@ Decisions worth recording, because each had a real alternative:
   adds a production config step that must not be forgotten and still breaks
   down at the second jurisdiction.
 
-_Decided 2026-09-07; override bullet added 2026-09-14._
+- **The correspondence travels with the application as a zip, built for the
+  applicant's own view.** The direction (2.7, 2.14) says a copy of the s 26
+  notice, or of the request for a deemed refusal, *must* be included and an
+  application without it may be treated as invalid; a link to the request
+  page is not a copy. `ExternalReviewZip` builds the same content as
+  "Download a zip file of all correspondence" (text transcript plus masked
+  attachments) using `Ability.new(user)`, so a decision the applicant has
+  hidden from the public still reaches the reviewer; the form says so. It is
+  built from the models rather than by calling the host's controller code,
+  which is bound to a request by `can?` and `render_to_string`, so the seed
+  script gets the same zip. Images are never included (signature logos far
+  outnumber relevant images, and code can't tell them apart); above 15 MB
+  other documents are dropped before PDFs, Word documents and zips, and the
+  letter lists what was left out. If the zip can't be built the application
+  is not sent at all and the applicant is pointed at OAIC's own form, because
+  a silently incomplete application is worse than a visible failure.
+- **The form asks only what the direction needs.** Checked clause by clause
+  against the direction of 26 June 2024 (the mapping is a comment at the top
+  of `ExternalReviewApplication`): five inputs, with a sixth (reasons for an
+  extension of time under s 54T, 2.15(b)) appearing only when the decision
+  date is over 60 days old. Name, email, the copy of the decision and the
+  2.16 particulars are derived or hinted, not asked for separately.
+
+_Decided 2026-09-07; override bullet added 2026-09-14; direction compliance
+bullets added 2026-09-14._

@@ -223,13 +223,16 @@ The seed prints their URLs; they are, in order:
 To walk the process end to end, sign in as `seed_user_1` and, on request 1:
 
 - Choose **Apply for external review** from the Actions menu (or follow the
-  banner link on request 2). Fill in the form, preview, and send.
+  banner link on request 2). Fill in the form, preview, and send. Enter a
+  decision date more than 60 days ago to see the extra question about
+  extending the time to apply, which on-time applicants never see.
 - Open the mail catcher (`http://localhost:1080` with the Docker setup). The
   application is addressed to the Office of the Australian Information
   Commissioner, but at `OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS` if that is set
   in `general.yml`, exactly as authority mail is. The private appendix (phone
-  number, assistance needs) is at the bottom of the email and nowhere on the
-  request page.
+  number, other information) is at the bottom of the email and nowhere on the
+  request page. Attached is a zip of the request's correspondence (transcript
+  plus the decision PDF), which the OAIC's procedure direction requires.
 - Play the reviewer: pipe an email from `FOIDR@oaic.gov.au` to the request's
   own address (shown at the bottom of the application email) through
   `RequestMailer.receive` in a Rails console, quoting the phone number. It
