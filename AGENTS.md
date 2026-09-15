@@ -68,7 +68,7 @@ The entry point the host app requires. It:
   the same name at the same relative path.
 - Prepends this theme's `app/assets/{stylesheets,images,javascripts,fonts}` to
   the asset pipeline paths, so theme assets shadow host assets of the same name.
-- Requires the four patch files below so their monkey-patches load at boot.
+- Requires the five patch files below so their monkey-patches load at boot.
 - Registers `lib/config/custom-routes.rb` with the host's
   `$alaveteli_route_extensions` so its routes get drawn.
 - Wires FastGettext to check `locale-theme/en` for translations before falling
@@ -102,6 +102,11 @@ reloading in development, per the comment in each file):
   (`lib/helpers/`) into `ActionView::Base`.
 - **`patch_mailer_paths.rb`** — prepends theme mailer views onto
   `ActionMailer::Base`.
+- **`job_patches.rb`**: re-declares `FoiAttachmentMaskJob`'s `unique` options
+  to cap the runtime lock at 30 minutes and route runtime conflicts through
+  `lib/mask_job_runtime_conflict.rb`, which clears stranded locks. `unique`
+  replaces the options wholesale, so the host's `on_conflict: :log` is repeated
+  there. See "Attachment masking" below and ADR-0005.
 
 `lib/customstates.rb` and `lib/help_page_history.rb` are not required by
 `lib/alavetelitheme.rb` directly:
@@ -193,6 +198,15 @@ only). Run via `rails runner` from the **host app**, not this repo — see
   See `doc/adr/0003-dormant-account-deletion-is-three-ordered-passes.md`,
   `doc/adr/0004-bounces-arrive-at-the-blackhole-address.md`, and "Account
   housekeeping" in `README.md`.
+- **Attachment masking**: the **masking job** is the host's
+  `FoiAttachmentMaskJob`, which applies censor rules to one attachment and sets
+  `masked_at`; the wait page re-enqueues it until that is set. Its uniqueness
+  strategy holds two Redis keys: the **enqueue lock** (`...:<digest>`), taken
+  when the job is queued and released as it starts, and the **runtime lock**
+  (`...:<digest>:runtime`), the only one held while the work runs. A
+  **stranded lock** is a runtime lock with no in-flight job behind it, left by
+  a hard death that skipped the release; `MaskJobRuntimeConflict` detects and
+  clears those. See `doc/adr/0005-sidekiq-runs-without-a-systemd-watchdog.md`.
 
 ## Working with AI tools
 
