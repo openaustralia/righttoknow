@@ -114,9 +114,29 @@ Rails.configuration.to_prepare do
   end
 
   InfoRequest.class_eval do
-    def date_response_required_by
+    # Make the due date stored by the host's set_due_dates jurisdiction-aware.
+    # The host's version uses the site-wide reply_late_after_days config; ours
+    # comes from the public body's jurisdiction tag (see PublicBody patches
+    # above). The host calls this whenever an event resets due dates, and
+    # stores the result in the date_response_required_by column.
+    def calculate_date_response_required_by
       Holiday.due_date_from(date_initial_request_last_sent_at, public_body.reply_late_after_days,
                             public_body.working_or_calendar_days)
+    end
+
+    # Prefer the stored column, computing only as a fallback, exactly like the
+    # host's own reader. From 2015 to 2026 this theme overrode the reader to
+    # always recompute (the column didn't exist when the override was written),
+    # which made InfoRequest#calculate_status - and any page rendering it, like
+    # /list - slow enough that the status had to be hidden. Stored values are
+    # kept jurisdiction-correct by the calculate_date_response_required_by
+    # override; script/populate_due_dates.rb backfills requests stored before
+    # that override existed (re-run it if a body changes jurisdiction tag).
+    def date_response_required_by
+      date = read_attribute(:date_response_required_by)
+      return date if date
+
+      calculate_date_response_required_by
     end
   end
 end

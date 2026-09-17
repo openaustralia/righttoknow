@@ -278,6 +278,10 @@ To contribute an enhancement or a fix to this theme:
 
 The application is deployed using [Capistrano 3](https://capistranorb.com/). Deployment is run from this repository against the [alaveteli](https://github.com/openaustralia/alaveteli) codebase.
 
+Releases to production happen as a staging→production release pull request.
+As part of each release PR, add a section to [`CHANGELOG.md`](CHANGELOG.md)
+covering everything merged to `staging` since the previous release.
+
 ### Prerequisites
 
 Capistrano looks up the EC2 deploy targets dynamically by their `Application` and `Stage` tags
@@ -357,14 +361,37 @@ bundle exec cap production accounts:destroy_never_confirmed DRYRUN=0
 
 These accounts never confirmed their email address, so they cannot be warned first and are handled
 separately from the dormant-account notice. What "never-confirmed" and "dormant" mean, and why the
-order matters, is in `AGENTS.md` under "Key domain knowledge" and in `docs/DECISIONS.md`
-(2026-09-03).
+order matters, is in `AGENTS.md` under "Key domain knowledge" and in
+[ADR-0003](doc/adr/0003-dormant-account-deletion-is-three-ordered-passes.md).
 
-The same job can be run from a shell on the server, with the same environment variables:
+Tell the remaining dormant accounts they will be removed unless they sign in
+([#1095](https://github.com/openaustralia/righttoknow/issues/1095)):
+
+```bash
+# List who would be notified, and the removal date the email would quote
+bundle exec cap production accounts:send_dormant_notices
+
+# Send one tranche, then watch the bounce count before sending the next
+bundle exec cap production accounts:send_dormant_notices DRYRUN=0 LIMIT=20
+bundle exec cap production accounts:send_dormant_notices DRYRUN=0
+```
+
+**Do not send these live until bounce recording works
+([#1094](https://github.com/openaustralia/righttoknow/issues/1094)).** Without it nothing suppresses
+repeat sends to addresses that have permanently failed, and there is no way to judge the send. Right
+to Know's sending reputation is what gets FOI requests delivered to authorities.
+
+Each notice quotes a removal date of the run date plus 60 days, and each account notified is tagged
+`dormant_account_notice:<date>` so a later run never mails the same person twice. **The host's
+`users:destroy_unused` cron must not be enabled before the latest date any tranche was told.** The
+run prints that date so it can be recorded on the issue.
+
+Either job can be run from a shell on the server, with the same environment variables:
 
 ```bash
 cd /srv/www/production/current
 lib/themes/righttoknow/script/destroy-never-confirmed-accounts
+lib/themes/righttoknow/script/send-dormant-account-notices
 ```
 
 ### First-time server setup
