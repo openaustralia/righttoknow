@@ -7,6 +7,27 @@ staging→production release pull request). Each bullet is one merged pull
 request, credited to its author. Update this file as part of each release PR,
 covering everything merged to `staging` since the previous release.
 
+## 2026-09-16 (release #1117)
+
+* Add developer changelog and convert decision records to ADRs (Ben
+  Fairless, #1113)
+* Keep the personal information gate answered after a failed submission (Ben
+  Fairless, #1087)
+* Notify dormant accounts before they are removed (Ben Fairless, #1098)
+* Restore request status on list pages (Ben Fairless, #1114)
+
+## 2026-09-10 (release #1112)
+
+* Always run migrations in the dev container setup (Ben Fairless, #1088)
+* Pin EC2 discovery and the SSM tunnel to the same AWS profile (Ben
+  Fairless, #1089)
+* Pin sentry gems to the 6.x line (Ben Fairless, #1091)
+* Add a pass to destroy never-confirmed empty accounts (Ben Fairless, #1097)
+* Survive dev code reloads in whatismyip controller (Ben Fairless, #1101)
+* Use www-staging hostname consistently in whatismyip README section (Ian
+  Heggie, #1105)
+* Use short timeout with whatismyip Cloudflare fetch (Ian Heggie, #1106)
+
 ## 2026-09-03 (release #1084) — supports Alaveteli 0.46.7.0
 
 * Theme updates for Alaveteli 0.46.7.0 (Ben Fairless, #1033)
