@@ -103,6 +103,19 @@ RSpec.describe MaskJobRuntimeConflict do
     end
   end
 
+  context 'when the lock predates the 30 minute TTL cap' do
+    # A hard death under the old 1-day gem default leaves a lock with more
+    # time remaining than the current runtime_lock_ttl, which would read as
+    # a negative (so "young") age if that subtraction were trusted.
+    before { plant_lock(23.hours.in_milliseconds) }
+
+    it 'still deletes it and reports it to Sentry' do
+      call
+      expect(lock_manager.locked?(lock_key)).to eq(false)
+      expect(sentry).to have_received(:capture_message)
+    end
+  end
+
   context 'when the lock is old and nothing is running behind it' do
     before { plant_lock(1.minute.in_milliseconds) }
 

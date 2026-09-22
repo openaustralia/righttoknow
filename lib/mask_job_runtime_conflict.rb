@@ -23,8 +23,10 @@
 # a moment ago may not be listed yet. Any lock younger than HEARTBEAT_GRACE_MS
 # is therefore treated as live without looking. The heartbeat also leaves a
 # dead process's work list in Redis for up to 60 s, which only ever errs on
-# the side of "live", so the worst misclassification is one duplicate mask
-# run, never a deleted live lock.
+# the side of "live". The check-then-delete against Redis is not atomic, so
+# a job that reacquires this exact key between the checks and the delete can
+# in principle have its lock removed too; the worst misclassification in
+# either case is one duplicate mask run, never lost data.
 #
 # See doc/adr/0005-sidekiq-runs-without-a-systemd-watchdog.md.
 #
@@ -42,10 +44,9 @@ class MaskJobRuntimeConflict
   def call
     remaining_ttl_ms = lock_manager.get_remaining_ttl_for_resource(lock_key)
     return if remaining_ttl_ms.nil?
-
-    lock_age_ms = job.lock_strategy.runtime_lock_ttl - remaining_ttl_ms
-    return if lock_age_ms < HEARTBEAT_GRACE_MS
+    return if too_young?(remaining_ttl_ms)
     return if in_flight?
+    return unless still_stranded?(remaining_ttl_ms)
 
     lock_manager.delete_lock(lock_key)
     report_stranded(remaining_ttl_ms)
@@ -71,6 +72,28 @@ class MaskJobRuntimeConflict
 
   def lock_manager
     ActiveJob::Uniqueness.lock_manager
+  end
+
+  # A lock created before this theme capped the runtime TTL at 30 minutes
+  # (a hard death under the old 1-day gem default) can still have more time
+  # remaining than the current cap allows for. `runtime_lock_ttl -
+  # remaining_ttl_ms` would go negative for one of those and read as
+  # younger than the grace period, so a lock with more time left than the
+  # current cap is treated as old rather than freshly created.
+  def too_young?(remaining_ttl_ms)
+    configured_ttl_ms = job.lock_strategy.runtime_lock_ttl
+    return false if remaining_ttl_ms > configured_ttl_ms
+
+    (configured_ttl_ms - remaining_ttl_ms) < HEARTBEAT_GRACE_MS
+  end
+
+  # Narrows, but does not close, the gap between reading this lock and
+  # deleting it: a job that legitimately reacquires the same key resets its
+  # TTL to the full runtime_lock_ttl, so a remaining TTL that has grown
+  # since the first reading means someone new is holding it now.
+  def still_stranded?(first_reading_ms)
+    latest_ms = lock_manager.get_remaining_ttl_for_resource(lock_key)
+    latest_ms && latest_ms <= first_reading_ms
   end
 
   def in_flight?
