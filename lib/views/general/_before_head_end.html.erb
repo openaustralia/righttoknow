@@ -4,8 +4,12 @@
 <link rel="icon" type="image/png" sizes="16x16" href="<%= image_path('favicon/favicon-16x16.png')%>">
 <link rel="manifest" href="<%= image_path('favicon/manifest.json') %>">
 <% if Rails.env.production? && AlaveteliConfiguration.domain == 'www.righttoknow.org.au' %>
-<script defer data-domain="righttoknow.org.au" src="https://plausible.io/js/script.outbound-links.js"></script>
-<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-YLNmDTZ9oPyPrNbNS9rD3.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
 <% end %>
 <%# Sentry browser error monitoring (issue #1004). The loader URL is set in
     general.yml on the servers, so this renders nothing in development. %>
