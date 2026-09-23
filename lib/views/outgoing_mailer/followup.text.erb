@@ -1,0 +1,21 @@
+<%= raw @outgoing_message.body.strip %>
+<% details = @outgoing_message.try(:external_review_details) %>
+<% if @outgoing_message.try(:external_review?) && details.present? %>
+
+-------------------------------------------------------------------
+<%= _('Applicant contact details (not published on Right to Know):') %>
+
+<%= _('Name:') %> <%= @info_request.user_name %>
+<%= _('Email (preferred contact method):') %> <%= @info_request.incoming_email %>
+<%= _('Contact telephone number:') %> <%= details[:phone] %>
+<% if details[:other_information].present? %><%= _('Other information (previous OAIC reference, interpreter or other assistance):') %> <%= details[:other_information] %>
+<% end %>-------------------------------------------------------------------
+<% end %>
+
+<%= raw @outgoing_message.quoted_part_to_append_to_email.strip %>
+
+-------------------------------------------------------------------
+<%= _('Please use this email address for all replies to this request:')%>
+<%= @info_request.incoming_email %>
+
+<%= render :partial => 'followup_footer' %>

@@ -8,6 +8,73 @@
 #
 require_dependency 'legislation'
 
+# Behaviour for outgoing messages whose what_doing is 'external_review': an
+# application to the jurisdiction's external reviewer (see
+# PublicBody#external_reviewer), sent from the request's address so the
+# reviewer's correspondence threads back into the public request page.
+# Prepended (rather than alias-chained) so reloading in development doesn't
+# stack the patch.
+module ExternalReviewOutgoingMessage
+  # Contact and assistance details sent to the reviewer in the email but
+  # never part of the public body text. Set by FollowupsController (see
+  # controller_patches.rb) and read by the outgoing_mailer/followup view
+  # override. Not persisted: the same details are recorded in the
+  # followup_sent event params for admins.
+  attr_accessor :external_review_details
+
+  def external_review?
+    message_type == 'followup' && what_doing == 'external_review'
+  end
+
+  # Applications go to the reviewer rather than the authority, so this
+  # bypasses PublicBody#request_email and must apply the same
+  # OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS guard itself: on a development
+  # or staging site every outgoing message is redirected, and an application
+  # to a real Information Commissioner is the last thing that should escape.
+  def to
+    reviewer = external_review? && info_request.public_body.external_reviewer
+    return super unless reviewer
+
+    email = AlaveteliConfiguration.override_all_public_body_request_emails
+    email = reviewer[:email] if email.blank?
+    MailHandler.address_from_name_and_email(reviewer[:name], email)
+  end
+
+  def subject
+    return super unless external_review?
+
+    _('Information Commissioner review application: {{request_title}} ' \
+      '({{public_body_name}})',
+      request_title: info_request.title,
+      public_body_name: info_request.public_body.name)
+  end
+
+  private
+
+  def set_info_request_described_state
+    super
+    return unless status == 'sent' && external_review?
+
+    info_request.set_described_state('external_review')
+  end
+end
+
+# Attaches the correspondence zip (ExternalReviewZip) to an external review
+# application email. The zip travels on external_review_details[:zip], set by
+# ExternalReviewSender, so ordinary followups are untouched. Attachments must
+# be added before mail() runs, hence before super.
+module ExternalReviewOutgoingMailer
+  def followup(info_request, outgoing_message, incoming_message_followup)
+    zip = outgoing_message.try(:external_review_details).try(:[], :zip)
+    if outgoing_message.try(:external_review?) && zip
+      attachments[zip[:filename]] = { content_type: 'application/zip',
+                                      content: zip[:data] }
+    end
+
+    super
+  end
+end
+
 Legislation.class_eval do
   def self.all
     [
@@ -98,6 +165,29 @@ Rails.configuration.to_prepare do
     def info_requests_hidden_count
       info_requests.where('prominence != ?', 'normal').count
     end
+
+    # The body that conducts external (merits) review of FOI decisions in
+    # this authority's jurisdiction, or nil where we don't (yet) support
+    # applying for external review through the site. Only federal is wired
+    # up so far; other jurisdictions are tracked in issue #875. The
+    # application is sent by email (the OAIC's procedure direction says
+    # applications *should*, not must, use its online form), with the online
+    # form linked as an alternative.
+    #
+    # The reviewer table lives here in code, not in general.yml: the host's
+    # EXTERNAL_REVIEWERS setting is a single string, which can't express one
+    # reviewer per jurisdiction, and nothing in the host reads it anyway. It
+    # is deliberately left unused (see ADR-0005 and issue #752).
+    def external_reviewer
+      case jurisdiction
+      when :federal
+        {
+          name: 'Office of the Australian Information Commissioner',
+          email: 'FOIDR@oaic.gov.au',
+          form_url: 'https://webform.oaic.gov.au/prod?entitytype=ICReview&layoutcode=ICReviewWF'
+        }
+      end
+    end
   end
 
   PublicBody.class_eval do
@@ -139,4 +229,7 @@ Rails.configuration.to_prepare do
       calculate_date_response_required_by
     end
   end
+
+  OutgoingMessage.prepend ExternalReviewOutgoingMessage
+  OutgoingMailer.prepend ExternalReviewOutgoingMailer
 end
