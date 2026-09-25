@@ -145,6 +145,12 @@ namespace :accounts do
   task :destroy_never_confirmed do
     run_account_job('DormantAccounts.destroy_never_confirmed')
   end
+
+  desc 'Email dormant accounts a removal notice (#1095). DRYRUN=0 to send, ' \
+       'LIMIT=n per tranche (default 200). Needs bounce recording (#1094)'
+  task :send_dormant_notices do
+    run_account_job('DormantAccountMailer.send_notices')
+  end
 end
 
 namespace :deploy do

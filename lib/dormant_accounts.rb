@@ -6,8 +6,8 @@
 # destroy (openaustralia/righttoknow#1031, #1095, #1096).
 #
 # See "Account housekeeping" in README.md for how to run this, and
-# docs/DECISIONS.md (2026-09-03) for why never-confirmed accounts are
-# handled separately and without notice.
+# doc/adr/0003-dormant-account-deletion-is-three-ordered-passes.md for why
+# never-confirmed accounts are handled separately and without notice.
 #
 module DormantAccounts
   # Exactly the cohort of the host's `users:destroy_unused`
