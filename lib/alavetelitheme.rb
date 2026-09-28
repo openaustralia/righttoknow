@@ -27,11 +27,16 @@ end
   $LOAD_PATH.insert(0, path)
 end
 
+# Stranded-lock detection for FoiAttachmentMaskJob (#1115); job_patches.rb
+# below wires it in, so it must be loaded first
+require File.expand_path('mask_job_runtime_conflict.rb', __dir__)
+
 # Monkey patch app code
 ['controller_patches.rb',
  'model_patches.rb',
  'helper_patches.rb',
- 'patch_mailer_paths.rb'].each do |patch|
+ 'patch_mailer_paths.rb',
+ 'job_patches.rb'].each do |patch|
   require File.expand_path "../#{patch}", __FILE__
 end
 
