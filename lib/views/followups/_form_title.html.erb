@@ -1,0 +1,33 @@
+<%# Theme override of the host's followups/_form_title.html.erb. The only
+    change: a pointer to the external review application flow for
+    jurisdictions with a wired-up external reviewer, mirroring how the
+    internal review option is surfaced. Keep the rest in sync with core. %>
+<% if @refusal_advice.suggested_actions %>
+  <br />
+  <%= link_to _('Go back to refusal advice questions'),
+              help_unhappy_path(url_title: @info_request.url_title) %>
+<% end %>
+
+<% if @internal_review %>
+  <h1><%= _('Request an internal review from {{person_or_body}}',
+            :person_or_body => name_for_followup) %></h1>
+<% elsif incoming_message.nil? || !incoming_message.valid_to_reply_to? %>
+  <h2><%= _('Send a public follow up message to {{person_or_body}}',
+            :person_or_body => name_for_followup) %>
+  </h2>
+<% else %>
+  <h2><%= _('Send a public reply to {{person_or_body}}',
+          :person_or_body => name_for_followup) %>
+  </h2>
+<% end %>
+
+<% if !@internal_review && @info_request.public_body.external_reviewer %>
+  <p>
+    <%= _('If you are unhappy with a decision, or never received one, you ' \
+          'can also <a href="{{url}}">apply for external review</a> by the ' \
+          '{{reviewer_name}}.',
+          url: new_request_followup_path(@info_request.url_title,
+                                         external_review: 1),
+          reviewer_name: h(@info_request.public_body.external_reviewer[:name])) %>
+  </p>
+<% end %>

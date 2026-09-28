@@ -5,6 +5,135 @@ require 'models/alaveteli_pro/promotion_code'
 require 'models/alaveteli_pro/discount_code_resolution'
 require 'promotion_code_subscriptions'
 
+# The external review application flow, entered from the ordinary followup
+# URL with ?external_review=1 (mirroring core's ?internal_review=1). It reuses
+# the followup machinery (preview, delivery, event logging) but:
+#
+# - the form is structured (ExternalReviewApplication) and the letter is
+#   composed from it, so there is no editable message body;
+# - the message goes to the jurisdiction's external reviewer
+#   (PublicBody#external_reviewer), not the authority - see
+#   ExternalReviewOutgoingMessage in model_patches.rb;
+# - contact/assistance details are emailed but never published: they ride on
+#   the outgoing message as a non-persisted attribute for the mailer view,
+#   are recorded in the followup_sent event params for admins, and the phone
+#   number gets a request-scoped censor rule as a safety net in case the
+#   reviewer quotes it back in correspondence. The send and those records are
+#   ExternalReviewSender's job, shared with script/seed_test_data.rb.
+#
+# Prepended so overridden actions can fall through to core with `super` for
+# ordinary followups.
+module ExternalReviewFollowups
+  def new
+    return super unless @external_review
+
+    render 'followups/external_review_new'
+  end
+
+  def preview
+    return super unless @external_review
+
+    @outgoing_message.info_request = @info_request
+    if @external_review_application.valid? && @outgoing_message.valid?
+      render 'followups/external_review_preview'
+    else
+      render 'followups/external_review_new'
+    end
+  end
+
+  def create
+    return super unless @external_review
+
+    @outgoing_message.info_request = @info_request
+    if !(@external_review_application.valid? && @outgoing_message.valid?)
+      render 'followups/external_review_new'
+    elsif @info_request.find_existing_outgoing_message(@outgoing_message.body)
+      flash.clear
+      flash[:error] = _('You previously submitted that exact external ' \
+                        'review application for this request.')
+      render 'followups/external_review_new'
+    elsif send_external_review_application
+      redirect_to request_url(@info_request)
+    else
+      render 'followups/external_review_new'
+    end
+  end
+
+  private
+
+  # Runs before set_internal_review in the callback chain, so @external_review
+  # isn't set yet - check the param directly. The check guards the validity of
+  # the *authority's* address, which is irrelevant for an application sent to
+  # the external reviewer (and would wrongly block review of e.g. a defunct
+  # authority's decision).
+  def check_incoming_message_can_be_followed_up
+    return if params[:external_review]
+
+    super
+  end
+
+  def set_internal_review
+    super
+    @external_review = false
+    return unless params[:external_review]
+
+    # Only jurisdictions with a wired-up external reviewer get this flow.
+    raise ActiveRecord::RecordNotFound unless @info_request.public_body.external_reviewer
+
+    @external_review = true
+  end
+
+  def check_reedit
+    return super unless @external_review
+
+    render 'followups/external_review_new' if params[:reedit]
+  end
+
+  def set_outgoing_message
+    return super unless @external_review
+
+    @external_review_application = ExternalReviewApplication.new(
+      external_review_application_params.merge(info_request: @info_request)
+    )
+    @outgoing_message =
+      ExternalReviewSender.build_outgoing_message(@external_review_application)
+  end
+
+  def external_review_application_params
+    return {} unless params[:external_review_application]
+
+    params.require(:external_review_application)
+          .permit(:decision_type, :decision_date, :disagreement,
+                  :extension_reasons, :phone, :other_information).to_h
+  end
+
+  # Returns false if nothing was saved (the correspondence copy the reviewer
+  # requires could not be built), so the caller can re-show the form.
+  def send_external_review_application
+    reviewer = @info_request.public_body.external_reviewer
+    sender = ExternalReviewSender.new(@external_review_application,
+                                      @outgoing_message)
+
+    if sender.deliver
+      flash[:notice] = _('Your external review application has been sent ' \
+                         'to {{reviewer_name}}.',
+                         reviewer_name: reviewer[:name])
+    else
+      flash[:error] = _('Your external review application has been saved ' \
+                        'but not yet sent to {{reviewer_name}} due to an ' \
+                        'error.',
+                        reviewer_name: reviewer[:name])
+    end
+    true
+  rescue ExternalReviewSender::ZipFailed => e
+    Rails.logger.error('External review zip failed for request ' \
+                       "#{@info_request.id}: #{e.message}")
+    flash.now[:error] = { partial: 'followups/external_review_zip_failed',
+                          locals: { reviewer: reviewer } }
+    false
+  end
+end
+
 # Add a callback - to be executed before each request in development,
 # and at startup in production - to patch existing app classes.
 # Doing so in init/environment.rb wouldn't work in development, since
@@ -12,6 +141,12 @@ require 'promotion_code_subscriptions'
 # See http://stackoverflow.com/questions/7072758/plugin-not-reloading-in-development-mode
 #
 Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
+  # Required here rather than at the top of the file: the class includes
+  # LinkToHelper, which isn't autoloadable while the theme itself is being
+  # required during initialization.
+  require 'external_review_application'
+  require 'external_review_zip'
+  require 'external_review_sender'
   HelpController.class_eval do
     before_action :set_history
 
@@ -269,4 +404,6 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
   end
 
   AlaveteliPro::SubscriptionCollection.prepend(PromotionCodeSubscriptions)
+
+  FollowupsController.prepend(ExternalReviewFollowups)
 end
