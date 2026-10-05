@@ -99,4 +99,4 @@ tickets. Creating any of these goes through "Drafting, not creating" first.
 - **Resolve**: `gh issue comment <n> --body "<answer>"`, then
   `gh issue close <n>`, then append a context pointer to the map's
   Decisions-so-far. Where the answer is a cross-cutting decision rather than a
-  one-off, add it to `docs/DECISIONS.md` too and link that from the map.
+  one-off, record it as an ADR in `doc/adr/` too and link that from the map.

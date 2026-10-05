@@ -262,8 +262,13 @@
       <% if !@batch && @info_request.public_body.info_requests_hidden_count >= 2 %>
         <%# Answer "No" for people who have already been through the form once,
             so they don't lose their place. Replaces a jQuery equivalent that
-            checked for .errorExplanation and a filled-in subject. %>
-        <% personal_switch_answered = @existing_request.present? || @info_request.title.present? %>
+            checked for .errorExplanation and a filled-in subject; the errors
+            below are what foi_error_messages_for renders as .errorExplanation,
+            so a submission that failed validation still counts as answered
+            even when the title came back blank. %>
+        <% personal_switch_answered = @existing_request.present? ||
+                                      @info_request.title.present? ||
+                                      [@info_request, @outgoing_message].compact.any? { |record| record.errors.any? } %>
         <fieldset id="request_personal_switch" class="request_personal_switch">
           <legend>Are you asking for <strong>personal information</strong> that should be confidential?</legend>
           <p>This includes <em>police incident reports</em>, <em>court records</em>, <em>medical records</em>, <em>paperwork for insurance or court</em>, etc.</p>

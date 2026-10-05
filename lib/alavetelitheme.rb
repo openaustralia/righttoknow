@@ -27,11 +27,16 @@ end
   $LOAD_PATH.insert(0, path)
 end
 
+# Stranded-lock detection for FoiAttachmentMaskJob (#1115); job_patches.rb
+# below wires it in, so it must be loaded first
+require File.expand_path('mask_job_runtime_conflict.rb', __dir__)
+
 # Monkey patch app code
 ['controller_patches.rb',
  'model_patches.rb',
  'helper_patches.rb',
- 'patch_mailer_paths.rb'].each do |patch|
+ 'patch_mailer_paths.rb',
+ 'job_patches.rb'].each do |patch|
   require File.expand_path "../#{patch}", __FILE__
 end
 
@@ -40,6 +45,10 @@ require File.expand_path('sentry_config.rb', __dir__)
 
 # A new controller (not a patch to an existing one) - see its own file for why
 require File.expand_path('whatismyip_controller.rb', __dir__)
+
+# Account housekeeping (#1095, #1096) - see "Account housekeeping" in README.md
+require File.expand_path('dormant_accounts.rb', __dir__)
+require File.expand_path('dormant_account_mailer.rb', __dir__)
 
 # Note you should rename the file at "config/custom-routes.rb" to
 # something unique (e.g. yourtheme-custom-routes.rb":

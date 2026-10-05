@@ -42,7 +42,7 @@
 
 // The rest of the form stays hidden until the person answers "No". This is CSS
 // rather than JavaScript so the gate survives application.js failing to load,
-// which used to make it disappear entirely. See docs/DECISIONS.md 2026-08-24.
+// which used to make it disappear entirely. See doc/adr/0001.
 //
 // Two things this depends on: the No radio must stay inside this fieldset, and
 // the form content must stay a following sibling of it. Move either and the
