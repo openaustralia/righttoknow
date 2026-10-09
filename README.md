@@ -34,7 +34,7 @@
 Freedom of Information (FOI) requests in Australia. It is powered by the open
 source FOI request platform [Alaveteli](http://www.alaveteli.org/).
 
-This repository contains the the theme package for Alaveteli for the Australian
+This repository contains the theme package for Alaveteli for the Australian
 deployment. If you find a problem with Right to Know, please report it to this
 repository's
 [issue tracker](https://github.com/openaustralia/righttoknow/issues).
