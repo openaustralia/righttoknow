@@ -1,0 +1,38 @@
+// Help pages and their "history of this page" block (lib/views/help/_history).
+// Overrides the host's responsive/_help_style.scss.
+
+dt {
+  font-weight: 600;
+  @include respond-min( $main_menu-mobile_menu_cutoff ){
+    font-size: 1.375em;
+    line-height: 1.3;
+    margin-top: 1.5em;
+  }
+}
+
+#help_about, #help_requesting, #help_privacy, #help_officers, #help_alaveteli,
+#help_credits, #help_api, #help_house_rules  {
+  ul {
+    margin-bottom: 1em;
+  }
+  li {
+    margin-bottom: 0.5em;
+  }
+  // Cap the measure so paragraphs stay readable on wide screens
+  p, dd {
+    max-width: 42em;
+  }
+}
+
+.changes {
+  background-color: darken($body-bg, 2%);
+  border-radius: 2px;
+  border: 1px solid darken($body-bg, 12%);
+  font-size: smaller;
+  margin-top: 2em;
+  padding: 0.1em 1.5em;
+
+  h2 {
+    font-size: 1.65em;
+  }
+}

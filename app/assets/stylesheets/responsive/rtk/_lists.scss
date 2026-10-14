@@ -1,0 +1,28 @@
+// Request, authority and user listings.
+// Overrides the host's responsive/_lists_style.scss.
+
+.request_listing .head, .body_listing .head, .user_listing .head {
+  // Provide a tiny bit of extra room at the top of headers in lists so that
+  // the top of letters don't get chopped off
+  margin-top: 0.1em;
+  font-weight: 600;
+}
+
+/* Tighter vertical rhythm and clearer hierarchy in request/authority lists */
+.request_listing, .body_listing, .user_listing {
+  margin-top: 1.125em;
+}
+
+.request_listing {
+  .desc {
+    font-style: normal;
+    color: $color_dark_grey;
+    font-size: 0.9375em;
+    margin-bottom: 1em;
+  }
+  .bottomline {
+    @include respond-min( $main_menu-mobile_menu_cutoff ){
+      margin-bottom: 1em;
+    }
+  }
+}

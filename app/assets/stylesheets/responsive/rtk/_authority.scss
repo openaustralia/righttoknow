@@ -1,0 +1,19 @@
+// Authority (public body) page.
+// Overrides the host's responsive/_public_body_style.scss.
+
+.authority__header__action-bar {
+  .action-bar__follow-button {
+    .link_button_green {
+      @include button-secondary();
+      @include follow-button();
+    }
+  }
+
+  .action-bar__follower-count {
+    @include follower-count();
+  }
+}
+
+.authority__body__sidebar form input[type=submit] {
+  @include button-secondary();
+}

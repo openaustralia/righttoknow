@@ -1,0 +1,147 @@
+// Request page: action bar, correspondence, status classification, status
+// icons, attachment view and sidebar.
+// Overrides the host's responsive/_request_style.scss, _sidebar_style.scss
+// and _attachments_style.scss.
+
+.request-header__action-bar__actions {
+  .action-bar__follow-button {
+    .track__action {
+      @include button-primary();
+      @include follow-button();
+    }
+  }
+
+}
+
+.request-header__action-bar__actions, .request-footer__action-bar__actions {
+  .action-menu__button {
+    @include button-secondary();
+    &:after {
+      border-color: #a5a5a5 transparent transparent transparent;
+      right: 7%;
+    }
+  }
+  .action-bar__follower-count {
+    @include follower-count();
+  }
+}
+
+.request-footer__action-bar__actions {
+  .action-menu__button {
+    padding-right: 2em;
+  }
+}
+
+div.correspondence {
+  background-color: $color_white;
+  box-shadow: 0 2px 2px transparentize($color_black, 0.8);
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 2em;
+}
+
+.incoming.correspondence {
+  border-top: 8px solid $color_secondary;
+}
+
+.outgoing.correspondence {
+  border-top: 8px solid $color_primary;
+}
+
+.describe_state_form input[type="radio"] + label {
+  display:inline;
+}
+
+.describe_state_form .input-label-aligned {
+  input[type="radio"],
+  .icon-standalone,
+  label {
+    vertical-align: middle;
+  }
+
+  .icon-standalone {
+    margin: 0 0.25em;
+  }
+}
+
+.describe_state_form {
+  padding: 0;
+
+  form{
+    background-color: $action-bg;
+    border-color: $action-color;
+    h2 {
+      margin-top: 0;
+    }
+    hr {
+      border-color: $action-color;
+    }
+  }
+}
+
+.sidebar {
+  .new-request-cta {
+    .new-request__make-new-requests {
+      @include button-primary();
+    }
+  }
+  .sidebar__section.pro-upsell {
+    background-color: #faf785;
+    padding: 0.85em;
+  }
+}
+
+.feed_link_sidebar .link_button_green {
+  @include button-primary();
+}
+
+/* Status lines and icons */
+.icon_waiting_classification,
+.icon_waiting_response,
+.icon_waiting_clarification,
+.icon_requires_admin,
+.icon_waiting_response_overdue,
+.icon_gone_postal,
+.icon_error_message,
+.icon_internal_review,
+.icon_user_withdrawn {
+  color: $status-pending;
+}
+
+.icon_attention_requested,
+.icon_not_held,
+.icon_waiting_response_very_overdue,
+.icon_failed,
+.icon_rejected {
+  color: $status-failure;
+}
+
+.icon_successful,
+.icon_partially_successful {
+  color: $status-success;
+}
+
+.request-status-message {
+  color: $color_black;
+}
+
+/* Attachments*/
+
+.view_html_prefix {
+  font-family: $font-family;
+  background-color: $color_primary;
+  color: transparentize($color_white, 0.2);
+  a {
+    color: $color_white;
+  }
+  .view_html_logo, .view_html_description, .view_html_download_link {
+    padding-top: 1em;
+  }
+}
+
+#header_right {
+  .link_button_green {
+    @include button-secondary;
+    margin-bottom: 1em;
+  }
+}
