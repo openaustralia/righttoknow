@@ -55,10 +55,27 @@ to your request '<%=request_link(@info_request) %>'?
   <%= link_to "contact us", help_contact_path %>.
 </p>
 
+<% if !@info_request.nil? && @info_request.public_body.external_reviewer %>
+<p>
+  <%= link_to "Apply for external review",
+              new_request_followup_path(:request_url_title => @info_request.url_title) + "?external_review=1",
+              :class => 'link_button_green request-external-review-action' %>
+  and <%= site_name %> will send your application to the
+  <%= @info_request.public_body.external_reviewer[:name] %> for you. Your
+  request page will then show that the request is awaiting external review.
+</p>
+<% end %>
+
 <ul>
   <li>
-    For <%= link_to "Federal Authorities", list_public_bodies_path(:tag => "federal") %>, contact the
-    <a href="https://www.oaic.gov.au/freedom-of-information/your-freedom-of-information-rights/freedom-of-information-reviews">Federal Information Commissioner</a>.
+    For <%= link_to "Federal Authorities", list_public_bodies_path(:tag => "federal") %>, apply to the
+    <a href="https://www.oaic.gov.au/freedom-of-information/your-freedom-of-information-rights/freedom-of-information-reviews">Office of the Australian Information Commissioner</a>
+    for an Information Commissioner review. There is no charge. You should apply
+    within 60 days of being notified of the decision (though extensions of time
+    are possible), or at any time if the authority never made a decision within
+    the time allowed. From the page of any request to a federal authority on
+    <%= site_name %>, choose &ldquo;Apply for external review&rdquo; and we will
+    send your application for you.
   </li>
   <li>
     For <%= link_to "ACT Authorities", list_public_bodies_path(:tag => "ACT") %>, contact the
@@ -106,8 +123,11 @@ in your complaint or print out the whole page of your request and all attachment
 </p>
 
 <p>
-  <%= site_name %> has no special facilities for handling an external review at this stage.
-  You can leave annotations on your request keeping people informed of progress.
+  For federal authorities, <%= site_name %> can send your external review
+  application for you and will show the review on your request page (see
+  above). For other jurisdictions <%= site_name %> has no special facilities
+  for handling an external review at this stage; you can leave annotations on
+  your request keeping people informed of progress.
 </p>
 
 <h1 id="other_means">3. Using other means to answer your question <a class="hover_a" href="#other_means">#</a> </h1>
