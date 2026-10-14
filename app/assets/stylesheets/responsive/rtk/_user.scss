@@ -1,0 +1,8 @@
+// User profile page.
+// Overrides the host's responsive/_user_style.scss.
+
+#user_photo_on_profile {
+  img, #set_photo {
+    margin-top:0.5em;
+  }
+}

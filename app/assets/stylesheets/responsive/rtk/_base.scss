@@ -1,0 +1,61 @@
+// Site-wide type, links and form controls.
+// Overrides the host's responsive/_global_style.scss and foundation/components/forms.
+
+body {
+  background-color: $body-bg;
+  color: $body-font-color;
+}
+
+.entirebody {
+  font-family: $font-family;
+}
+
+// Fira Sans 700 reads heavy at display sizes - semibold carries the same
+// hierarchy with less shouting
+h1, h2, h3 {
+  font-weight: 600;
+}
+
+a {
+  color: $link-color;
+  &:visited {
+    color: $link-color;
+  }
+  &:hover,
+  &:active,
+  &:focus {
+    color: $link-hover-color;
+  }
+}
+
+/* Let h1s be a little smaller on small screens */
+@media( max-width: $main_menu-mobile_menu_cutoff ){
+  h1 {
+    font-size: 2em;
+  }
+}
+
+/* Square corners for text type inputs */
+form input[type="text"],
+form input[type="password"],
+form input[type="search"],
+form input[type="email"],
+form input[type="url"],
+form input[type="tel"],
+form input[type="number"] {
+    border-radius: 0;
+    background-color: $form_input-bg;
+}
+
+// The host's _search_style.scss sets the calendar icon and width; only the
+// field colour is ours.
+input.use-datepicker[type=text] {
+  background-color: $form_input-bg;
+}
+
+/* Button styles */
+
+form input[type=submit], a.link_button_green {
+  @include button-primary;
+  text-decoration: none;
+}

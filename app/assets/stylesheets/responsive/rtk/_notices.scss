@@ -1,0 +1,84 @@
+// Flash notices, errors, warnings and the site-wide announcement popup.
+// Overrides the host's responsive/_global_style.scss and _popups_style.scss.
+
+/* Popups */
+
+// Core's responsive/_popups_style.scss styles .popup as a dark banner and forces
+// white text and white links. We keep the pale green banner, so mirror core's
+// full selector list to restore readable text. The theme loads after core
+// (all.scss:133 vs :20), so matching specificity wins. Keep in sync on upgrade.
+.popup {
+  background-color: $notice-bg;
+  border: 3px solid $notice-color;
+  color: $body-font-color;
+
+  a,
+  a:visited {
+    color: $link-color;
+  }
+
+  a:hover,
+  a:active,
+  a:focus,
+  a:visited:hover,
+  a:visited:active,
+  a:visited:focus {
+    color: $link-hover-color;
+  }
+
+  // Core's white `.popup a` rule (0,1,1) also captures the dismiss x, which core
+  // otherwise colours via `.popup__close` (0,1,0). Restore that colour so the x
+  // is not swept up by the link rules above.
+  a.popup__close {
+    color: $body-font-color;
+  }
+}
+
+// TEMPORARY: donation appeal urgency treatment for the site-wide announcement.
+// Scoped to #standard-popup's ID specificity so it overrides .popup above
+// without touching it or $notice-color/$notice-bg (used elsewhere for flash
+// notices). Delete this block once the campaign ends to revert to green.
+// The title already renders bold via vendor/normalize.scss's `strong` rule,
+// so no extra typography override is needed here.
+#standard-popup {
+  background-color: $color_yellow;
+  border-color: $hero-cta-bg;
+}
+
+/* Notices, errors */
+
+// The host's _global_style.scss covers #notice, #error and .warning; the
+// other three selectors only get this treatment from here.
+#notice, #error, #hidden_request,.describe_state_form form, .undescribed_requests, .warning {
+  border-top: 10px solid;
+  font-size: 1em;
+  margin:1em 0;
+  padding: 1.5em;
+
+  p:first-child {
+    margin-top: 0;
+  }
+
+  p:last-child {
+    margin-bottom:0;
+  }
+
+  ul {
+    margin: 0;
+  }
+}
+
+#notice {
+  background-color: $notice-bg;
+  border-color: $notice-color;
+}
+
+#error, #hidden_request, .warning {
+  background-color: $error-bg;
+  border-color: $error-color;
+}
+
+.undescribed_requests {
+  background-color: $action-bg;
+  border-color: $action-color;
+}

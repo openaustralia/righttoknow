@@ -1,0 +1,108 @@
+// Front page: hero, "how it works" steps and the latest-requests block.
+// Overrides the host's responsive/_frontpage_layout.scss and _frontpage_style.scss.
+
+/* How it works section */
+.steps__list {
+  li {
+    @include respond-min( $main_menu-mobile_menu_cutoff ){
+      width: 33.3333%;
+      // The host's _frontpage_layout.scss sets the margin via grid-column()
+      margin-left: 0 !important;
+    }
+  }
+}
+
+.steps__step-box {
+  background-color: $color_white;
+  padding: 1.5em;
+  box-shadow: 0 1px 2px transparentize($color_black, 0.75);
+  p {
+    line-height: 1.5em;
+    color: $color_neutral_dark;
+  }
+}
+
+.steps__step-number {
+  height: 3.5em;
+  width: 3.5em;
+  background-color: $color_primary;
+  box-shadow: 0 1px 2px transparentize($color_black, 0.75);
+  padding: 1em;
+  border-radius: 100%;
+  color: $color_white;
+  @include respond-min( $main_menu-mobile_menu_cutoff ){
+    left: 50%;
+    margin-left: -1.75em;
+    bottom: -1em;
+    top: auto;
+  }
+}
+
+.learn-more-foi {
+  @include respond-min( $main_menu-mobile_menu_cutoff ){
+    margin-top: 3em;
+  }
+  a {
+    @include button-secondary;
+  }
+}
+
+.latest-requests {
+  .button-secondary {
+    @include button-secondary;
+  }
+}
+
+.homepage-hero {
+  background-color: #020e16;
+  background-image: image-url('homepage-background-small.jpg');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  color: $color_white;
+  padding: 2em 0 3em;
+  position: relative;
+  @include respond-min($main_menu-mobile_menu_cutoff) {
+    padding: 3em 0 4em;
+    background-image: image-url('homepage-background.jpg');
+  }
+
+  a {
+    color: $color_secondary;
+    &:hover,
+    &:active,
+    &:focus {
+      color: $color_white;
+    }
+  }
+
+  .intro__title {
+    color: $color_white;
+  }
+
+  .new-request__content {
+    background-color: $color_neutral_dark;
+    border-radius: 5px;
+    padding: 1.5em;
+  }
+
+  .new-request__title {
+    color: $color_white;
+    font-size: 1.4375em;
+    margin: 0 0 0.5em;
+  }
+
+  .new-request__description {
+    color: transparentize($color_white, 0.2);
+  }
+  .new-request__make-new-requests {
+    @include button-base;
+    background-color: $hero-cta-bg;
+    color: $color_black;
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: $hero-cta-bg-hover;
+    }
+  }
+}

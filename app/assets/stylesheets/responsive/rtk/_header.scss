@@ -1,0 +1,159 @@
+// Banner, logo, top navigation, search and the logged-in menu.
+// Overrides the host's responsive/_header_layout.scss and _header_style.scss.
+
+.js-loaded {
+  .account-link {
+    &:after {
+      border-top-color: rgba(255,255,255,0.4);
+    }
+  }
+}
+
+.logged_in_bar {
+  @include respond-min( $main_menu-mobile_menu_cutoff ){
+    padding-top: 1.4em;
+  }
+}
+
+.logged-in-menu {
+  li {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  a:link,
+  a:visited {
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    &:hover,
+    &:active,
+    &:focus {
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    @include respond-min( $main_menu-mobile_menu_cutoff ){
+      color: $link-color;
+      &:hover,
+      &:active,
+      &:focus {
+        color: $color_black;
+        background-color: transparent;
+        text-decoration: underline;
+      }
+    }
+  }
+  .js-loaded & {
+    @include respond-min( $main_menu-mobile_menu_cutoff ){
+      //positioned alongside the button
+      top: 4.1em;
+    }
+  }
+}
+
+.alaveteli-pro .account-link,
+.alaveteli-pro .account-link:visited,
+.account-link,
+.account-link:link,
+.account-link:visited,
+.sign_in_link,
+.sign_in_link:link,
+.sign_in_link:visited {
+  color: #fff;
+  text-decoration: none;
+  &:hover,
+  &:active,
+  &:focus {
+    color: #fff;
+  }
+}
+
+.pro-pill {
+  color: $color_neutral_dark;
+  font-weight: 600;
+  background-color: $color_secondary;
+}
+
+.topnav {
+  background-color: $topnav_bg;
+  @media( min-width: $main_menu-mobile_menu_cutoff ) {
+    box-shadow: inset 0 1px 3px 0 rgba(0,0,0,0.1);
+  }
+}
+
+#banner_inner {
+  background-color: $banner_inner_bg;
+}
+
+// SVG fallback for logo
+.site-title__logo {
+  // https://css-tricks.com/a-complete-guide-to-svg-fallbacks/
+  background-image: image-url("logo.svg"),
+                    linear-gradient(transparent, transparent);
+}
+
+.banner--pro .site-title__logo {
+  background-image: image-url("alaveteli-pro/logo.png");
+  background-image: image-url("alaveteli-pro/logo.svg"),
+                    linear-gradient(transparent, transparent);
+}
+
+.navigation {
+  border-bottom: none;
+  a {
+    @extend %menu-item;
+    color: transparentize($color_white, 0.1);
+    @media( min-width: $main_menu-mobile_menu_cutoff ) {
+      padding: 0.875em 1em;
+    }
+  }
+
+  /* Show which section is currently selected */
+  li.selected a {
+    @extend %selected-menu-item;
+  }
+}
+
+@media (min-width: $main_menu-mobile_menu_cutoff) {
+  #navigation_search {
+    padding-top: 1.4em;
+  }
+}
+
+#navigation_search_button{
+  padding-top: 0.7em;
+  background-color: $color_white;
+  border: none;
+  transition: all 0.3s ease-out;
+  color: $color_primary;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+#banner {
+  .rsp_menu_button{
+    position: absolute;
+    top: 9px; // vertically centre the button in the header
+    right: 4px; // 15px for margin minus 9 for background offset
+    @extend .image-replacement;
+    background-image: image-url('hamburger.png');
+    background-repeat: no-repeat;
+    background-position: center 10px;
+    background-size: 28px 26px;
+    width: 44px;
+    height: 38px;
+    padding: 0;
+    /* Make sure clickable area covers image */
+    a {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // The host's _header_layout.scss moves the button under :target, so
+  // repeat our position there.
+  &:target {
+    .rsp_menu_button {
+      top: 9px;
+      right: 4px;
+    }
+  }
+}

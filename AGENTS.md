@@ -137,6 +137,19 @@ paths (see above). `lib/alavetelitheme.rb` also explicitly registers
 `event_tracking.js`, `personal_message_toggler.js`, and
 `alaveteli_pro/coupon_preview.js` for precompilation.
 
+The host's `responsive/all.scss` imports the theme's
+`responsive/custom.scss` last, so every rule there wins over the host's
+partials at equal specificity. `custom.scss` is only an index: the rules live
+in `responsive/rtk/_<area>.scss` partials (base, header, notices, footer,
+lists, frontpage, help, request, authority, user, pro), listed in the host's
+import order, and each opens with a note naming the host partial it
+overrides. `_settings.scss` shadows the host's file of the same name and
+holds every colour and size. `rtk/_oaf-footer.scss` is vendored from
+`openaustralia/oaf-standard-footer` and must stay byte-identical to it; theme
+footer rules go in `rtk/_footer.scss`. To prove a stylesheet change is a pure
+refactor, dump the compiled `responsive/all.css` from the host before and
+after and compare the rule lists.
+
 ### Translations (`locale-theme/en/app.po`)
 
 Theme-specific/overriding translation strings, checked before the host's own
