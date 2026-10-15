@@ -51,6 +51,8 @@ rather than this README, which would only go stale:
 
 If there is a fix or enhancement that is not specific to Right to Know/Australia changes should be submitted to the upstream [Alaveteli repository](https://github.com/mysociety/alaveteli) via a pull request. In the vast majority of cases we will not deploy a fix until it's been accepted upstream. This ensures we're all using the same code as much as possible.
 
+The one exception for now is announcement styles and rich text, which this theme carries until upstream accepts [pull request 9644](https://github.com/mysociety/alaveteli/pull/9644). It adds two migrations, which run with the host's (`rake db:migrate` or `cap deploy:migrate`). See `lib/announcement_patches.rb` for what to delete when upstream releases it.
+
 However if you'd like to adjust the look and feel of Right To Know, or to update copy like that found on the help pages, this is the place to make those changes.
 
 ## Development environment

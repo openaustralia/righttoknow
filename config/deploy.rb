@@ -61,6 +61,14 @@ set :maintenance_template_path,
 # Tagging options
 set :tagging3_format, ':stage_:release'
 
+# The repository Sentry release tracking associates commits from (see
+# lib/capistrano/tasks/sentry.rake). What actually runs in production is
+# Alaveteli - this theme is merged into it at deploy time - so suspect
+# commits should come from there, and it is also where :repo_url points via
+# each operator's config/deploy.yml. Set explicitly so release tracking
+# doesn't depend on that local file's remote spelling.
+set :sentry_release_repo, 'openaustralia/alaveteli'
+
 # Read the Ruby version from the server's shared rbenv-version file,
 # matching the version installed by the infrastructure repo.
 task :set_rbenv_ruby do

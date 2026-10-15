@@ -28,6 +28,22 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  # Announcements take a style and a rich text body instead of plain `content`.
+  # See lib/announcement_patches.rb for why and when to delete this.
+  AdminAnnouncementsController.class_eval do
+    private
+
+    def announcement_params
+      translatable_params(
+        params[:announcement],
+        translated_keys: %i[locale title rich_body],
+        general_keys: %i[visibility style]
+      ).merge(
+        user: current_user
+      )
+    end
+  end
+
   # Live coupon price preview for the Pro plan signup page. Returns the
   # discounted price as JSON so alaveteli_pro/coupon_preview.js can update the
   # displayed amount before the user submits. Mirrors the access rules of

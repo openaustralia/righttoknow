@@ -1,0 +1,43 @@
+<%# Overrides core to add a style. See lib/announcement_patches.rb %>
+<%= f.error_messages %>
+
+<div class="control-group">
+  <%= f.label :style, class: 'control-label' %>
+  <div class="controls">
+    <%= f.select :style, Announcement.style_labels %>
+  </div>
+</div>
+
+<% f.translated_fields do |t| %>
+  <%= render partial: 'locale_fields', locals: { t: t } %>
+<% end %>
+
+<hr>
+
+<div class="control-group">
+  <label for="announcement_visibility" class="control-label">Visibility</label>
+  <div class="controls">
+    <div class="inline-elements">
+      <label for="announcement_visibility_everyone" class="inline-element">
+        <%= f.radio_button :visibility, 'everyone' %>
+        <strong>everyone</strong> all users see the announcement as a site-wide banner
+      </label>
+      <% if feature_enabled?(:alaveteli_pro) %>
+        <label for="announcement_visibility_pro" class="inline-element">
+          <%= f.radio_button :visibility, 'pro' %>
+          <strong>pro</strong> users see the announcement on the pro dashboard
+        </label>
+      <% end %>
+      <label for="announcement_visibility_admin" class="inline-element">
+        <%= f.radio_button :visibility, 'admin' %>
+        <strong>admin</strong> users see the announcement on the admin summary
+      </label>
+      <% if feature_enabled?(:alaveteli_pro) %>
+        <label for="announcement_visibility_pro_admin" class="inline-element">
+          <%= f.radio_button :visibility, 'pro_admin' %>
+          <strong>pro_admin</strong> users see the announcement on the admin summary
+        </label>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@
 @import "responsive/rtk/mixins";
 @import "responsive/rtk/request_personal_message";
 @import "responsive/rtk/supporting_orgs";
+@import "responsive/rtk/announcements";
 
 .js-loaded {
   .account-link {
@@ -172,17 +173,6 @@ a.link_button_green_large {
   a.popup__close {
     color: $body-font-color;
   }
-}
-
-// TEMPORARY: donation appeal urgency treatment for the site-wide announcement.
-// Scoped to #standard-popup's ID specificity so it overrides .popup above
-// without touching it or $notice-color/$notice-bg (used elsewhere for flash
-// notices). Delete this block once the campaign ends to revert to green.
-// The title already renders bold via vendor/normalize.scss's `strong` rule,
-// so no extra typography override is needed here.
-#standard-popup {
-  background-color: $color_yellow;
-  border-color: $hero-cta-bg;
 }
 
 

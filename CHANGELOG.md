@@ -7,7 +7,13 @@ staging→production release pull request). Each bullet is one merged pull
 request, credited to its author. Update this file as part of each release PR,
 covering everything merged to `staging` since the previous release.
 
-## 2026-09-16 (release #1117)
+## 2026-10-14 (release #1124)
+
+* Adopt canonical Sentry configuration and release tracking (Ben Fairless,
+  #1103)
+* Add tagged /donate redirect to Raisely (Ben Fairless, #1122)
+
+## 2026-09-25 (release #1117)
 
 * Add developer changelog and convert decision records to ADRs (Ben
   Fairless, #1113)
@@ -15,6 +21,10 @@ covering everything merged to `staging` since the previous release.
   Fairless, #1087)
 * Notify dormant accounts before they are removed (Ben Fairless, #1098)
 * Restore request status on list pages (Ben Fairless, #1114)
+* Update Plausible analytics script to latest version (Ben Fairless, #1118)
+* Style the site announcement banner for donation urgency (Ben Fairless,
+  #1119)
+* Cap mask job runtime lock and clear stranded ones (Ben Fairless, #1116)
 
 ## 2026-09-10 (release #1112)
 

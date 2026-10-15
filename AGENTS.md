@@ -20,6 +20,13 @@ site), it belongs here. If it's a general Alaveteli fix or feature, it should
 go to the upstream [mysociety/alaveteli](https://github.com/mysociety/alaveteli)
 repo instead — this fork won't deploy an unaccepted upstream change.
 
+One deliberate, temporary exception: announcement styles and rich text are
+backported here from the unmerged upstream
+[pull request 9644](https://github.com/mysociety/alaveteli/pull/9644). It
+includes migrations, which the theme registers itself. `lib/announcement_patches.rb`
+lists everything to delete once upstream releases it. Don't treat it as a
+precedent for other upstream changes.
+
 Small, low-capacity charity team (OpenAustralia Foundation) — favour simple,
 low-maintenance solutions over ones that need ongoing attention.
 
