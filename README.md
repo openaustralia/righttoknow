@@ -76,30 +76,26 @@ Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers
 1. Open this repository in VS Code and choose **Reopen in Container** when
    prompted (or create a Codespace on GitHub).
 2. Wait for setup to finish — the first run clones Alaveteli, installs gems,
-   and migrates and seeds the databases, so it takes a while.
-3. Start the server from the integrated terminal:
-
-   ```bash
-   cd /alaveteli && bin/rails server -b 0.0.0.0
-   ```
-
-4. Open <http://localhost:3000>. Log in as the development admin with the
+   and migrates and seeds the databases, so it takes a while. The Rails
+   server starts by itself once it's done.
+3. Open <http://localhost:3000>. Log in as the development admin with the
    username and password from `config/general-righttoknow.yml.example`
    (`adminxxxx` / `passwordx`).
 
 Inside the container, Alaveteli lives at `/alaveteli` and this theme is
 mounted at `/alaveteli-themes/righttoknow` (your workspace folder). Theme
 changes take effect on reload; changes to Ruby files under `lib/` need a
-server restart.
+server restart: `docker compose restart app`.
 
 ### Option 2: Docker + Make
 
 The same stack without VS Code — just Docker and `make`:
 
 ```bash
-make setup    # first run: build, clone Alaveteli, migrate, seed (takes a while)
-make server   # start the site at http://localhost:3000
+make up       # build, clone Alaveteli, migrate, seed, then start the site at http://localhost:3000
 ```
+
+The first run takes a while; `make logs SERVICE=app` shows how it's going.
 
 Other useful targets (`make help` lists them all):
 
@@ -108,13 +104,32 @@ make console  # Rails console
 make test     # run this theme's specs
 make seed     # load realistic AU test data (see "Seeding test data")
 make shell    # shell in the app container
+make status   # each container's health and host ports
+make down     # stop, keeping the data
+make clean    # also re-clone Alaveteli and rebuild, keeping the data
 make reset    # destroy containers and data, set up from scratch
 ```
 
 To develop against a different Alaveteli branch or fork, set
-`ALAVETELI_BRANCH` / `ALAVETELI_REPO` before the first `make setup`. If ports
-3000 or 1080 are already in use on your machine, set `RAILS_PORT` /
-`MAILHOG_PORT`.
+`ALAVETELI_BRANCH` / `ALAVETELI_REPO` before the first `make up`, or run
+`make clean` after changing them. If ports
+3000 or 1080 are already in use on your machine, or you run more than one
+worktree at once, see [Port clashes](AGENTS.md#port-clashes) in AGENTS.md.
+
+### If the app won't start
+
+Startup fails loudly on purpose, so a broken setup gets noticed instead of hiding behind a container that looks fine.
+If setup fails, or takes longer than `START_LIMIT` (20 minutes here, set in `.devcontainer/compose.yaml`), the `app`
+container stops, `make up` reports the failure, and the dev container shows an error instead of opening.
+
+To fix it:
+
+1. `make status` shows which container stopped, and `make logs SERVICE=app` shows why.
+2. `make shell` opens a shell in a fresh `app` container even when it has stopped, so you can rerun the setup by hand
+   and fix the problem.
+3. `make up`, or reopen the dev container, to start again.
+
+On a slow machine, a longer limit can go in `.env`, for example `START_LIMIT=20m`.
 
 ### Option 3: Manual setup
 
