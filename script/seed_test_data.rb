@@ -823,8 +823,11 @@ if InfoRequest.respond_to?(:custom_states_loaded) &&
 end
 
 if ENV['SEED_REPLACE'] == '1'
+  # The showcase titles read like ordinary requests, so only those owned by a
+  # seed user are replaced; someone else's request with the same title stays.
+  seed_user_ids = User.where('email LIKE ?', "seed_user_%@#{DUMMY_EMAIL_DOMAIN}").select(:id)
   seeded = InfoRequest.where('title LIKE ?', "#{SEED_TITLE_PREFIX}%")
-                      .or(InfoRequest.where(title: SHOWCASE.values))
+                      .or(InfoRequest.where(title: SHOWCASE.values, user_id: seed_user_ids))
   puts "Destroying #{seeded.count} previously seeded requests ..."
   seeded.find_each(&:destroy)
 end
@@ -900,13 +903,17 @@ selection.each do |tag, tag_rows|
           sent_at: sent_at
         )
 
+        # Keep events in the past: sent_at can be as recent as 20 days ago, so
+        # the response offset is capped at the days elapsed since then (less a
+        # day for the classification that follows a response).
+        days_elapsed = ((now - sent_at) / 1.day).floor
         if RESPONDED_STATES.include?(state)
-          responded_at = sent_at + rand(7..35).days
+          responded_at = sent_at + rand(7..[35, days_elapsed - 1].min).days
           travel_to(responded_at) { receive_authority_response(info_request, outcome: state) }
           travel_to(responded_at + 1.day) { classify(info_request, state, by: user) }
           stats[:responses] += 1
         elsif state != 'waiting_response'
-          travel_to(sent_at + rand(7..35).days) { classify(info_request, state, by: user) }
+          travel_to(sent_at + rand(7..[35, days_elapsed].min).days) { classify(info_request, state, by: user) }
         end
       rescue StandardError => e
         warn "    ! Skipped a request for #{body.url_name} " \
