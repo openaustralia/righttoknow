@@ -74,6 +74,16 @@ RSpec.describe ExternalReviewZip do
     expect(entries(result.data).keys).to eq(['correspondence.txt'])
     expect(result.omitted).to eq(['1_3_interesting.spc', '1_2_interesting.pdf'])
   end
+
+  it 'writes the zip once however many attachments are dropped' do
+    add_response([[:pdf_attachment], [:unknown_attachment]])
+    # As above: the limit is lowered rather than building huge fixtures. The
+    # contract is that dropping files does not mean rewriting the zip each time.
+    stub_const('ExternalReviewZip::MAX_BYTES', 1)
+    expect(Zip::OutputStream).to receive(:write_buffer).once.and_call_original
+
+    described_class.new(info_request, ability: Ability.new(user)).build
+  end
 end
 
 RSpec.describe ExternalReviewSender, 'with the correspondence zip' do
@@ -112,6 +122,21 @@ RSpec.describe ExternalReviewSender, 'with the correspondence zip' do
     expect(outgoing_message.reload.body)
       .to include('A copy of all correspondence on my FOI request')
     expect(mail.text_part.body.to_s).not_to include('zip')
+  end
+
+  it 'rebuilds the zip when the saved message is resent' do
+    sender.deliver
+    # external_review_details is not persisted, as after an admin resend.
+    saved = OutgoingMessage.find(outgoing_message.id)
+    expect(saved.external_review_details).to be_nil
+
+    mail = OutgoingMailer.followup(info_request, saved, nil)
+
+    zip = mail.attachments["#{info_request.url_title}.zip"]
+    expect(zip).to be_present
+    names = []
+    Zip::File.open_buffer(StringIO.new(zip.body.decoded)) { |z| names = z.entries.map(&:name) }
+    expect(names).to include('correspondence.txt', '1_2_interesting.pdf')
   end
 
   it 'lists attachments left out to fit the size limit' do

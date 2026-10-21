@@ -60,18 +60,28 @@ module ExternalReviewOutgoingMessage
 end
 
 # Attaches the correspondence zip (ExternalReviewZip) to an external review
-# application email. The zip travels on external_review_details[:zip], set by
-# ExternalReviewSender, so ordinary followups are untouched. Attachments must
-# be added before mail() runs, hence before super.
+# application email. On the first send the zip travels on
+# external_review_details[:zip], set by ExternalReviewSender. That attribute is
+# not persisted, so on an admin resend the zip is rebuilt from the request, as
+# the letter says it is attached. Ordinary followups are untouched. Attachments
+# must be added before mail() runs, hence before super.
 module ExternalReviewOutgoingMailer
   def followup(info_request, outgoing_message, incoming_message_followup)
-    zip = outgoing_message.try(:external_review_details).try(:[], :zip)
-    if outgoing_message.try(:external_review?) && zip
+    if outgoing_message.try(:external_review?)
+      zip = outgoing_message.external_review_details.try(:[], :zip) ||
+            rebuilt_correspondence_zip(info_request)
       attachments[zip[:filename]] = { content_type: 'application/zip',
                                       content: zip[:data] }
     end
 
     super
+  end
+
+  private
+
+  def rebuilt_correspondence_zip(info_request)
+    builder = ExternalReviewZip.for_applicant(info_request)
+    { filename: builder.filename, data: builder.build.data }
   end
 end
 

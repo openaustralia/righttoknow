@@ -84,12 +84,10 @@ class ExternalReviewSender
     outgoing_message.info_request
   end
 
-  # The applicant's own view of the request (Ability.new(user)), so a
-  # decision they have hidden from the public still reaches the reviewer.
   # Files left out to fit MAX_BYTES are listed in the letter, which is why
   # the letter body is composed here rather than earlier.
   def attach_correspondence_zip
-    zip = ExternalReviewZip.new(info_request, ability: Ability.new(info_request.user))
+    zip = ExternalReviewZip.for_applicant(info_request)
     result = zip.build
     application.omitted_attachments = result.omitted
     outgoing_message.body = application.letter_body

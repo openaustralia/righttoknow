@@ -34,32 +34,48 @@ class ExternalReviewZip
   # the request URL in the letter.
   EXCLUDED_TYPE_PREFIX = 'image/'
 
-  Entry = Struct.new(:name, :body, :tier, keyword_init: true)
+  # deflated_bytes is the deflated size of body, set once so trimming never recompresses.
+  Entry = Struct.new(:name, :body, :tier, :deflated_bytes, keyword_init: true)
 
   # The zip bytes and the names of any attachments left out to fit.
   Result = Struct.new(:data, :omitted, keyword_init: true)
 
+  # Allowance per entry for the zip's local header and central directory
+  # record, on top of the deflated body, when estimating the zip's size.
+  ENTRY_OVERHEAD_BYTES = 512
+
   attr_reader :info_request, :ability
 
   delegate :can?, to: :ability
+
+  # The applicant's own view of the request (Ability.new(user)), so a decision
+  # they have hidden from the public still reaches the reviewer.
+  def self.for_applicant(info_request)
+    new(info_request, ability: Ability.new(info_request.user))
+  end
 
   def initialize(info_request, ability:)
     @info_request = info_request
     @ability = ability
   end
 
+  # Each attachment is deflated once to estimate the zip's size, the ones that
+  # won't fit are chosen from those estimates, and the zip is written once.
+  # The estimate can undershoot (zip headers, incompressible data), so the
+  # written zip is still checked against MAX_BYTES and trimmed further if need be.
   def build
     entries = attachment_entries
     omitted = []
     transcript = Entry.new(name: TRANSCRIPT, body: transcript_text, tier: 0)
+    transcript.deflated_bytes = deflated_size(transcript)
+
+    drop_until_estimate_fits(entries, transcript, omitted)
 
     loop do
       data = write_zip([transcript] + entries)
       return Result.new(data: data, omitted: omitted) if data.bytesize <= MAX_BYTES || entries.empty?
 
-      dropped = next_to_drop(entries)
-      entries.delete(dropped)
-      omitted << dropped.name
+      omit(entries, omitted)
     end
   end
 
@@ -69,11 +85,26 @@ class ExternalReviewZip
 
   private
 
+  def drop_until_estimate_fits(entries, transcript, omitted)
+    estimate = ->(list) { ([transcript] + list).sum { |e| e.deflated_bytes + ENTRY_OVERHEAD_BYTES } }
+    omit(entries, omitted) while entries.any? && estimate.call(entries) > MAX_BYTES
+  end
+
+  def omit(entries, omitted)
+    dropped = next_to_drop(entries)
+    entries.delete(dropped)
+    omitted << dropped.name
+  end
+
+  def deflated_size(entry)
+    Zlib::Deflate.deflate(entry.body).bytesize
+  end
+
   # Drop the whole second tier first, largest first; then the largest of
   # the first tier.
   def next_to_drop(entries)
     tier_two = entries.select { |e| e.tier == 2 }
-    (tier_two.presence || entries).max_by { |e| e.body.bytesize }
+    (tier_two.presence || entries).max_by(&:deflated_bytes)
   end
 
   def write_zip(entries)
@@ -98,11 +129,13 @@ class ExternalReviewZip
         next unless can?(:read, attachment)
         next if attachment.content_type.to_s.start_with?(EXCLUDED_TYPE_PREFIX)
 
-        entries << Entry.new(
+        entry = Entry.new(
           name: "#{message_index}_#{attachment.url_part_number}_#{attachment.display_filename}",
           body: message.apply_masks(attachment.default_body, attachment.content_type),
           tier: TIER_ONE_TYPES.include?(attachment.content_type) ? 1 : 2
         )
+        entry.deflated_bytes = deflated_size(entry)
+        entries << entry
       end
     end
 
