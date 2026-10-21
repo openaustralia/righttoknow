@@ -16,6 +16,14 @@ Rails.application.routes.draw do
   # safe let's redirect the old url
   get '/people' => redirect('statistics#people')
 
+  # Short, shareable donate link. Redirects to DONATION_URL (general.yml) with
+  # UTMs attributing the visit to Right to Know. A 302 so browsers don't cache
+  # the destination, which is expected to change. Incoming query parameters
+  # are deliberately ignored. Not routed at all (404) if DONATION_URL is blank.
+  get '/donate',
+      to: redirect(status: 302) { DonationUrl.build(campaign: 'donate-redirect') },
+      constraints: ->(_request) { AlaveteliConfiguration.donation_url.present? }
+
   # Live coupon price preview for the Pro plan signup page. Read-only JSON
   # endpoint (GET, no CSRF) consumed by alaveteli_pro/coupon_preview.js to show
   # the discounted price before the user submits. The action is added to

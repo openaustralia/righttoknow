@@ -2,6 +2,7 @@
 
 # Load our helpers
 require 'helpers/alaveteli_pro/alternative_price_text_helper'
+require 'helpers/announcement_style_helper'
 
 # Request status banner text for external review (see customstates.rb and
 # ExternalReviewFollowups in controller_patches.rb). Prepended to the host's
@@ -69,4 +70,5 @@ end
 Rails.configuration.to_prepare do
   ActionView::Base.include AlaveteliPro::AlternativePriceTextHelper
   InfoRequestHelper.prepend ExternalReviewInfoRequestHelper
+  ActionView::Base.include AnnouncementStyleHelper
 end

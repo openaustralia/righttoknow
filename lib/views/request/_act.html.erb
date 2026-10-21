@@ -20,7 +20,7 @@
 <% if AlaveteliConfiguration.donation_url.present? %>
   <div class="act_link">
     <i class="act-link-icon act-link-icon--donation"></i>
-    <%= link_to AlaveteliConfiguration.donation_url do %>
+    <%= link_to DonationUrl.build(content: 'request-actions') do %>
       <%= _('<strong>Donate</strong> to {{site_name}}', site_name: site_name) %>
     <% end %>
   </div>

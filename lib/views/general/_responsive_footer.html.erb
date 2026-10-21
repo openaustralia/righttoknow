@@ -35,10 +35,12 @@
         </ul>
       </nav>
 
-      <div class="oaf-footer__donate">
-        <p>Your donations keep this site and others like it running</p>
-        <a class="oaf-footer__donate-button" href="https://www.oaf.org.au/donate/">Donate now</a>
-      </div>
+      <% if AlaveteliConfiguration.donation_url.present? %>
+        <div class="oaf-footer__donate">
+          <p>Your donations keep this site and others like it running</p>
+          <a class="oaf-footer__donate-button" href="<%= DonationUrl.build(content: 'footer') %>">Donate now</a>
+        </div>
+      <% end %>
     </div>
 
     <hr class="oaf-footer__divider">

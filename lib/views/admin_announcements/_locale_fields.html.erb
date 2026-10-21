@@ -1,0 +1,14 @@
+<%# Overrides core to edit rich text. See lib/announcement_patches.rb %>
+<div class="control-group">
+  <%= t.label :title, 'Title (optional)', class: 'control-label' %>
+  <div class="controls">
+    <%= t.text_field :title, class: 'span4' %>
+  </div>
+</div>
+
+<div class="control-group">
+  <%= t.label :rich_body, 'Content', class: 'control-label' %>
+  <div class="controls">
+    <%= t.rich_text_area :rich_body %>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+// Colour styles for announcements (red, yellow, green and blue), using the same
+// colours as core's notes. The default style keeps the theme's own look. See
+// lib/announcement_patches.rb for why these live here and when to delete them.
+
+$announcement-palette: (
+  red:    (text: darken($alert-color, 25%),   bg: lighten($alert-color, 40%),   border: $alert-color),
+  yellow: (text: darken($warning-color, 30%), bg: lighten($warning-color, 40%), border: $warning-color),
+  green:  (text: darken($success-color, 25%), bg: lighten($success-color, 40%), border: $success-color),
+  blue:   (text: darken($primary-color, 15%), bg: lighten($primary-color, 60%), border: $primary-color)
+);
+
+// The body is ActionText output: a `<div>` per line, sitting directly inside
+// `.popup__content` (there is no `.trix-content` wrapper on public pages).
+// A div is a block and would push the bold title onto its own line, so run the
+// first one inline and "Title - body" flows as it did before the body became
+// rich text. Later lines and lists stay as blocks. Scoped to announcements so
+// other popups keep their layout.
+.popup[class*='announcement--style-'] .popup__content > div:first-of-type {
+  display: inline;
+}
+
+@each $style, $colours in $announcement-palette {
+  // Two classes, to beat the `.popup` and `.popup a` rules in custom.scss.
+  .popup.announcement--style-#{$style} {
+    background-color: map-get($colours, bg);
+    border-color: map-get($colours, border);
+    color: map-get($colours, text);
+
+    a,
+    a:visited,
+    a:hover,
+    a:active,
+    a:focus,
+    a:visited:hover,
+    a:visited:active,
+    a:visited:focus {
+      color: map-get($colours, text);
+    }
+  }
+
+  .dashboard__announcement.announcement--style-#{$style} {
+    color: map-get($colours, text);
+    border-left: 4px solid map-get($colours, border);
+    padding-left: 0.75em;
+  }
+}

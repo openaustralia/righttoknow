@@ -34,11 +34,20 @@ require File.expand_path('mask_job_runtime_conflict.rb', __dir__)
 # Monkey patch app code
 ['controller_patches.rb',
  'model_patches.rb',
+ 'announcement_patches.rb',
  'helper_patches.rb',
  'patch_mailer_paths.rb',
  'job_patches.rb'].each do |patch|
   require File.expand_path "../#{patch}", __FILE__
 end
+
+# Run this theme's migrations along with the host's (rake db:migrate, and so
+# cap deploy:migrate). Only the announcement ones so far, see
+# announcement_patches.rb.
+Rails.application.config.paths['db/migrate'] << File.expand_path('../db/migrate', __dir__)
+
+# Tagged donation URL, used by the /donate redirect and the donate links
+require File.expand_path('donation_url.rb', __dir__)
 
 # Error monitoring and APM (no-op unless the sentry gems and DSN are present)
 require File.expand_path('sentry_config.rb', __dir__)

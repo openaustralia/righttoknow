@@ -51,7 +51,9 @@
 <dd>
     <p>Yes please! We're built out of our supporters and volunteers.</p>
     <ul>
-    <li>You can <a href="https://oaf.org.au/donate/righttoknow/">make a donation</a>.</li>
+    <% if AlaveteliConfiguration.donation_url.present? %>
+    <li>You can <a href="<%= DonationUrl.build(content: 'credits') %>">make a donation</a>.</li>
+    <% end %>
     <li>Help people find successful requests, and monitor performance of authorities, by
     <a href="/categorise/play">playing the categorisation game</a>. </li>
     <li>Help people get the documents they’re after by annotating their requests with suggestions for improvements and ways to overcome objections.</li>

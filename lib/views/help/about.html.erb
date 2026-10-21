@@ -40,7 +40,7 @@
   </dd>
 
   <dt id="who">Who makes <%= site_name %>? <a href="#who">#</a> </dt>
-  <dd><%= site_name %> is part of the OpenAustralia Foundation collection. It was developed with software by the UK organisation mySociety and made possible by a <a href="https://oaf.org.au/2012/09/25/accelerating-to-the-future-of-online-democracy-in-australia/">donation from Guy King</a>. OpenAustralia Foundation is a charity, so if you like what we're doing, you can <a href="https://donate.oaf.org.au">make a donation</a>.
+  <dd><%= site_name %> is part of the OpenAustralia Foundation collection. It was developed with software by the UK organisation mySociety and made possible by a <a href="https://oaf.org.au/2012/09/25/accelerating-to-the-future-of-online-democracy-in-australia/">donation from Guy King</a>.<% if AlaveteliConfiguration.donation_url.present? %> OpenAustralia Foundation is a charity, so if you like what we're doing, you can <a href="<%= DonationUrl.build(content: 'about') %>">make a donation</a>.<% end %>
   </dd>
 
   <dt id="reporting">
