@@ -27,7 +27,7 @@ RSpec.describe ExternalReviewApplication do
     described_class.new({
       info_request: info_request,
       decision_type: 'original',
-      decision_date: '2026-08-01',
+      decision_date: 10.days.ago.to_date.iso8601,
       disagreement: 'The section 47E exemption was wrongly applied.',
       phone: '0491 570 006',
       other_information: ''
@@ -107,7 +107,7 @@ RSpec.describe ExternalReviewApplication do
       )
       expect(body).to include("Department of Examples's original decision")
       expect(body).to include('s 26 notice')
-      expect(body).to include('1 August 2026')
+      expect(body).to include(10.days.ago.to_date.strftime('%-d %B %Y'))
       expect(body).to include('The section 47E exemption was wrongly applied.')
       expect(body).to include('is attached to this email')
       expect(body).to include(info_request.url_title)
