@@ -9,8 +9,7 @@
 # the theme and run any pending migrations, but leave the sample data alone
 # unless --reset-data is passed.
 #
-# Runs as the Dev Container onCreateCommand, and via `make setup` for the
-# plain Docker workflow. Mirrors the steps in alaveteli's docker/bootstrap and
+# Run by the app container (.devcontainer/compose.yaml) every time it starts. Mirrors the steps in alaveteli's docker/bootstrap and
 # docker/setup scripts.
 
 set -e
