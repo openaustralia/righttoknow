@@ -252,6 +252,21 @@ RSpec.describe FollowupsController, type: :controller do # rubocop:disable Metri
       expect(response).to render_template('followups/external_review_new')
     end
 
+    it 'rejects the same application again when files were omitted from the zip' do
+      # Real zips only omit files over the size cap, which the fixtures
+      # don't reach, so fake the omission to put the paragraph in the letter.
+      allow_any_instance_of(ExternalReviewZip).to receive(:build).and_return(
+        ExternalReviewZip::Result.new(data: 'zip', omitted: ['1_2_large-scan.pdf'])
+      )
+      post_create
+      expect(info_request.reload.outgoing_messages.last.body)
+        .to include('1_2_large-scan.pdf')
+
+      expect { post_create }
+        .not_to(change { ActionMailer::Base.deliveries.size })
+      expect(flash[:error]).to include('previously submitted')
+    end
+
     it 'returns to the form for re-editing from the preview' do
       post_create(valid_fields, reedit: '1')
 

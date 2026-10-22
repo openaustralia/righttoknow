@@ -47,7 +47,7 @@ module ExternalReviewFollowups
     @outgoing_message.info_request = @info_request
     if !(@external_review_application.valid? && @outgoing_message.valid?)
       render 'followups/external_review_new'
-    elsif @info_request.find_existing_outgoing_message(@outgoing_message.body)
+    elsif external_review_already_submitted?
       flash.clear
       flash[:error] = _('You previously submitted that exact external ' \
                         'review application for this request.')
@@ -105,6 +105,16 @@ module ExternalReviewFollowups
     params.require(:external_review_application)
           .permit(:decision_type, :decision_date, :disagreement,
                   :extension_reasons, :phone, :other_information).to_h
+  end
+
+  # Sending adds any omitted attachments to the saved letter, so compare the
+  # letters without that paragraph, ignoring whitespace as core's check does.
+  def external_review_already_submitted?
+    squash = ->(body) { ExternalReviewLetter.without_omissions(body).gsub(/\s/, '') }
+    new_body = squash.call(@outgoing_message.body)
+
+    @info_request.outgoing_messages.where(what_doing: 'external_review')
+                 .any? { |message| squash.call(message.body) == new_body }
   end
 
   # Returns false if nothing was saved (the correspondence copy the reviewer

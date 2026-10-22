@@ -156,6 +156,16 @@ end
 # Composes the public application letter from an ExternalReviewApplication,
 # using the direction's own terms (s 26 notice, deemed access refusal).
 class ExternalReviewLetter
+  # The paragraph added once the zip is built, which depends on attachment
+  # sizes rather than on the applicant's answers.
+  OMITTED_PARAGRAPH = /\n\nThe following attachments were too large to include in this email and can be downloaded from that address: [^\n]*\./
+
+  # The letter as composed from the answers alone, so a saved letter can be
+  # compared with a newly composed one whether or not files were omitted.
+  def self.without_omissions(body)
+    body.to_s.sub(OMITTED_PARAGRAPH, '')
+  end
+
   attr_reader :application
 
   delegate :info_request, :decision_type, :disagreement, :extension_reasons,
