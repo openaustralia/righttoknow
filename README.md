@@ -101,7 +101,8 @@ Other useful targets (`make help` lists them all):
 
 ```bash
 make console  # Rails console
-make test     # run this theme's specs
+make test     # run this theme's specs (ARGS=spec/coupon_preview_spec.rb:42 to narrow)
+make lint     # run RuboCop, as CI does
 make seed     # load realistic AU test data (see "Seeding test data")
 make shell    # shell in the app container
 make status   # each container's health and host ports
@@ -146,6 +147,9 @@ the layout Alaveteli's theme tooling expects:
 3. From the `alaveteli` directory run
    `bundle exec script/switch-theme.rb righttoknow`.
 
+`make setup` installs the Ruby in `.ruby-version` with [mise](https://mise.jdx.dev) (preferred) or rbenv, then this
+repository's own gems, which is enough to deploy and lint from the host.
+
 ## Seeding test data
 
 [`script/seed_test_data.rb`](script/seed_test_data.rb) fills a development or
@@ -171,7 +175,7 @@ Run it against the Alaveteli **app** (not this theme repo) with `rails runner`.
 In the development environment above it's one command:
 
 ```bash
-make seed
+make seed                        # or SEED_BODIES_PER_TAG=2, and the other variables below
 ```
 
 or manually (from the `alaveteli` directory):
