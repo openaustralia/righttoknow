@@ -36,6 +36,9 @@ services:
     volumes:
       - ..:/alaveteli-themes/righttoknow:cached
       - alaveteli:/alaveteli
+      # Data that goes with the database, apart from the clone so `make clean` keeps the two in step
+      - storage:/alaveteli/storage
+      - xapian:/alaveteli/lib/acts_as_xapian/xapiandbs
       - bundle:/bundle
     depends_on:
       db:
@@ -70,6 +73,8 @@ services:
     volumes:
       - ..:/alaveteli-themes/righttoknow:cached
       - alaveteli:/alaveteli
+      - storage:/alaveteli/storage
+      - xapian:/alaveteli/lib/acts_as_xapian/xapiandbs
       - bundle:/bundle
     depends_on:
       db:
@@ -122,4 +127,6 @@ volumes:
   alaveteli: {}
   bundle: {}
   postgres: {}
+  storage: {} # raw emails and attachments
+  xapian: {}  # the search index
   redis: {}

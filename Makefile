@@ -5,13 +5,23 @@
 # --wait returns once every service passes its healthcheck, so the next command can use them straight away.
 
 COMPOSE := docker compose
-IN_APP  := $(COMPOSE) exec app sh -c
+# Runs a command in the app container, or in a fresh one if it has stopped, with any options for docker compose
+in_app = if [ -n "$$($(COMPOSE) ps -q --status running app)" ]; then $(COMPOSE) exec $(2) app $(1); else $(COMPOSE) run --rm $(2) app $(1); fi
+# The seed script's settings that are set, passed into the container (an empty one would override its default)
+SEED_ENV = $(foreach v,SEED_CSV_URL SEED_CSV_PATH SEED_BODIES_PER_TAG,$(if $($(v)),-e $(v)))
 
-.PHONY: help up services-up down clean clobber status logs shell console test seed reset
+.PHONY: help setup up services-up down clean clobber status logs shell console test lint seed reset
 
 help: ## Show this help (the default target)
 	@grep -hE '^[a-zA-Z0-9_.-]+:.*## ' $(MAKEFILE_LIST) | \
 	  awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+# The theme only runs inside Alaveteli, so on the host this is for deploying and linting; run the site with `make up`.
+# mise is preferred, rbenv works too; both read .ruby-version (mise via mise.toml).
+setup: ## Install Ruby (with mise or rbenv) and the theme's gems, for deploying and linting on the host
+	@if command -v mise >/dev/null; then mise trust && mise install && mise exec -- bundle install; \
+	elif command -v rbenv >/dev/null; then rbenv install --skip-existing && rbenv exec bundle install; \
+	else echo "Install mise (https://mise.jdx.dev) or rbenv first" >&2; exit 1; fi
 
 up: ## Start everything, including the site at http://localhost:3000 (the first run clones Alaveteli and takes a while)
 	$(COMPOSE) up --build --wait -d
@@ -39,14 +49,21 @@ status: ## Show each container's health and the host ports it's published on
 logs: ## Follow the logs of every container (or SERVICE=app for one)
 	$(COMPOSE) logs -f $(SERVICE)
 shell: ## Open a shell in the app container, or in a fresh one if it has stopped (e.g. after a failed start)
-	@if [ -n "$$(docker compose ps -q --status running app)" ]; then docker compose exec app bash; else docker compose run --rm app bash; fi
+	@$(call in_app,bash)
 
-console: ## Open a Rails console
-	$(IN_APP) 'cd /alaveteli && bin/rails console'
-test: ## Run this theme's specs
-	$(IN_APP) 'cd /alaveteli && bundle exec rspec lib/themes/righttoknow/spec'
-seed: ## Load realistic AU authorities and requests (see script/seed_test_data.rb)
-	$(IN_APP) 'cd /alaveteli && SEED_REBUILD_INDEX=1 bundle exec rails runner \
-	  /alaveteli-themes/righttoknow/script/seed_test_data.rb'
+# See "Tests and linting" in AGENTS.md. The specs run from the host app, so ARGS paths are relative to this repo.
+test: ## Run this theme's specs, after preparing the test database (ARGS=spec/x_spec.rb:42 to narrow)
+	@$(call in_app,bash -c 'cd /alaveteli && RAILS_ENV=test bin/rails db:prepare && \
+	  bundle exec rspec $(addprefix lib/themes/righttoknow/,$(or $(ARGS),spec))')
+# CI installs this RuboCop version on its own rather than the one in Gemfile.lock, so this does too
+lint: ## Run RuboCop as CI does (ARGS=<paths> to narrow)
+	@$(call in_app,bash -c 'cd /alaveteli-themes/righttoknow && \
+	  { gem list -i rubocop -v 1.80.2 >/dev/null || gem install --no-document rubocop -v 1.80.2; } && \
+	  rubocop _1.80.2_ $(ARGS)')
+console: ## Open a Rails console in the app container
+	@$(call in_app,bash -c 'cd /alaveteli && bin/rails console')
+seed: ## Load realistic AU authorities and requests (SEED_BODIES_PER_TAG=5 and the like, see "Seeding test data")
+	@$(call in_app,bash -c 'cd /alaveteli && SEED_REBUILD_INDEX=1 bundle exec rails runner \
+	  /alaveteli-themes/righttoknow/script/seed_test_data.rb',$(SEED_ENV))
 reset: clobber ## Remove everything, then start again from scratch
 	$(MAKE) up

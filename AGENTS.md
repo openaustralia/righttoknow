@@ -46,6 +46,10 @@ make services-up  # PostgreSQL, Redis and MailHog only
 make status       # each container's health and host ports
 make logs         # follow the logs (SERVICE=<name> for one container)
 make shell        # a shell in the app container, or a fresh one if it has stopped
+make test         # this theme's specs (ARGS=spec/coupon_preview_spec.rb:42 to narrow)
+make lint         # RuboCop, as CI runs it
+make console      # a Rails console
+make seed         # realistic AU authorities and requests (SEED_BODIES_PER_TAG=2 for fewer)
 make down         # stop and remove the containers, keeping the data
 make clean        # also remove built images and dependencies, so the next start rebuilds; keeps the data
 make clobber      # also remove the data, and prune unused Docker images and cache machine-wide
@@ -83,8 +87,9 @@ only resolves when this repo is checked out at `alaveteli/lib/themes/righttoknow
 They also set `ALAVETELI_TEST_THEME = 'righttoknow'` so the host's
 `config/initializers/theme_loader` loads this theme during the run.
 
-To run them, `cd` into the host Alaveteli checkout and run rspec from there,
-pointing at this theme's spec files, e.g.:
+`make test` runs them in the app container, preparing the test database first, and `ARGS=` takes paths relative
+to this repo. Without Docker, `cd` into the host Alaveteli checkout and run rspec from there, pointing at this
+theme's spec files, e.g.:
 
 ```bash
 cd ../alaveteli   # the host app, with this theme at lib/themes/righttoknow
@@ -94,8 +99,9 @@ bundle exec rspec lib/themes/righttoknow/spec/coupon_price_restriction_spec.rb
 There is also a `test/` directory (Minitest/`ActiveSupport::TestCase`) but it
 only contains the generated placeholder test — it is not actively used.
 
-CI (`.github/workflows/rubocop.yml`) only runs Rubocop, not the spec suite —
-lint locally with:
+CI (`.github/workflows/rubocop.yml`) only runs Rubocop, not the spec suite.
+`make lint` runs the same RuboCop version as CI, in the app container. On the host, after `make setup` (which
+installs the Ruby in `.ruby-version` with mise or rbenv, then this repo's gems):
 
 ```bash
 bundle exec rubocop
