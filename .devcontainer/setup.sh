@@ -29,7 +29,11 @@ success_msg 'done'
 
 if [ ! -d "$ALAVETELI_DIR/.git" ]; then
   notice_msg "Cloning $ALAVETELI_REPO ($ALAVETELI_BRANCH)..."
-  git clone --branch "$ALAVETELI_BRANCH" "$ALAVETELI_REPO" "$ALAVETELI_DIR"
+  # Not `git clone`, which refuses a directory that isn't empty, as the data volumes are mounted inside this one
+  git init -q "$ALAVETELI_DIR"
+  git -C "$ALAVETELI_DIR" remote add origin "$ALAVETELI_REPO"
+  git -C "$ALAVETELI_DIR" fetch origin "$ALAVETELI_BRANCH"
+  git -C "$ALAVETELI_DIR" checkout -t "origin/$ALAVETELI_BRANCH"
   success_msg 'done'
 fi
 
