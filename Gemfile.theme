@@ -20,5 +20,6 @@ source 'https://rubygems.org'
 gem 'sentry-rails', '~> 7.0'
 gem 'sentry-ruby', '~> 7.0'
 gem 'sentry-sidekiq', '~> 7.0'
-# Profiler used by Sentry profiling (requires Ruby 3.2+)
+# Profiler for Sentry profiling (requires Ruby 3.2+). Installed but not in
+# use: profiling is off in lib/sentry_config.rb because of #1150.
 gem 'vernier', '~> 1.10'
