@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Sentry error monitoring, tracing and profiling for Right To Know
+# Sentry error monitoring and tracing for Right To Know
 # (https://github.com/openaustralia/righttoknow/issues/1004), following the
 # canonical OAF configuration in the infrastructure repo's docs/monitoring.md.
 # Change the convention there first, then update every copy.
@@ -68,10 +68,12 @@ if defined?(Sentry)
     # code change if quota becomes a problem.
     config.traces_sample_rate =
       AlaveteliConfiguration.get('SENTRY_TRACES_SAMPLE_RATE', 0.1).to_f
-    # Relative to traces_sample_rate - profile 1 in 10 sampled transactions,
-    # using vernier
-    config.profiles_sample_rate = 0.1
-    config.profiler_class = Sentry::Vernier::Profiler
+
+    # No profiling here, unlike the canonical configuration. Vernier's thread
+    # hook takes a mutex that can be held by another thread when Open4 forks
+    # to run pdftk. The forked child then waits on it forever, and the Sidekiq
+    # worker thread waits on the child (issue #1150). Do not add
+    # profiles_sample_rate or profiler_class back until that is fixed.
   end
 
   # Attach the signed-in user to Sentry events so errors show who was
