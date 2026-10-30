@@ -14,8 +14,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        RUBY_VERSION: '${RUBY_VERSION:-3.4.10}' # production's, see Dockerfile
     # setup.sh clones Alaveteli on first run and is idempotent after that.
     command: >
       sh -c '/alaveteli-themes/righttoknow/.devcontainer/setup.sh &&
@@ -57,12 +55,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        RUBY_VERSION: '${RUBY_VERSION:-3.4.10}' # production's, see Dockerfile
-    # Gems are installed by the app container's setup.sh, so wait for them, giving up after the same START_LIMIT.
+    # The app container's setup.sh installs gems, links the theme and migrates, so wait until the app answers,
+    # giving up after the same START_LIMIT.
     command: >
       sh -c 'cd /alaveteli &&
-             /alaveteli-themes/righttoknow/.devcontainer/wait-for-app.sh app "the app container to install gems" bundle check &&
+             /alaveteli-themes/righttoknow/.devcontainer/wait-for-app.sh app "the app to finish setting up" curl -fs -o /dev/null http://app:3000/ &&
              bundle exec sidekiq'
     environment:
       START_LIMIT: *start_limit

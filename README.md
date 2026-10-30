@@ -110,7 +110,7 @@ make shell    # shell in the app container
 make status   # each container's health and host ports, then where to browse
 make down     # stop, keeping the data
 make clean    # also re-clone Alaveteli and rebuild, keeping the data
-make reset    # destroy containers and data, set up from scratch
+make reset    # remove this checkout's containers, images and data, then set up from scratch
 ```
 
 To develop against a different Alaveteli branch or fork, set
@@ -122,17 +122,18 @@ worktree at once, see [Port clashes](AGENTS.md#port-clashes) in AGENTS.md.
 ### If the app won't start
 
 Startup fails loudly on purpose, so a broken setup gets noticed instead of hiding behind a container that looks fine.
-If setup fails, or takes longer than `START_LIMIT` (20 minutes here, set in `.devcontainer/compose.yaml`), the `app`
-container stops, `make up` reports the failure, and the dev container shows an error instead of opening.
+If setup fails, the `app` container stops. If the app isn't ready within `START_LIMIT` (20 minutes here, set in
+`.devcontainer/compose.yaml`), it shows as unhealthy. Either way, `make up` reports the failure and the dev container
+shows an error instead of opening.
 
 To fix it:
 
-1. `make status` shows which container stopped, and `make logs SERVICE=app` shows why.
+1. `make status` shows which container stopped or is unhealthy, and `make logs SERVICE=app` shows why.
 2. `make shell` opens a shell in a fresh `app` container even when it has stopped, so you can rerun the setup by hand
    and fix the problem.
 3. `make up`, or reopen the dev container, to start again.
 
-On a slow machine, a longer limit can go in `.env`, for example `START_LIMIT=20m`.
+On a slow machine, a longer limit can go in `.env`, for example `START_LIMIT=40m`.
 
 ### Option 3: Manual setup
 
