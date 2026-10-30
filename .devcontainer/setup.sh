@@ -9,8 +9,7 @@
 # the theme and run any pending migrations, but leave the sample data alone
 # unless --reset-data is passed.
 #
-# Runs as the Dev Container onCreateCommand, and via `make setup` for the
-# plain Docker workflow. Mirrors the steps in alaveteli's docker/bootstrap and
+# Run by the app container (.devcontainer/compose.yaml) every time it starts. Mirrors the steps in alaveteli's docker/bootstrap and
 # docker/setup scripts.
 
 set -e
@@ -28,9 +27,19 @@ notice_msg "Waiting for the database..."
 wait-for-it db:5432 --strict --timeout=120 -- true
 success_msg 'done'
 
-if [ ! -d "$ALAVETELI_DIR/.git" ]; then
+# No commit checked out means no clone yet, or one that was interrupted, which starts again
+if ! git -C "$ALAVETELI_DIR" rev-parse -q --verify HEAD >/dev/null 2>&1; then
   notice_msg "Cloning $ALAVETELI_REPO ($ALAVETELI_BRANCH)..."
-  git clone --branch "$ALAVETELI_BRANCH" "$ALAVETELI_REPO" "$ALAVETELI_DIR"
+  # Not `git clone`, which refuses a directory that isn't empty, as the data volumes are mounted inside this one
+  rm -rf "$ALAVETELI_DIR/.git"
+  git init -q "$ALAVETELI_DIR"
+  git -C "$ALAVETELI_DIR" remote add origin "$ALAVETELI_REPO"
+  # A branch or a tag, as `git clone --branch` takes
+  git -C "$ALAVETELI_DIR" fetch origin "$ALAVETELI_BRANCH"
+  git -C "$ALAVETELI_DIR" checkout -q -f -B "$ALAVETELI_BRANCH" FETCH_HEAD
+  # So `git pull` works in a branch, as after `git clone`
+  git -C "$ALAVETELI_DIR" rev-parse -q --verify "origin/$ALAVETELI_BRANCH" >/dev/null &&
+    git -C "$ALAVETELI_DIR" branch -q -u "origin/$ALAVETELI_BRANCH"
   success_msg 'done'
 fi
 

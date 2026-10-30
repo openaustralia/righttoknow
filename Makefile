@@ -1,50 +1,74 @@
 # Docker-based development workflow for the Right to Know theme.
 #
-# Uses the same compose stack as the Dev Container (.devcontainer/), so you
-# can develop with plain Docker and any editor — no VS Code required.
-# Run `make setup` once, then `make server` and open http://localhost:3000.
+# The stack is defined in .devcontainer/compose.yaml and shared with the Dev Container, so you can develop with plain
+# Docker and any editor. See "Docker development environment" in AGENTS.md.
+# --wait returns once every service passes its healthcheck, so the next command can use them straight away.
 
-COMPOSE := docker compose -f .devcontainer/docker-compose.yml
-APP     := $(COMPOSE) exec app
-IN_APP  := $(APP) sh -c
+COMPOSE := docker compose
+# Runs a command in the app container, or in a fresh one if it has stopped, with any options for docker compose
+in_app = if [ -n "$$($(COMPOSE) ps -q --status running app)" ]; then $(COMPOSE) exec $(2) app $(1); else $(COMPOSE) run --rm $(2) app $(1); fi
+# The seed script's settings that are set, passed into the container (an empty one would override its default)
+SEED_ENV = $(foreach v,SEED_CSV_URL SEED_CSV_PATH SEED_BODIES_PER_TAG,$(if $($(v)),-e $(v)))
 
-.PHONY: help setup server console test seed shell logs stop down reset
+.PHONY: help setup up services-up down clean clobber status logs shell console test lint seed reset
 
-help: ## Show this help
-	@grep -E '^[a-z][a-zA-Z_-]*:.*## ' $(MAKEFILE_LIST) | \
-	  awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
+help: ## Show this help (the default target)
+	@grep -hE '^[a-zA-Z0-9_.-]+:.*## ' $(MAKEFILE_LIST) | \
+	  awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
 
-setup: ## Build images, start services and bootstrap Alaveteli + this theme
-	$(COMPOSE) build
-	$(COMPOSE) up -d
-	$(APP) /alaveteli-themes/righttoknow/.devcontainer/setup.sh
+# The theme only runs inside Alaveteli, so on the host this is for deploying and linting; run the site with `make up`.
+# mise is preferred, rbenv works too; both read .ruby-version (mise via mise.toml).
+setup: ## Install Ruby (with mise or rbenv) and the theme's gems, for deploying and linting on the host
+	@if command -v mise >/dev/null; then mise trust && mise install && mise exec -- bundle install; \
+	elif command -v rbenv >/dev/null; then rbenv install --skip-existing && rbenv exec bundle install; \
+	else echo "Install mise (https://mise.jdx.dev) or rbenv first" >&2; exit 1; fi
 
-server: ## Run the Rails server (then open http://localhost:3000)
-	$(COMPOSE) up -d
-	$(IN_APP) 'cd /alaveteli && rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0'
-
-console: ## Open a Rails console
-	$(IN_APP) 'cd /alaveteli && bin/rails console'
-
-test: ## Run this theme's specs
-	$(IN_APP) 'cd /alaveteli && bundle exec rspec lib/themes/righttoknow/spec'
-
-seed: ## Load realistic AU authorities and requests (see script/seed_test_data.rb)
-	$(IN_APP) 'cd /alaveteli && SEED_REBUILD_INDEX=1 bundle exec rails runner \
-	  /alaveteli-themes/righttoknow/script/seed_test_data.rb'
-
-shell: ## Open a shell in the app container
-	$(APP) bash
-
-logs: ## Tail service logs
-	$(COMPOSE) logs -f
-
-stop: ## Stop services (keeps data)
-	$(COMPOSE) stop
-
-down: ## Stop and remove containers (keeps data volumes)
-	$(COMPOSE) down
-
-reset: ## Destroy everything (containers AND data volumes) and set up again
+up: ## Start everything, including the site at http://localhost:3000 (the first run clones Alaveteli and takes a while)
+	$(COMPOSE) up --build --wait -d
+services-up: ## Start PostgreSQL, Redis and MailHog only
+	$(COMPOSE) up --build --wait -d db redis mailhog
+down: ## Stop and remove the containers, keeping the data
+	$(COMPOSE) down --remove-orphans
+# Everything this checkout built, so the next `make up` rebuilds from scratch. The data is kept.
+# VS Code's dev container builds its own images on top of compose's. Only this project's containers say which
+# they are, so they're noted before `down` removes them.
+clean: ## Remove containers, built images (VS Code's too), gems and the Alaveteli clone, keeping the data
+	p=$$($(COMPOSE) config | sed -n 's/^name: //p'); \
+	vsc=$$(docker ps -a --filter "label=com.docker.compose.project=$$p" --format '{{.Image}}' | grep '^vsc-' | sort -u); \
+	$(COMPOSE) down --remove-orphans --rmi local && \
+	docker volume rm --force "$${p}_alaveteli" "$${p}_bundle" && \
+	{ [ -z "$$vsc" ] || docker rmi --force $$vsc; }
+# Reaches past this checkout, for after switching branches or changing dependencies. Other projects lose only
+# download and build time, as volumes (where their databases live) are never pruned.
+clobber: clean ## Also remove the data, then all stopped containers, unused images and build cache machine-wide
 	$(COMPOSE) down --volumes
-	$(MAKE) setup
+	@echo "Pruning stopped containers, unused images and build cache from ALL projects (volumes are kept)"
+	docker system prune --all --force
+status: ## Show each container's health, the host ports it's published on, and where to browse
+	@$(COMPOSE) ps -a --format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}'
+	@echo; port() { $(COMPOSE) port $$1 $$2 2>/dev/null | sed 's/.*://'; }; \
+	p=$$(port app 3000); [ -z "$$p" ] || { echo "Site:    http://righttoknow.localhost:$$p/"; \
+	  echo "Admin:   http://righttoknow.localhost:$$p/admin/requests?emergency=1 (user: adminxxxx, password: passwordx)"; }; \
+	p=$$(port mailhog 8025); [ -z "$$p" ] || echo "MailHog: http://mailhog.localhost:$$p/"
+logs: ## Follow the logs of every container (or SERVICE=app for one)
+	$(COMPOSE) logs -f $(SERVICE)
+shell: ## Open a shell in the app container, or in a fresh one if it has stopped (e.g. after a failed start)
+	@$(call in_app,bash)
+
+# See "Tests and linting" in AGENTS.md. The specs run from the host app, so ARGS paths are relative to this repo.
+test: ## Run this theme's specs, after preparing the test database (ARGS=spec/x_spec.rb:42 to narrow)
+	@$(call in_app,bash -c 'cd /alaveteli && RAILS_ENV=test bin/rails db:prepare && \
+	  bundle exec rspec $(addprefix lib/themes/righttoknow/,$(or $(ARGS),spec))')
+# RuboCop from this repo's Gemfile.lock, as CI uses. Its gems go in the bundle volume beside Alaveteli's.
+lint: ## Run RuboCop as CI does (ARGS=<paths> to narrow)
+	@$(call in_app,bash -c 'cd /alaveteli-themes/righttoknow && export BUNDLE_WITHOUT=deployment BUNDLE_FROZEN=true && \
+	  { bundle check >/dev/null || bundle install --quiet; } && bundle exec rubocop $(ARGS)')
+console: ## Open a Rails console in the app container
+	@$(call in_app,bash -c 'cd /alaveteli && bin/rails console')
+seed: ## Load realistic AU authorities and requests (SEED_BODIES_PER_TAG=5 and the like, see "Seeding test data")
+	@$(call in_app,bash -c 'cd /alaveteli && SEED_REBUILD_INDEX=1 bundle exec rails runner \
+	  /alaveteli-themes/righttoknow/script/seed_test_data.rb',$(SEED_ENV))
+# Unlike clobber, leaves other projects' Docker containers, images and cache alone
+reset: clean ## Remove this checkout's containers, images and data, then start again from scratch
+	$(COMPOSE) down --volumes
+	$(MAKE) up

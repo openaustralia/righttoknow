@@ -1,15 +1,17 @@
 {
   "name": "Right to Know (Alaveteli theme)",
-  "dockerComposeFile": "docker-compose.yml",
+  "dockerComposeFile": "../compose.yaml",
   "service": "app",
   "workspaceFolder": "/alaveteli-themes/righttoknow",
-  "onCreateCommand": "/alaveteli-themes/righttoknow/.devcontainer/setup.sh",
-  "forwardPorts": [3000, 1080],
+  "shutdownAction": "stopCompose",
+  // Waits for the app to finish starting, so the first command you run works. Gives up after START_LIMIT (compose.yaml).
+  "postStartCommand": ["sh", ".devcontainer/wait-for-app.sh", "app", "setup.sh and Rails", "curl", "-fs", "-o", "/dev/null", "http://localhost:3000/"],
+  // MailHog runs in its own container, so it's forwarded from there
+  "forwardPorts": [3000, "mailhog:8025"],
   "portsAttributes": {
     "3000": { "label": "Rails (Right to Know)", "onAutoForward": "notify" },
-    "1080": { "label": "MailHog (email)", "onAutoForward": "silent" }
+    "mailhog:8025": { "label": "MailHog (email)", "onAutoForward": "silent" }
   },
-  "postAttachCommand": "echo 'Start the site with: cd /alaveteli && bin/rails server -b 0.0.0.0 — then open http://localhost:3000'",
   "customizations": {
     "vscode": {
       "extensions": [
