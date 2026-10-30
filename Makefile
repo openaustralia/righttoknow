@@ -68,5 +68,7 @@ console: ## Open a Rails console in the app container
 seed: ## Load realistic AU authorities and requests (SEED_BODIES_PER_TAG=5 and the like, see "Seeding test data")
 	@$(call in_app,bash -c 'cd /alaveteli && SEED_REBUILD_INDEX=1 bundle exec rails runner \
 	  /alaveteli-themes/righttoknow/script/seed_test_data.rb',$(SEED_ENV))
-reset: clobber ## Remove everything, then start again from scratch
+# Unlike clobber, leaves other projects' Docker containers, images and cache alone
+reset: clean ## Remove this checkout's containers, images and data, then start again from scratch
+	$(COMPOSE) down --volumes
 	$(MAKE) up
