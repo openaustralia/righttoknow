@@ -78,9 +78,11 @@ Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers
 2. Wait for setup to finish — the first run clones Alaveteli, installs gems,
    and migrates and seeds the databases, so it takes a while. The Rails
    server starts by itself once it's done.
-3. Open <http://localhost:3000>. Log in as the development admin with the
-   username and password from `config/general-righttoknow.yml.example`
-   (`adminxxxx` / `passwordx`).
+3. Open <http://localhost:3000>. For the admin pages, open
+   <http://localhost:3000/admin/requests?emergency=1> and enter the emergency
+   admin's username and password from `config/general-righttoknow.yml.example`
+   (`adminxxxx` / `passwordx`). `make status` shows these addresses on the
+   ports in use.
 
 Inside the container, Alaveteli lives at `/alaveteli` and this theme is
 mounted at `/alaveteli-themes/righttoknow` (your workspace folder). Theme
@@ -105,7 +107,7 @@ make test     # run this theme's specs (ARGS=spec/coupon_preview_spec.rb:42 to n
 make lint     # run RuboCop, as CI does
 make seed     # load realistic AU test data (see "Seeding test data")
 make shell    # shell in the app container
-make status   # each container's health and host ports
+make status   # each container's health and host ports, then where to browse
 make down     # stop, keeping the data
 make clean    # also re-clone Alaveteli and rebuild, keeping the data
 make reset    # destroy containers and data, set up from scratch
