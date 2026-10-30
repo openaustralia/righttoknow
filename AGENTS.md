@@ -43,7 +43,7 @@ One stack, defined in `.devcontainer/compose.yaml`, serves every way of working:
 ```
 make up           # everything, including the app at http://localhost:3000, once it's ready
 make services-up  # PostgreSQL, Redis and MailHog only
-make status       # each container's health and host ports
+make status       # each container's health and host ports, then where to browse
 make logs         # follow the logs (SERVICE=<name> for one container)
 make shell        # a shell in the app container, or a fresh one if it has stopped
 make test         # this theme's specs (ARGS=spec/coupon_preview_spec.rb:42 to narrow)
