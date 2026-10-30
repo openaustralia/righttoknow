@@ -59,11 +59,10 @@ shell: ## Open a shell in the app container, or in a fresh one if it has stopped
 test: ## Run this theme's specs, after preparing the test database (ARGS=spec/x_spec.rb:42 to narrow)
 	@$(call in_app,bash -c 'cd /alaveteli && RAILS_ENV=test bin/rails db:prepare && \
 	  bundle exec rspec $(addprefix lib/themes/righttoknow/,$(or $(ARGS),spec))')
-# CI installs this RuboCop version on its own rather than the one in Gemfile.lock, so this does too
+# RuboCop from this repo's Gemfile.lock, as CI uses. Its gems go in the bundle volume beside Alaveteli's.
 lint: ## Run RuboCop as CI does (ARGS=<paths> to narrow)
-	@$(call in_app,bash -c 'cd /alaveteli-themes/righttoknow && \
-	  { gem list -i rubocop -v 1.80.2 >/dev/null || gem install --no-document rubocop -v 1.80.2; } && \
-	  rubocop _1.80.2_ $(ARGS)')
+	@$(call in_app,bash -c 'cd /alaveteli-themes/righttoknow && export BUNDLE_WITHOUT=deployment BUNDLE_FROZEN=true && \
+	  { bundle check >/dev/null || bundle install --quiet; } && bundle exec rubocop $(ARGS)')
 console: ## Open a Rails console in the app container
 	@$(call in_app,bash -c 'cd /alaveteli && bin/rails console')
 seed: ## Load realistic AU authorities and requests (SEED_BODIES_PER_TAG=5 and the like, see "Seeding test data")
