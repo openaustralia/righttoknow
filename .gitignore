@@ -90,3 +90,9 @@ build-iPhoneSimulator/
 # .rubocop-https?--*
 
 # End of https://www.toptal.com/developers/gitignore/api/ruby,macos
+
+# Claude Code's local per-project notes, settings, worktrees and scheduler lock
+/CLAUDE.local.md
+/.claude/*.local*
+/.claude/worktrees/
+/.claude/scheduled_tasks.*
