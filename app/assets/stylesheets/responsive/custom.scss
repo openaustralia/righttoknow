@@ -216,6 +216,9 @@ a.link_button_green_large {
   background-image: image-url("alaveteli-pro/logo.png");
   background-image: image-url("alaveteli-pro/logo.svg"),
                     linear-gradient(transparent, transparent);
+  position: static;
+  z-index: unset;
+  transform: none;
 }
 
 .navigation {
