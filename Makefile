@@ -48,7 +48,7 @@ status: ## Show each container's health, the host ports it's published on, and w
 	@$(COMPOSE) ps -a --format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}'
 	@echo; port() { $(COMPOSE) port $$1 $$2 2>/dev/null | sed 's/.*://'; }; \
 	p=$$(port app 3000); [ -z "$$p" ] || { echo "Site:    http://righttoknow.localhost:$$p/"; \
-	  echo "Admin:   http://righttoknow.localhost:$$p/admin/requests?emergency=1 (user: adminxxxx, password: passwordx)"; }; \
+	  echo "Admin:   http://righttoknow.localhost:$$p/admin/requests?emergency=1 (HTTP basic auth: adminxxxx / passwordx)"; }; \
 	p=$$(port mailhog 8025); [ -z "$$p" ] || echo "MailHog: http://mailhog.localhost:$$p/"
 logs: ## Follow the logs of every container (or SERVICE=app for one)
 	$(COMPOSE) logs -f $(SERVICE)

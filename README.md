@@ -81,8 +81,9 @@ Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers
 3. Open <http://localhost:3000>. For the admin pages, open
    <http://localhost:3000/admin/requests?emergency=1> and enter the emergency
    admin's username and password from `config/general-righttoknow.yml.example`
-   (`adminxxxx` / `passwordx`). `make status` shows these addresses on the
-   ports in use.
+   (`adminxxxx` / `passwordx`) in the browser's basic auth prompt, not the
+   site's sign-in form. `make status` shows these addresses on the ports in
+   use.
 
 Inside the container, Alaveteli lives at `/alaveteli` and this theme is
 mounted at `/alaveteli-themes/righttoknow` (your workspace folder). Theme
