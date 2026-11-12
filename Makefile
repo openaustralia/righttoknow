@@ -10,7 +10,7 @@ in_app = if [ -n "$$($(COMPOSE) ps -q --status running app)" ]; then $(COMPOSE) 
 # The seed script's settings that are set, passed into the container (an empty one would override its default)
 SEED_ENV = $(foreach v,SEED_CSV_URL SEED_CSV_PATH SEED_BODIES_PER_TAG,$(if $($(v)),-e $(v)))
 
-.PHONY: help setup up services-up down clean clobber status logs shell console test lint seed reset
+.PHONY: help setup up services-up down clean clobber status logs shell console restart test lint seed reset
 
 help: ## Show this help (the default target)
 	@grep -hE '^[a-zA-Z0-9_.-]+:.*## ' $(MAKEFILE_LIST) | \
@@ -65,6 +65,9 @@ lint: ## Run RuboCop as CI does (ARGS=<paths> to narrow)
 	  { bundle check >/dev/null || bundle install --quiet; } && bundle exec rubocop $(ARGS)')
 console: ## Open a Rails console in the app container
 	@$(call in_app,bash -c 'cd /alaveteli && bin/rails console')
+# Quicker than restarting the container, which reruns setup.sh
+restart: ## Restart the Rails server, needed after changing Ruby files under lib/
+	$(COMPOSE) exec app bash -c 'cd /alaveteli && bin/rails restart'
 seed: ## Load realistic AU authorities and requests (SEED_BODIES_PER_TAG=5 and the like, see "Seeding test data")
 	@$(call in_app,bash -c 'cd /alaveteli && SEED_REBUILD_INDEX=1 bundle exec rails runner \
 	  /alaveteli-themes/righttoknow/script/seed_test_data.rb',$(SEED_ENV))

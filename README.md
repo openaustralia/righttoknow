@@ -87,7 +87,7 @@ Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers
 Inside the container, Alaveteli lives at `/alaveteli` and this theme is
 mounted at `/alaveteli-themes/righttoknow` (your workspace folder). Theme
 changes take effect on reload; changes to Ruby files under `lib/` need a
-server restart: `docker compose restart app`.
+server restart: `make restart`.
 
 ### Option 2: Docker + Make
 
@@ -103,6 +103,7 @@ Other useful targets (`make help` lists them all):
 
 ```bash
 make console  # Rails console
+make restart  # restart the Rails server, after changing Ruby files under lib/
 make test     # run this theme's specs (ARGS=spec/coupon_preview_spec.rb:42 to narrow)
 make lint     # run RuboCop, as CI does
 make seed     # load realistic AU test data (see "Seeding test data")
