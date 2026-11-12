@@ -49,6 +49,7 @@ make shell        # a shell in the app container, or a fresh one if it has stopp
 make test         # this theme's specs (ARGS=spec/coupon_preview_spec.rb:42 to narrow)
 make lint         # RuboCop, as CI runs it
 make console      # a Rails console
+make restart      # restart the Rails server, after changing Ruby files under lib/
 make seed         # realistic AU authorities and requests (SEED_BODIES_PER_TAG=2 for fewer)
 make down         # stop and remove the containers, keeping the data
 make clean        # also remove built images and dependencies, so the next start rebuilds; keeps the data
@@ -61,7 +62,7 @@ see "If the app won't start" in the README.
 
 The app container runs `.devcontainer/setup.sh` and then the Rails server every time it starts. On the first run that
 clones Alaveteli into a volume, installs gems and loads sample data, so it takes a while. Restart the server with
-`docker compose restart app`.
+`make restart`, which is needed after changing Ruby files under `lib/`.
 
 ### Port clashes
 
