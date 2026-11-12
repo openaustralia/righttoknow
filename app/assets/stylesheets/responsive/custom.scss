@@ -64,12 +64,12 @@
 .sign_in_link,
 .sign_in_link:link,
 .sign_in_link:visited {
-  color: #fff;
+  color: $color_primary_text;
   text-decoration: none;
   &:hover,
   &:active,
   &:focus {
-    color: #fff;
+    color: $color_primary_text;
   }
 }
 
@@ -179,9 +179,23 @@ a.link_button_green_large {
 /* Header */
 
 .topnav {
+  position: relative;
   background-color: $topnav_bg;
   @media( min-width: $main_menu-mobile_menu_cutoff ) {
     box-shadow: inset 0 1px 3px 0 rgba(0,0,0,0.1);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    contain: strict;
+    pointer-events: none;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: 7px;
+    background: linear-gradient(to bottom, rgba($color_primary_text, 0.4), rgba($topnav_bg, 0)), $topnav_bg;
+    z-index: 1;
   }
 }
 
@@ -192,8 +206,10 @@ a.link_button_green_large {
 // SVG fallback for logo
 .site-title__logo {
   // https://css-tricks.com/a-complete-guide-to-svg-fallbacks/
-  background-image: image-url("logo.svg"),
-                    linear-gradient(transparent, transparent);
+  position: relative;
+  z-index: 2;
+  background: image-url("logo.svg") no-repeat 0 0 / 100% 100%;
+  transform: translate(0, 5px) scale(3);
 }
 
 .banner--pro .site-title__logo {
@@ -206,7 +222,6 @@ a.link_button_green_large {
   border-bottom: none;
   a {
     @extend %menu-item;
-    color: transparentize($color_white, 0.1);
     @media( min-width: $main_menu-mobile_menu_cutoff ) {
       padding: 0.875em 1em;
     }
@@ -229,8 +244,8 @@ a.link_button_green_large {
   background-color: $color_white;
   border: none;
   transition: all 0.3s ease-out;
-  color: $color_primary;
-  border-radius: 0;
+  color: $color_primary_text;
+  border-radius: 99px;
   font-size: inherit;
 }
 
@@ -449,6 +464,7 @@ p.locale-list-trigger {
     width: 44px;
     height: 38px;
     padding: 0;
+    z-index: 3;
     /* Make sure clickable area covers image */
     a {
       width: 100%;
@@ -675,9 +691,23 @@ dt {
 
 /* How it works section */
 .steps__list {
+  &::before,
+  &::after {
+    content: none !important;
+  }
+
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(1, 1fr);
+
+  @include respond-min( $main_menu-mobile_menu_cutoff ){
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   li {
     @include respond-min( $main_menu-mobile_menu_cutoff ){
-      width: 33.3333%;
+      width: 100%;
+      height: 100%;
       margin-left: 0 !important;
     }
   }
@@ -686,7 +716,10 @@ dt {
 .steps__step-box {
   background-color: $color_white;
   padding: 1.5em;
+  height: calc(100% - 2em);
   box-shadow: 0 1px 2px transparentize($color_black, 0.75);
+  border-radius: 4px;
+
   p {
     line-height: 1.5em;
     color: $color_neutral_dark;
@@ -696,11 +729,11 @@ dt {
 .steps__step-number {
   height: 3.5em;
   width: 3.5em;
-  background-color: $color_primary;
-  box-shadow: 0 1px 2px transparentize($color_black, 0.75);
+  background-color: $body-bg;
+  box-shadow: 0 -2px 2px transparentize($color_black, 0.75);
   padding: 1em;
   border-radius: 100%;
-  color: $color_white;
+  color: $color_primary_text;
   @include respond-min( $main_menu-mobile_menu_cutoff ){
     left: 50%;
     margin-left: -1.75em;
