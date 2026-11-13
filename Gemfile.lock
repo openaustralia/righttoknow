@@ -120,7 +120,7 @@ GEM
       method_source (~> 1.0)
       reline (>= 0.6.0)
     racc (1.8.1)
-    rack (3.1.21)
+    rack (3.1.23)
     rack-livereload (0.6.1)
       rack (>= 3.0, < 3.2)
     rainbow (3.1.1)
