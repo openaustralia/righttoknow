@@ -5,7 +5,7 @@
   "workspaceFolder": "/alaveteli-themes/righttoknow",
   "shutdownAction": "stopCompose",
   // Waits for the app to finish starting, so the first command you run works. Gives up after START_LIMIT (compose.yaml).
-  "postStartCommand": ["sh", ".devcontainer/wait-for-app.sh", "app", "setup.sh and Rails", "curl", "-fs", "-o", "/dev/null", "http://localhost:3000/"],
+  "postStartCommand": ["sh", ".devcontainer/wait-for-app.sh", "app", "setup.sh and Rails", "curl", "-fs", "-m", "10", "-o", "/dev/null", "http://127.0.0.1:3000/"],
   // MailHog runs in its own container, so it's forwarded from there
   "forwardPorts": [3000, "mailhog:8025"],
   "portsAttributes": {
