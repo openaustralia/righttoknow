@@ -88,7 +88,8 @@ Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers
 Inside the container, Alaveteli lives at `/alaveteli` and this theme is
 mounted at `/alaveteli-themes/righttoknow` (your workspace folder). Theme
 changes take effect on reload; changes to Ruby files under `lib/` need a
-server restart: `make restart`.
+server restart: `cd /alaveteli && bin/rails restart`, or use `make restart`
+from the host.
 
 ### Option 2: Docker + Make
 
