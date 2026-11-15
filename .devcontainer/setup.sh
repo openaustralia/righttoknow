@@ -71,10 +71,18 @@ ln -sfn "$THEME_DIR" lib/themes/righttoknow
 bin/rails assets:clean >/dev/null
 success_msg 'done'
 
-# Sample data is loaded once, on a database that has never been seeded. Pass
+# Sample data is loaded once. There's a check for each step below, so a run
+# that stopped partway loads it again. The email check covers only the sample
+# emails, as a reload empties tables of any data added since. Pass
 # --reset-data to force a reload.
 set +e
-bin/rails runner 'User.find(1)' >/dev/null 2>&1
+bin/rails runner '
+  sample_emails = RawEmail.where(id: YAML.load_file("spec/fixtures/raw_emails.yml").values.map { |e| e["id"] })
+  loaded = User.exists?(1) &&
+    sample_emails.all? { |e| e.file.attached? && e.file.blob.service.exist?(e.file.key) } &&
+    InfoRequest.external.none? &&
+    (ActsAsXapian.readable_init; ActsAsXapian.db.doccount.positive?)
+  exit(loaded ? 0 : 1)' >/dev/null 2>&1
 RESET_DATA_FLAG=$?
 set -e
 for arg in "$@"; do
@@ -83,6 +91,8 @@ for arg in "$@"; do
     *);;
   esac
 done
+# The index is rebuilt last, so until then an old one must not pass the check
+[ $RESET_DATA_FLAG -eq 0 ] || rm -rf lib/acts_as_xapian/xapiandbs/development
 
 # Migrations run every time, not just on first setup: /alaveteli is a
 # persistent volume, so a re-run after the checkout moves to a revision with
