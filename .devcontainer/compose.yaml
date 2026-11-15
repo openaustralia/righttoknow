@@ -30,7 +30,8 @@ services:
       ALAVETELI_REPO: ${ALAVETELI_REPO:-https://github.com/openaustralia/alaveteli.git}
       ALAVETELI_BRANCH: ${ALAVETELI_BRANCH:-staging}
     ports:
-      - '${RAILS_PORT:-3000}:3000'
+      # This machine only by default, given the well-known logins; the database and Redis always are
+      - '${BIND_ADDRESS:-127.0.0.1}:${RAILS_PORT:-3000}:3000'
     volumes:
       - ..:/alaveteli-themes/righttoknow:cached
       - alaveteli:/alaveteli
@@ -88,7 +89,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=password
     ports:
-      - "5432" # rarely needed from the host: a random port, see `make status`
+      - "127.0.0.1::5432" # rarely needed from the host: a random port, see `make status`
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
@@ -100,7 +101,7 @@ services:
     image: redis:6.0.16 # production's version, Ubuntu 22.04's package
     command: redis-server
     ports:
-      - "6379" # rarely needed from the host: a random port, see `make status`
+      - "127.0.0.1::6379" # rarely needed from the host: a random port, see `make status`
     volumes:
       - redis:/data
     healthcheck:
@@ -114,7 +115,7 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - '${MAILHOG_PORT:-1080}:8025'
+      - '${BIND_ADDRESS:-127.0.0.1}:${MAILHOG_PORT:-1080}:8025'
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025/"]
       interval: 2s

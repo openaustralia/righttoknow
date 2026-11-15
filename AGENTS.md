@@ -70,6 +70,7 @@ clones Alaveteli into a volume, installs gems and loads sample data, so it takes
 |----------------|---------|--------------------|
 | `RAILS_PORT`   | 3000    | the Rails server   |
 | `MAILHOG_PORT` | 1080    | the MailHog web UI |
+| `BIND_ADDRESS` | 127.0.0.1 | the site and MailHog; set to `0.0.0.0` for others with access to this network |
 
 Put overrides in `.env` at the repo root, which is gitignored, with different values in each worktree. Compose reads
 it however you start the stack. Containers and data are named `righttoknow` (`name:` in `compose.yaml`), so a second checkout of
