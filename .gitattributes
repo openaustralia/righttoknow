@@ -1,0 +1,6 @@
+# Scripts must keep LF line endings to run in the dev container, which mounts a Windows checkout as is, and under
+# WSL or Git Bash
+*.sh                                  text eol=lf
+Makefile                              text eol=lf
+script/destroy-never-confirmed-accounts text eol=lf
+script/send-dormant-account-notices   text eol=lf
