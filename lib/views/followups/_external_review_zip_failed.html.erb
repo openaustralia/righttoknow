@@ -1,0 +1,6 @@
+<%= _('We could not prepare a copy of your correspondence to send with your ' \
+      'application, so it has not been sent. Please try again, or apply ' \
+      'using <a href="{{form_url}}">{{reviewer_name}}\'s online form</a> ' \
+      'and include this page\'s address.',
+      form_url: reviewer[:form_url],
+      reviewer_name: h(reviewer[:name])) %>

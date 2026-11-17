@@ -1,0 +1,115 @@
+<%# Theme override of the host's request/_after_actions.html.erb. The only
+    change: an "Apply for external review" owner action for authorities in
+    jurisdictions with a wired-up external reviewer (see
+    PublicBody#external_reviewer in lib/model_patches.rb), alongside the
+    internal review action. Keep the rest in sync with core. %>
+<div id="after_actions" class="after-actions">
+  <ul class="action-menu after-actions__action-menu">
+    <li>
+      <a href="#" class="action-menu__button"><%= _('Actions') %></a>
+
+      <ul class="action-menu__menu">
+        <% unless info_request.is_external? %>
+          <li class="action-menu__menu__item">
+            <span class="action-menu__menu__heading">
+              <%= _('{{info_request_user_name}}',
+                    :info_request_user_name => h(info_request.user_name)) %>
+            </span>
+
+            <ul class="action-menu__menu__submenu owner_actions">
+              <li>
+                <% if last_response.nil? %>
+                  <%= link_to _('Send a followup'), new_request_followup_path(info_request.url_title) %>
+                <% else %>
+                  <%= link_to _('Write a reply'), new_request_incoming_followup_path(info_request.url_title, incoming_message_id: last_response.id) %>
+                <% end %>
+              </li>
+
+              <% if show_owner_update_status_action %>
+                <li>
+                  <%= link_to _('Update the status of this request'), request_path(info_request, update_status: 1) %>
+                </li>
+              <% end %>
+
+              <li>
+                <%= link_to _('Request an internal review'), new_request_followup_path(info_request.url_title, internal_review: '1') %>
+              </li>
+
+              <% if info_request.public_body.external_reviewer %>
+                <li>
+                  <%= link_to _('Apply for external review'), new_request_followup_path(info_request.url_title, external_review: '1') %>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
+
+        <% if info_request.allow_new_responses_from != 'nobody' %>
+        <li class="action-menu__menu__item">
+          <span class="action-menu__menu__heading">
+            <%= _('{{public_body_name}}',
+                  :public_body_name => h(info_request.public_body.name)) %>
+          </span>
+
+          <ul class="action-menu__menu__submenu public_body_actions">
+            <li>
+              <%= link_to _("Respond to request"), upload_response_path(:url_title => info_request.url_title) %>
+            </li>
+          </ul>
+        </li>
+        <% end %>
+
+        <li class="action-menu__menu__item">
+          <ul class="action-menu__menu__submenu anyone_actions">
+
+            <% if info_request.attention_requested %>
+              <%# The request has already been reported %>
+              <li>
+                <%=  _("Report this request") %>
+                <span class="action-menu__info-link">
+                  <%= link_to _("Unavailable"), help_about_path(:anchor => "reporting_unavailable") %>
+                </span>
+              </li>
+            <% else %>
+              <li>
+                <%= link_to _("Report this request"), new_request_report_path(info_request.url_title) %><span class="action-menu__info-link">
+                <%= link_to _("Help"), help_about_path(:anchor => "reporting") %>
+              </span>
+              </li>
+            <% end %>
+
+            <% if can? :create_comment, info_request %>
+              <li>
+                <%= link_to _('Add an annotation'), new_comment_path(:url_title => info_request.url_title) %>
+              </li>
+            <% end %>
+
+            <% if show_other_user_update_status_action %>
+              <li>
+                <%= link_to _('Update the status of this request'), '#describe_state_form_1' %>
+              </li>
+            <% end %>
+
+            <li>
+              <%= link_to _("Download a zip file of all correspondence"), download_entire_request_path(:url_title => info_request.url_title) %>
+            </li>
+
+            <li>
+              <%= link_to _('View event history details'), request_details_path(info_request) %>
+            </li>
+
+            <li>
+              <a tabindex="0" class="js-collapsible-trigger-all" data-text-expanded="<%= _('Collapse all correspondence') %>" data-text-collapsed="<%= _('Expand all correspondence') %>"><%= _('Collapse all correspondence') %></a>
+            </li>
+
+            <li>
+              <%= render :partial => 'track/rss_feed',
+                         :locals => { :track_thing => track_thing,
+                                      :location => 'action-menu' } %>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
