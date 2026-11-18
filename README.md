@@ -88,7 +88,9 @@ Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers
 `config/general-righttoknow.yml.example` is only copied when
 `alaveteli/config/general-righttoknow.yml` does not exist, so an existing
 checkout keeps its old settings. Run `make clean` or `make clobber` to pick up
-changes to the example.
+changes to the example. Both remove the `alaveteli` volume, so anything you
+added to `alaveteli/config/general-righttoknow.yml` (such as Stripe test keys)
+is lost and needs adding again.
 
 **Pro pages without Stripe.** The example turns Pro on, as production does, but
 has no Stripe keys. Signing in as `paul@localhost` shows the Pro dashboard and
