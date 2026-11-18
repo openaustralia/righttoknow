@@ -98,10 +98,17 @@ namespace :themes do
   desc 'Record the installed theme commit in REVISION'
   task :record_revision do
     on roles(:app) do
-      within release_path.join('lib', 'themes', 'righttoknow') do
-        revision = capture(:git, 'rev-parse', 'HEAD').strip
-        upload! StringIO.new("#{revision}\n"),
-                release_path.join('lib', 'themes', 'righttoknow', 'REVISION')
+      theme_path = release_path.join('lib', 'themes', 'righttoknow')
+      # The release root has its own .git, so without this guard git would
+      # walk up and record Alaveteli's commit as the theme's. The page hides
+      # a missing REVISION, so skipping is safe and never fails the deploy.
+      if test("[ -d #{theme_path.join('.git')} ]")
+        within theme_path do
+          revision = capture(:git, 'rev-parse', 'HEAD').strip
+          upload! StringIO.new("#{revision}\n"), theme_path.join('REVISION')
+        end
+      else
+        info 'Theme has no .git, so no REVISION was recorded'
       end
     end
   end

@@ -18,7 +18,7 @@ RSpec.describe DeployedRevisionHelper, type: :helper do
   def with_revision_file(content)
     Dir.mktmpdir do |dir|
       path = File.join(dir, 'REVISION')
-      File.write(path, content) unless content.nil?
+      File.binwrite(path, content) unless content.nil?
       yield path
     end
   end
@@ -43,6 +43,12 @@ RSpec.describe DeployedRevisionHelper, type: :helper do
         end
       end
     end
+
+    it 'returns nil when the file is not valid UTF-8' do
+      with_revision_file("\xFF\xFE#{sha}".b) do |path|
+        expect(helper.deployed_revision(path)).to be_nil
+      end
+    end
   end
 
   describe '#deployed_revision_link' do
@@ -60,26 +66,24 @@ RSpec.describe DeployedRevisionHelper, type: :helper do
 end
 
 RSpec.describe 'GET /help/alaveteli', type: :request do
-  let(:alaveteli_path) { Rails.root.join('REVISION') }
-  let(:theme_path) { File.join(DeployedRevisionHelper::THEME_ROOT, 'REVISION') }
+  let(:alaveteli_dir) { Dir.mktmpdir }
+  let(:theme_dir) { Dir.mktmpdir }
+  let(:alaveteli_path) { File.join(alaveteli_dir, 'REVISION') }
+  let(:theme_path) { File.join(theme_dir, 'REVISION') }
   let(:alaveteli_sha) { '1' * 40 }
   let(:theme_sha) { '2' * 40 }
 
-  # Put real files in place and restore whatever was there, so the spec is
-  # safe to run where a deploy has left genuine REVISION files.
-  around do |example|
-    originals = [alaveteli_path, theme_path].to_h do |path|
-      [path.to_s, File.exist?(path) ? File.read(path) : nil]
-    end
-    example.run
-  ensure
-    originals.each do |path, content|
-      content ? File.write(path, content) : FileUtils.rm_f(path)
-    end
+  # Point the helper at empty temp directories, so the spec never touches the
+  # real REVISION files a deploy may have left.
+  before do
+    DeployedRevisionHelper.alaveteli_root = alaveteli_dir
+    DeployedRevisionHelper.theme_root = theme_dir
   end
 
-  before do
-    FileUtils.rm_f([alaveteli_path.to_s, theme_path])
+  after do
+    DeployedRevisionHelper.alaveteli_root = nil
+    DeployedRevisionHelper.theme_root = nil
+    FileUtils.rm_rf([alaveteli_dir, theme_dir])
   end
 
   it 'shows both commits as links to GitHub' do
