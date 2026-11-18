@@ -1,4 +1,4 @@
-<% @title = "Making requests" %>
+<% @title = "Powered by Alaveteli" %>
 
 <%= render :partial => 'sidebar' %>
 <div id="left_column_flip" class="left_column_flip">
@@ -14,6 +14,15 @@
 
   <p>Read more on the <a href="http://alaveteli.org">Alaveteli
       website</a>.</p>
+
+  <% alaveteli_sha = alaveteli_revision %>
+  <% theme_sha = theme_revision %>
+  <% if alaveteli_sha || theme_sha %>
+    <p>This site is running
+      <% if alaveteli_sha %>Alaveteli version <%= deployed_revision_link(alaveteli_sha, DeployedRevisionHelper::ALAVETELI_REPO) %><% end %>
+      <% if alaveteli_sha && theme_sha %>with<% end %>
+      <% if theme_sha %>Right to Know theme version <%= deployed_revision_link(theme_sha, DeployedRevisionHelper::THEME_REPO) %><% end %>.</p>
+  <% end %>
 
   <%= render partial: 'history' %>
 

@@ -54,6 +54,9 @@ Temporary Items
 .env
 .envrc
 
+# Written at deploy time by themes:record_revision (see config/deploy.rb)
+/REVISION
+
 # Ignore Byebug command history file.
 .byebug_history
 
