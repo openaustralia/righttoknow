@@ -190,7 +190,8 @@ role-specific marketing partials under `pages/marketing_roles/`), `general/*`
 Standard Rails asset pipeline layout, prepended ahead of the host's own asset
 paths (see above). `lib/alavetelitheme.rb` also explicitly registers
 `event_tracking.js`, `personal_message_toggler.js`, and
-`alaveteli_pro/coupon_preview.js` for precompilation.
+`alaveteli_pro/coupon_preview.js`, and `alaveteli_pro/advice_deadline.js` for
+precompilation.
 
 ### Translations (`locale-theme/en/app.po`)
 
