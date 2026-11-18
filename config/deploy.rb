@@ -93,6 +93,26 @@ namespace :themes do
     end
   end
 
+  # themes:install re-clones the theme, so no REVISION survives from the
+  # release. Record what was actually checked out for /help/alaveteli.
+  desc 'Record the installed theme commit in REVISION'
+  task :record_revision do
+    on roles(:app) do
+      theme_path = release_path.join('lib', 'themes', 'righttoknow')
+      # The release root has its own .git, so without this guard git would
+      # walk up and record Alaveteli's commit as the theme's. The page hides
+      # a missing REVISION, so skipping is safe and never fails the deploy.
+      if test("[ -d #{theme_path.join('.git')} ]")
+        within theme_path do
+          revision = capture(:git, 'rev-parse', 'HEAD').strip
+          upload! StringIO.new("#{revision}\n"), theme_path.join('REVISION')
+        end
+      else
+        info 'Theme has no .git, so no REVISION was recorded'
+      end
+    end
+  end
+
   desc 'Upload Gemfile.theme and inject into alaveteli Gemfile before bundle install'
   task :pre_bundle_setup do
     on roles(:app) do
@@ -279,6 +299,7 @@ after  'deploy:symlink:shared',       'deploy:symlink_configuration'
 
 before 'bundler:install',          'themes:pre_bundle_setup'
 before 'deploy:assets:precompile', 'themes:install'
+after  'themes:install', 'themes:record_revision'
 after  'deploy:assets:precompile', 'deploy:assets:link_non_digest'
 
 # Show a maintenance page during migrations. current/ still points at the

@@ -153,8 +153,11 @@ reloading in development, per the comment in each file):
   Both halves must stay in sync: whatever the preview accepts, checkout must
   actually honour, and vice versa (`spec/coupon_preview_parity_spec.rb` guards
   this).
-- **`helper_patches.rb`** — mixes `AlaveteliPro::AlternativePriceTextHelper`
-  (`lib/helpers/`) into `ActionView::Base`.
+- **`helper_patches.rb`** — mixes the helpers in `lib/helpers/`
+  (`AlaveteliPro::AlternativePriceTextHelper`, `AnnouncementStyleHelper` and
+  `DeployedRevisionHelper`) into `ActionView::Base`.
+  `DeployedRevisionHelper` reads the `REVISION` files that Capistrano and
+  `themes:record_revision` write, for the commit lines on `/help/alaveteli`.
 - **`patch_mailer_paths.rb`** — prepends theme mailer views onto
   `ActionMailer::Base`.
 - **`job_patches.rb`**: re-declares `FoiAttachmentMaskJob`'s `unique` options
