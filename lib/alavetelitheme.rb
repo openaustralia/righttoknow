@@ -4,7 +4,7 @@ theme_name = File.split(File.expand_path('..', __dir__))[1]
 theme_name.gsub!('-', '_')
 THEME_NAME = theme_name
 
-Rails.application.config.assets.precompile << ['alaveteli_pro/coupon_preview.js']
+Rails.application.config.assets.precompile << ['alaveteli_pro/coupon_preview.js', 'alaveteli_pro/advice_deadline.js']
 
 module ActionController
   class Base

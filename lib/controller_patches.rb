@@ -4,6 +4,7 @@ require 'help_page_history'
 require 'models/alaveteli_pro/promotion_code'
 require 'models/alaveteli_pro/discount_code_resolution'
 require 'promotion_code_subscriptions'
+require 'admin_timeline_time_zone'
 
 # Add a callback - to be executed before each request in development,
 # and at startup in production - to patch existing app classes.
@@ -285,4 +286,6 @@ Rails.configuration.to_prepare do # rubocop:disable Metrics/BlockLength
   end
 
   AlaveteliPro::SubscriptionCollection.prepend(PromotionCodeSubscriptions)
+
+  AdminGeneralController.prepend(AdminTimelineTimeZone)
 end
