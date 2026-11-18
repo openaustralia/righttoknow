@@ -1,0 +1,18 @@
+# Config for .github/workflows/link-check.yml
+#
+# Hard failures only: DNS failures, refused or timed-out connections and 404.
+# Any other status (401, 403, 418, 5xx and so on) is accepted, because many live
+# sites answer non-browser clients that way.
+accept = ["100..=403", "405..=599"]
+
+max_retries = 3
+retry_wait_time = 5
+timeout = 30
+max_concurrency = 8
+no_progress = true
+
+# URL patterns (regular expressions, for example "^https://example\.gov\.au/") to skip
+# because they fail for non-browser clients with a network error or a 404 even
+# though they work in a browser. Add one only after confirming the link loads in
+# a browser, and say why in a comment.
+exclude = []
