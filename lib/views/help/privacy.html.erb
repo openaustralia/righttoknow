@@ -52,7 +52,10 @@ We don't use Google Analytics.</li>
 <li><strong>Cloudflare.</strong> It sits in front of the site and checks that visitors aren't bots.
 It sets cookies for that, and it runs its own web analytics.</li>
 <li><strong>Sentry.</strong> We use it to find and fix errors, and its servers are in Europe.
-When something goes wrong it can receive your IP address and, if you're signed in, your account's ID number.</li>
+When something goes wrong it can receive your IP address and, if you're signed in, your account's ID number.
+It can also receive details of the request you were making, including cookies, headers, the web address with any search terms, what you submitted in forms, and the database queries the site ran.
+That can include personal information, such as a name or email address you typed in.
+We mask email addresses in the logs we send to Sentry, but not in the other details.</li>
 <li><strong>Google reCAPTCHA.</strong> Some forms, including the contact form, use it to block spam.
 Google may set its own cookie there.</li>
 <li><strong>Stripe.</strong> Right to Know Pro payments go through Stripe.
