@@ -1,5 +1,8 @@
 <% @title = "Contact us" %>
 
+<%= render :partial => 'sidebar' %>
+
+<div id="left_column_flip" class="left_column_flip">
 <%= foi_error_messages_for :contact %>
 
 <h1><%= @title %></h1>
@@ -103,3 +106,4 @@
     </div>
 
 <% end %>
+</div>
