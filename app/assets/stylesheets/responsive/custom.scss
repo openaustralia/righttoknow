@@ -216,9 +216,10 @@ a.link_button_green_large {
   background-image: image-url("alaveteli-pro/logo.png");
   background-image: image-url("alaveteli-pro/logo.svg"),
                     linear-gradient(transparent, transparent);
-  position: static;
-  z-index: unset;
-  transform: none;
+  // The Pro logo is wider than the standard one, so it is centred 10px further
+  // left in the box. Shift it to keep its left edge in line with the standard
+  // logo, without moving the box (which would add horizontal scroll).
+  background-position: 10px 0;
 }
 
 .navigation {
