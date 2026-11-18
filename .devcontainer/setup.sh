@@ -9,8 +9,7 @@
 # the theme and run any pending migrations, but leave the sample data alone
 # unless --reset-data is passed.
 #
-# Runs as the Dev Container onCreateCommand, and via `make setup` for the
-# plain Docker workflow. Mirrors the steps in alaveteli's docker/bootstrap and
+# Run by the app container (.devcontainer/compose.yaml) every time it starts. Mirrors the steps in alaveteli's docker/bootstrap and
 # docker/setup scripts.
 
 set -e
@@ -28,9 +27,19 @@ notice_msg "Waiting for the database..."
 wait-for-it db:5432 --strict --timeout=120 -- true
 success_msg 'done'
 
-if [ ! -d "$ALAVETELI_DIR/.git" ]; then
+# No commit checked out means no clone yet, or one that was interrupted, which starts again
+if ! git -C "$ALAVETELI_DIR" rev-parse -q --verify HEAD >/dev/null 2>&1; then
   notice_msg "Cloning $ALAVETELI_REPO ($ALAVETELI_BRANCH)..."
-  git clone --branch "$ALAVETELI_BRANCH" "$ALAVETELI_REPO" "$ALAVETELI_DIR"
+  # Not `git clone`, which refuses a directory that isn't empty, as the data volumes are mounted inside this one
+  rm -rf "$ALAVETELI_DIR/.git"
+  git init -q "$ALAVETELI_DIR"
+  git -C "$ALAVETELI_DIR" remote add origin "$ALAVETELI_REPO"
+  # A branch or a tag, as `git clone --branch` takes
+  git -C "$ALAVETELI_DIR" fetch origin "$ALAVETELI_BRANCH"
+  git -C "$ALAVETELI_DIR" checkout -q -f -B "$ALAVETELI_BRANCH" FETCH_HEAD
+  # So `git pull` works in a branch, as after `git clone`
+  git -C "$ALAVETELI_DIR" rev-parse -q --verify "origin/$ALAVETELI_BRANCH" >/dev/null &&
+    git -C "$ALAVETELI_DIR" branch -q -u "origin/$ALAVETELI_BRANCH"
   success_msg 'done'
 fi
 
@@ -62,10 +71,18 @@ ln -sfn "$THEME_DIR" lib/themes/righttoknow
 bin/rails assets:clean >/dev/null
 success_msg 'done'
 
-# Sample data is loaded once, on a database that has never been seeded. Pass
+# Sample data is loaded once. There's a check for each step below, so a run
+# that stopped partway loads it again. The email check covers only the sample
+# emails, as a reload empties tables of any data added since. Pass
 # --reset-data to force a reload.
 set +e
-bin/rails runner 'User.find(1)' >/dev/null 2>&1
+bin/rails runner '
+  sample_emails = RawEmail.where(id: YAML.load_file("spec/fixtures/raw_emails.yml").values.map { |e| e["id"] })
+  loaded = User.exists?(1) &&
+    sample_emails.all? { |e| e.file.attached? && e.file.blob.service.exist?(e.file.key) } &&
+    InfoRequest.external.none? &&
+    (ActsAsXapian.readable_init; ActsAsXapian.db.doccount.positive?)
+  exit(loaded ? 0 : 1)' >/dev/null 2>&1
 RESET_DATA_FLAG=$?
 set -e
 for arg in "$@"; do
@@ -74,6 +91,8 @@ for arg in "$@"; do
     *);;
   esac
 done
+# The index is rebuilt last, so until then an old one must not pass the check
+[ $RESET_DATA_FLAG -eq 0 ] || rm -rf lib/acts_as_xapian/xapiandbs/development
 
 # Migrations run every time, not just on first setup: /alaveteli is a
 # persistent volume, so a re-run after the checkout moves to a revision with

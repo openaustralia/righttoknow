@@ -50,6 +50,10 @@ Temporary Items
 # Used by dotenv library to load environment variables.
 # .env
 
+# Per-checkout settings such as Docker host ports (see AGENTS.md), and direnv's .envrc
+.env
+.envrc
+
 # Ignore Byebug command history file.
 .byebug_history
 
