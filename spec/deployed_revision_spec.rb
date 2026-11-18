@@ -92,11 +92,12 @@ RSpec.describe 'GET /help/alaveteli', type: :request do
 
     get '/help/alaveteli'
 
-    expect(response.body).to include('Alaveteli commit:')
+    expect(response.body).to match(
+      %r{This site is running\s+Alaveteli version\s+<a[^>]*>1{7}</a>\s+with\s+Right to Know theme version\s+<a[^>]*>2{7}</a>\s*\.}
+    )
     expect(response.body).to include(
       "https://github.com/openaustralia/alaveteli/commit/#{alaveteli_sha}"
     )
-    expect(response.body).to include('Right to Know theme commit:')
     expect(response.body).to include(
       "https://github.com/openaustralia/righttoknow/commit/#{theme_sha}"
     )
@@ -107,16 +108,17 @@ RSpec.describe 'GET /help/alaveteli', type: :request do
 
     get '/help/alaveteli'
 
-    expect(response.body).to include('Right to Know theme commit:')
-    expect(response.body).not_to include('Alaveteli commit:')
+    expect(response.body).to match(
+      %r{This site is running\s+Right to Know theme version\s+<a[^>]*>2{7}</a>\s*\.}
+    )
+    expect(response.body).not_to include('Alaveteli version')
   end
 
   it 'hides the version section when neither file exists' do
     get '/help/alaveteli'
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).not_to include('commit:')
-    expect(response.body).not_to include('<h2>Version</h2>')
+    expect(response.body).not_to include('This site is running')
   end
 
   it 'sets the page title' do

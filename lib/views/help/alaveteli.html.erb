@@ -18,15 +18,10 @@
   <% alaveteli_sha = alaveteli_revision %>
   <% theme_sha = theme_revision %>
   <% if alaveteli_sha || theme_sha %>
-    <h2>Version</h2>
-    <ul>
-      <% if alaveteli_sha %>
-        <li>Alaveteli commit: <%= deployed_revision_link(alaveteli_sha, DeployedRevisionHelper::ALAVETELI_REPO) %></li>
-      <% end %>
-      <% if theme_sha %>
-        <li>Right to Know theme commit: <%= deployed_revision_link(theme_sha, DeployedRevisionHelper::THEME_REPO) %></li>
-      <% end %>
-    </ul>
+    <p>This site is running
+      <% if alaveteli_sha %>Alaveteli version <%= deployed_revision_link(alaveteli_sha, DeployedRevisionHelper::ALAVETELI_REPO) %><% end %>
+      <% if alaveteli_sha && theme_sha %>with<% end %>
+      <% if theme_sha %>Right to Know theme version <%= deployed_revision_link(theme_sha, DeployedRevisionHelper::THEME_REPO) %><% end %>.</p>
   <% end %>
 
   <%= render partial: 'history' %>
