@@ -55,4 +55,33 @@ ENABLE_ANTI_SPAM: false
 NEW_REQUEST_RECAPTCHA: false
 CONTACT_FORM_RECAPTCHA: false
 USER_CONTACT_FORM_RECAPTCHA: false
-ENABLE_ALAVETELI_PRO: false
+
+# Feature flags: these match production, so the same pages and features exist
+# locally. Production's values are in roles/internal/righttoknow/templates/
+# general.yml.j2 in the infrastructure repository
+# (https://gitlab.com/openaustralia/infrastructure). Check them there when
+# adding or changing a flag.
+#
+# Deliberately different from production: the anti-spam and reCAPTCHA settings
+# above (they need real keys), DISABLE_EMERGENCY_USER (the dev admin login
+# needs it), and Sentry, Stripe keys and prices (real accounts).
+ENABLE_ALAVETELI_PRO: true
+ENABLE_PRO_PRICING: true
+ENABLE_PRO_SELF_SERVE: false
+ENABLE_ANNOTATIONS: true
+ENABLE_PUBLIC_ANNOTATIONS: true
+ENABLE_USER_TO_USER_MESSAGING: true
+ENABLE_PROJECTS: false
+ENABLE_TWO_FACTOR_AUTH: false
+ENABLE_WIDGETS: false
+
+PRO_SITE_NAME: 'Right To Know Pro (DEV)'
+PRO_CONTACT_NAME: 'Right To Know Pro (DEV)'
+PRO_CONTACT_EMAIL: 'pro@localhost'
+
+# Stripe: no keys, prices or webhook secret here. The Pro dashboard and header
+# work without them; the pricing, plan and checkout pages return an error
+# until you add your own Stripe test keys
+# (STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_PRICES).
+STRIPE_NAMESPACE: 'RTK'
+STRIPE_TAX_RATE: '0.10'

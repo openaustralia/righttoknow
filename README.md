@@ -85,6 +85,17 @@ Works with [VS Code](https://code.visualstudio.com/docs/devcontainers/containers
    site's sign-in form. `make status` shows these addresses on the ports in
    use.
 
+`config/general-righttoknow.yml.example` is only copied when
+`alaveteli/config/general-righttoknow.yml` does not exist, so an existing
+checkout keeps its old settings. Run `make clean` or `make clobber` to pick up
+changes to the example.
+
+**Pro pages without Stripe.** The example turns Pro on, as production does, but
+has no Stripe keys. Signing in as `paul@localhost` shows the Pro dashboard and
+header at `/pro/dashboard`. The pricing page (`/pro/pricing`), the plan page
+(`/pro/plans`) and checkout call Stripe, so without your own Stripe test keys
+(set in `alaveteli/config/general-righttoknow.yml`) they return an error.
+
 Inside the container, Alaveteli lives at `/alaveteli` and this theme is
 mounted at `/alaveteli-themes/righttoknow` (your workspace folder). Theme
 changes take effect on reload; changes to Ruby files under `lib/` need a
