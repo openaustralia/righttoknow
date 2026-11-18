@@ -93,6 +93,19 @@ namespace :themes do
     end
   end
 
+  # themes:install re-clones the theme, so no REVISION survives from the
+  # release. Record what was actually checked out for /help/alaveteli.
+  desc 'Record the installed theme commit in REVISION'
+  task :record_revision do
+    on roles(:app) do
+      within release_path.join('lib', 'themes', 'righttoknow') do
+        revision = capture(:git, 'rev-parse', 'HEAD').strip
+        upload! StringIO.new("#{revision}\n"),
+                release_path.join('lib', 'themes', 'righttoknow', 'REVISION')
+      end
+    end
+  end
+
   desc 'Upload Gemfile.theme and inject into alaveteli Gemfile before bundle install'
   task :pre_bundle_setup do
     on roles(:app) do
@@ -279,6 +292,7 @@ after  'deploy:symlink:shared',       'deploy:symlink_configuration'
 
 before 'bundler:install',          'themes:pre_bundle_setup'
 before 'deploy:assets:precompile', 'themes:install'
+after  'themes:install', 'themes:record_revision'
 after  'deploy:assets:precompile', 'deploy:assets:link_non_digest'
 
 # Show a maintenance page during migrations. current/ still points at the
