@@ -61,8 +61,9 @@ RSpec.describe AdminAnnouncementsController, type: :controller do
       before { post :create, params: params }
 
       it 'creates the announcement' do
-        announcement = assigns[:announcement]
-        expect(announcement).to be_persisted
+        # Found again from the database, so this checks what was saved and
+        # not the object the controller built
+        announcement = Announcement.find(assigns[:announcement].id)
         expect(announcement).to be_yellow_style
         expect(announcement.rich_body.to_plain_text).to eq('New body')
       end
@@ -96,6 +97,28 @@ RSpec.describe AdminAnnouncementsController, type: :controller do
 
     it 'updates the style' do
       expect(announcement.reload).to be_green_style
+    end
+  end
+
+  describe 'PATCH #update with only a body' do
+    let(:announcement) do
+      FactoryBot.create(:announcement, style: 'red', rich_body: 'Old body')
+    end
+
+    before do
+      patch :update, params: {
+        id: announcement.id,
+        announcement: { rich_body: 'New body' }
+      }
+    end
+
+    it 'saves the new body' do
+      expect(Announcement.find(announcement.id).rich_body.to_plain_text)
+        .to eq('New body')
+    end
+
+    it 'leaves the style alone' do
+      expect(Announcement.find(announcement.id)).to be_red_style
     end
   end
 end

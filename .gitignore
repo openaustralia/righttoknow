@@ -50,6 +50,13 @@ Temporary Items
 # Used by dotenv library to load environment variables.
 # .env
 
+# Per-checkout settings such as Docker host ports (see AGENTS.md), and direnv's .envrc
+.env
+.envrc
+
+# Written at deploy time by themes:record_revision (see config/deploy.rb)
+/REVISION
+
 # Ignore Byebug command history file.
 .byebug_history
 
@@ -90,3 +97,12 @@ build-iPhoneSimulator/
 # .rubocop-https?--*
 
 # End of https://www.toptal.com/developers/gitignore/api/ruby,macos
+
+# Claude Code's local per-project notes, settings, worktrees and scheduler lock
+/CLAUDE.local.md
+/.claude/*.local*
+/.claude/worktrees/
+/.claude/scheduled_tasks.*
+
+# Playwright MCP session output
+.playwright-mcp/

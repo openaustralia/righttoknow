@@ -32,6 +32,12 @@ if defined?(Sentry)
     event
   end
 
+  scrub_log = lambda do |log|
+    log.body = scrub_value.call(log.body)
+    log.attributes = scrub_value.call(log.attributes)
+    log
+  end
+
   Sentry.init do |config|
     # With no DSN configured the SDK stays disabled - that is the off switch.
     config.dsn = AlaveteliConfiguration.get('SENTRY_DSN', nil)
@@ -54,14 +60,33 @@ if defined?(Sentry)
       end
 
     config.breadcrumbs_logger = %i[active_support_logger http_logger]
-    # Include IP addresses, request headers and request parameters for
-    # debugging context. Emails are scrubbed from breadcrumbs above.
-    config.send_default_pii = true
+    # Include user info, cookies, request headers, query parameters and
+    # bodies for debugging context. Emails are scrubbed from breadcrumbs and
+    # logs above.
+    config.data_collection.tap do |data|
+      data.user_info = true
+      data.cookies = true
+      data.http_headers.request = true
+      data.http_headers.response = true
+      data.url_query_params = true
+      data.http_bodies = %i[incoming_request outgoing_request incoming_response outgoing_response]
+      data.database_query_data = true
+      data.queues = true
+      data.graphql.document = true
+      data.graphql.variables = true
+      data.stack_frame_variables = false
+      data.frame_context_lines = 3
+    end
     config.before_send = scrub_breadcrumbs
     config.before_send_transaction = scrub_breadcrumbs
-    # Rails logs arrive via sentry-rails' structured logging, on by default
-    # since 7.0; the logger patch additionally forwards non-Rails stdlib
-    # logging (e.g. Sidekiq's)
+    config.before_send_log = scrub_log
+    # Rails logs arrive via sentry-rails' structured logging. It is on by
+    # default in 7.0 but off in 7.1, so set it explicitly. The logger patch
+    # additionally forwards stdlib logging (Sidekiq's, and Rails.logger),
+    # limited to warnings and above so request lines, with visitors' IP
+    # addresses, don't flood Sentry.
+    config.rails.structured_logging.enabled = true
+    config.std_lib_logger_filter = ->(_logger, _message, level) { %i[warn error fatal].include?(level) }
     config.enabled_patches << :logger
 
     # Fraction of requests traced for APM. Tune in general.yml without a

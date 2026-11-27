@@ -28,10 +28,17 @@ RSpec.describe Announcement do
       AlaveteliLocalization.with_locale(:es) do
         announcement.rich_body = 'Cuerpo'
         announcement.save!
-        expect(announcement.rich_body.to_plain_text).to eq('Cuerpo')
       end
 
-      expect(announcement.rich_body.to_plain_text).to eq('English body')
+      # Found again from the database in each locale, so this checks what was
+      # saved and not the object that was edited
+      AlaveteliLocalization.with_locale(:es) do
+        expect(Announcement.find(announcement.id).rich_body.to_plain_text)
+          .to eq('Cuerpo')
+      end
+
+      expect(Announcement.find(announcement.id).rich_body.to_plain_text)
+        .to eq('English body')
     end
   end
 

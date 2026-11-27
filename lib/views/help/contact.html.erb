@@ -1,5 +1,8 @@
 <% @title = "Contact us" %>
 
+<%= render :partial => 'sidebar' %>
+
+<div id="left_column_flip" class="left_column_flip">
 <%= foi_error_messages_for :contact %>
 
 <h1><%= @title %></h1>
@@ -88,9 +91,9 @@
     <% end %>
 
     <p class="form_note">
-    We can only help you with <strong>technical problems</strong>, or questions
+    We can only help you with <strong>questions about <%= site_name %></strong>, or general questions
     about Freedom of Information.
-    </P>
+    </p>
 
 
     <div class="form_button">
@@ -103,3 +106,4 @@
     </div>
 
 <% end %>
+</div>

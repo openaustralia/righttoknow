@@ -10,20 +10,19 @@
 /* General styling of nav menu items */
 %menu-item {
   text-decoration: none;
-  color: transparentize($color_white, 0.2);
+  color: $color_primary_text;
+  font-weight: bold;
   transition: background-color 0.5s ease-out;
   &:hover,
   &:active,
   &:focus {
-    background-color: darken($color_primary, 15%);
-    color: $color_white;
+    background-color: lighten($color_primary, 25%);
   }
 }
 
 /* Selected menu item */
 %selected-menu-item {
   font-weight: bold;
-  color: $color_primary;
   background-color: $color_neutral_light;
   &:hover,
   &:active,

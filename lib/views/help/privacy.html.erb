@@ -7,6 +7,74 @@
 
 <dl>
 
+<dt id="what_we_keep">What information do you collect about me, and how long do you keep it? <a href="#what_we_keep">#</a> </dt>
+
+<dd>
+<p>It depends on what you do on <%= site_name %>.</p>
+
+<ul>
+<li><strong>Requests.</strong> We publish your request, your name on it, the replies and any attachments.
+This is a permanent public archive, and we do not normally delete requests (<a href="#delete_requests">more details</a>).</li>
+<li><strong>Your account.</strong> When you sign up we store your name and your email address.
+We store your password in scrambled (hashed) form, so we can't read it.
+We keep a record of email address changes.
+If you add "about me" text or a profile photo, we store that too.
+Your "about me" text and your comments are published.</li>
+<li><strong>Messages, alerts and follows.</strong> We store messages you send to other people on the site, and the requests and authorities you follow.</li>
+<li><strong>Technical records.</strong> Cloudflare, which sits in front of the site, and our own web servers handle the IP address of each visit.</li>
+</ul>
+
+<p>We keep account information while the account exists.</p>
+</dd>
+
+<dt id="unused_accounts">Will you delete my account if I don't use it? <a href="#unused_accounts">#</a> </dt>
+
+<dd>
+<p>We may delete accounts that have no requests, comments or follows and have not been used for a long time.
+We do this so we're not holding personal information we don't need.
+Once an account is removed we can't get it back.
+Nothing on the public site changes, because nothing is published under these accounts.</p>
+
+<p>We send a notice to accounts we can email, giving the date the account will be removed.
+We can't email an account whose address was never confirmed, so we may remove those without a notice.</p>
+</dd>
+
+<dt id="cookies_and_services">Which cookies and outside services does the site use? <a href="#cookies_and_services">#</a> </dt>
+
+<dd>
+<ul>
+<li><strong>Our own cookies.</strong> A cookie called <code>locale</code> remembers your language.
+When you sign in or submit a form, we also set a session cookie that keeps you signed in.
+If you block it, you won't be able to stay signed in.</li>
+<li><strong>Plausible Analytics.</strong> We use it to count visits.
+It receives the web address of each page you visit and the page you came from.
+We don't use Google Analytics.</li>
+<li><strong>Cloudflare.</strong> It sits in front of the site and checks that visitors aren't bots.
+It sets cookies for that, and it runs its own web analytics.</li>
+<li><strong>Sentry.</strong> We use it to find and fix errors, and its servers are in Europe.
+When something goes wrong it can receive your IP address and, if you're signed in, your account's ID number.
+It can also receive details of the request you were making, including cookies, headers, the web address with any search terms, what you submitted in forms, and the database queries the site ran.
+That can include personal information, such as a name or email address you typed in.
+We mask email addresses in the logs we send to Sentry, but not in the other details.
+Sentry also runs a small script in your browser, loaded from its servers in Europe.
+If a page breaks, it can send the error, your IP address and a recording of the page as you saw it, with text and images hidden.</li>
+<li><strong>Google reCAPTCHA.</strong> Some forms, including the contact form, use it to block spam.
+Google may set its own cookie there.</li>
+<li><strong>Stripe.</strong> Right to Know Pro payments go through Stripe.
+Read <a href="https://stripe.com/en-au/privacy">Stripe's privacy policy</a>.</li>
+</ul>
+</dd>
+
+<dt id="privacy_contact">Who holds my information, and how do I contact you about it? <a href="#privacy_contact">#</a> </dt>
+
+<dd>
+<p>OpenAustralia Foundation Limited, a charity, runs <%= site_name %>.</p>
+
+<p>To ask about your information or to report personal information that shouldn't be public, use our <a href="/help/contact">contact form</a>.
+Say what the information is and where it appears.
+To report a specific problem on a request page, use the <strong>Report</strong> button on that page.</p>
+</dd>
+
 <dt id="email_address">Who gets to see my email address? <a href="#email_address">#</a> </dt>
 
 <dd>
@@ -24,7 +92,8 @@ email address to them so they can reply to you. You will be told that this is go
 <dt id="nasty_spam">Will you send nasty, brutish spam to my email address? <a href="#nasty_spam">#</a> </dt>
 <dd> <p>Nope. After you sign up to <%= site_name %> we will send you emails
 relating to a request you made, an email alert that you have signed up for,
-or for other reasons that you specifically authorise. </p>
+or for other reasons that you specifically authorise.
+We may also email you about your account itself (<a href="#unused_accounts">more details</a>). </p>
 
 <p>You will also receive emails from the <a href="https://oaf.org.au/">OpenAustralia Foundation</a>,
 the charity that runs <%= site_name %>. You can unsubscribe from these emails without affecting any alerts from <%= site_name %>. </p>
@@ -66,7 +135,7 @@ get in touch with you to assist you with your research or to campaign with you.
 <dt id="full_address">They've asked for my postal address! <a href="#full_address">#</a> </dt>
 
 <dd>
-<p>An email address is sufficient by law. You don't need to give your postal address.</p>
+<p>An email address is generally sufficient. You don't need to give your postal address.</p>
 <p>
   If a public authority insists on your full, physical address, <a href="/help/contact">let us know</a>. This website is specifically mentioned in the Federal Information Commissioner's <a href="https://www.oaic.gov.au/freedom-of-information/freedom-of-information-guidance-for-government-agencies/foi-guidelines/part-3-processing-and-deciding-on-requests-foi-access">FOI Guidelines</a> because we've been through this before.
 </p>
@@ -116,7 +185,12 @@ see the section on <a href="#real_name">pseudonyms</a>.</p>
 <p>If you see any personal information about you on the site which you'd like
 us to remove or hide, then please <a href="/help/contact">let us know</a>.
 Specify exactly what information you believe to be problematic and why, and
-where it appears on the site.</p>
+where it appears on the site.
+You can also use the <strong>Report</strong> button on the request page.</p>
+
+<p>When we decide something shouldn't be public, we can hide a request or a message.
+We can also add a rule that hides a name or other text.
+We automatically remove most email addresses and some mobile numbers from replies, but for technical reasons we don't always remove them from attachments.</p>
 
 <p>If it is sensitive personal information that has been accidentally
 posted, then we will usually remove it. Normally we will only consider

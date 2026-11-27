@@ -3,9 +3,11 @@
 # .devcontainer/setup.sh (Alaveteli's switch-theme script then symlinks
 # config/general.yml to it).
 #
-# Only contains settings that differ from Alaveteli's defaults — see
-# alaveteli/config/general.yml-example for the full list. Production settings
-# live in the infrastructure repository, not here.
+# Mostly settings that differ from Alaveteli's defaults — see
+# alaveteli/config/general.yml-example for the full list. The feature flags
+# further down repeat production's values even where they equal the default,
+# so a change to either is visible here. Production's own settings live in the
+# infrastructure repository.
 
 SITE_NAME: 'Right To Know'
 DOMAIN: 'localhost:3000'
@@ -55,4 +57,36 @@ ENABLE_ANTI_SPAM: false
 NEW_REQUEST_RECAPTCHA: false
 CONTACT_FORM_RECAPTCHA: false
 USER_CONTACT_FORM_RECAPTCHA: false
-ENABLE_ALAVETELI_PRO: false
+
+# Feature flags: these match production, so the same pages and features exist
+# locally. Production's values are in the infrastructure repository
+# (https://gitlab.com/openaustralia/infrastructure), in
+# roles/internal/righttoknow/templates/general.yml.j2. Two of them,
+# ENABLE_ALAVETELI_PRO and ENABLE_PRO_PRICING, are Ansible variables there, set
+# in roles/internal/righttoknow/tasks/main.yml. Check both when adding or
+# changing a flag.
+#
+# Not set here, so production differs: DISABLE_EMERGENCY_USER (the dev admin
+# login needs the emergency user), Sentry, and the Stripe keys, prices and
+# webhook secret (real accounts). The anti-spam and reCAPTCHA settings above are
+# switched off here and on in production.
+ENABLE_ALAVETELI_PRO: true
+ENABLE_PRO_PRICING: true
+ENABLE_PRO_SELF_SERVE: false
+ENABLE_ANNOTATIONS: true
+ENABLE_PUBLIC_ANNOTATIONS: true
+ENABLE_USER_TO_USER_MESSAGING: true
+ENABLE_PROJECTS: false
+ENABLE_TWO_FACTOR_AUTH: false
+ENABLE_WIDGETS: false
+
+PRO_SITE_NAME: 'Right To Know Pro (DEV)'
+PRO_CONTACT_NAME: 'Right To Know Pro (DEV)'
+PRO_CONTACT_EMAIL: 'pro@localhost'
+
+# Stripe: no keys, prices or webhook secret here. The Pro dashboard and header
+# work without them; the pricing, plan and checkout pages return an error
+# until you add your own Stripe test keys
+# (STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_PRICES).
+STRIPE_NAMESPACE: 'RTK'
+STRIPE_TAX_RATE: '0.10'
