@@ -210,9 +210,7 @@ See "Deployment" in `README.md` for the full command list
 `xapian:destroy_and_rebuild_index`) and the one-time server bootstrap
 (shared config files Capistrano expects to already exist under `shared/`).
 Server provisioning (not deployment) lives in the separate `infrastructure`
-repo. Each staging→production release PR also adds a section to
-`CHANGELOG.md` covering everything merged to `staging` since the previous
-release (one changelog touchpoint per release, not per PR).
+repo.
 
 ### Seeding test data (`script/seed_test_data.rb`)
 
