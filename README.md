@@ -449,10 +449,17 @@ One-time bootstrap per server:
    - `user_spam_scorer.yml`
    - `rails_env.rb`
    - `newrelic.yml`
+   - `master.key` (Alaveteli 0.47.0.0 and later, see below)
+   - `credentials.yml.enc` (Alaveteli 0.47.0.0 and later, see below)
    - `foi-live-creation.png`
    - `foi-user-use.png`
    - `rbenv-version`
 3. Run the first deploy: `bundle exec cap <stage> deploy`.
+
+`master.key` and `credentials.yml.enc` hold the Active Record Encryption keys that Alaveteli 0.47.0.0 uses for sensitive database columns, such as two factor authentication secrets.
+The infrastructure repository's `righttoknow` role writes them from Ansible vault, with a separate pair for each stage, and the role refuses to run until they exist.
+Do not generate them on the server and never regenerate them: without the key those columns cannot be read, and rolling back to 0.46.8.0 is unsupported once the secrets are encrypted.
+See [ADR 0007](doc/adr/0007-alaveteli-0-47-0-0-is-a-one-way-upgrade.md).
 
 `deploy:check_shared` runs at the start of every deploy and fails fast if any required file is missing.
 
